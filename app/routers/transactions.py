@@ -60,7 +60,17 @@ def update_transaction(transaction_id: str, payload: TransactionUpdate, db: Sess
     transaction = db.query(Transaction).filter(Transaction.id == transaction_id, Transaction.user_id == current_user.id).first()
     if not transaction:
         raise HTTPException(status_code=404, detail="Không tìm thấy giao dịch")
-    for key, value in payload.model_dump(exclude_unset=True).items():
+    updates = payload.model_dump(exclude_unset=True)
+    if "category_id" in updates:
+        category = db.query(Category).filter(
+            Category.id == updates["category_id"],
+            Category.user_id == current_user.id,
+        ).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Danh mục không tồn tại hoặc không thuộc về bạn")
+        transaction.type = category.type
+
+    for key, value in updates.items():
         setattr(transaction, key, value)
     db.commit()
     db.refresh(transaction)
