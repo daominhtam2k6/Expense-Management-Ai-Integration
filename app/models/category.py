@@ -10,3 +10,4 @@ class Category(Base):
     name = Column(String, nullable=False)
     type = Column(String, nullable=False)   # "income" hoặc "expense"
     color = Column(String, nullable=False, default="#D9A441")
+    icon = Column(String, nullable=False, default="circle-dollar-sign", server_default="circle-dollar-sign")

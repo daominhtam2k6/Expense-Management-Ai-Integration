@@ -68,7 +68,7 @@ def get_dashboard(
 
     category_amount = func.sum(Transaction.amount).label("amount")
     category_rows = (
-        db.query(Category.id, Category.name, Category.color, category_amount)
+        db.query(Category.id, Category.name, Category.color, Category.icon, category_amount)
         .join(Transaction, Transaction.category_id == Category.id)
         .filter(
             Category.user_id == current_user.id,
@@ -77,13 +77,13 @@ def get_dashboard(
             Transaction.txn_date >= period_start,
             Transaction.txn_date < period_end,
         )
-        .group_by(Category.id, Category.name, Category.color)
+        .group_by(Category.id, Category.name, Category.color, Category.icon)
         .order_by(category_amount.desc())
         .all()
     )
     spending_by_category = []
     spent_by_category: dict[str, Decimal] = {}
-    for category_id, category_name, color, amount in category_rows:
+    for category_id, category_name, color, icon, amount in category_rows:
         amount = Decimal(amount or 0)
         spent_by_category[category_id] = amount
         spending_by_category.append(
@@ -91,6 +91,7 @@ def get_dashboard(
                 "category_id": category_id,
                 "category_name": category_name,
                 "color": color,
+                "icon": icon,
                 "amount": amount,
                 "percentage": _percentage(amount, expense),
             }
@@ -128,7 +129,7 @@ def get_dashboard(
     ]
 
     budget_rows = (
-        db.query(Budget, Category.name, Category.color)
+        db.query(Budget, Category.name, Category.color, Category.icon)
         .join(Category, Category.id == Budget.category_id)
         .filter(
             Budget.user_id == current_user.id,
@@ -140,7 +141,7 @@ def get_dashboard(
         .all()
     )
     budgets = []
-    for budget, category_name, color in budget_rows:
+    for budget, category_name, color, icon in budget_rows:
         limit_amount = Decimal(budget.limit_amount)
         spent = spent_by_category.get(budget.category_id, Decimal(0))
         usage_percentage = _percentage(spent, limit_amount)
@@ -152,6 +153,7 @@ def get_dashboard(
                 "category_id": budget.category_id,
                 "category_name": category_name,
                 "color": color,
+                "icon": icon,
                 "limit_amount": limit_amount,
                 "spent": spent,
                 "remaining": limit_amount - spent,
@@ -207,7 +209,7 @@ def get_dashboard(
         )
 
     recent_rows = (
-        db.query(Transaction, Category.name, Category.color)
+        db.query(Transaction, Category.name, Category.color, Category.icon)
         .join(Category, Category.id == Transaction.category_id)
         .filter(
             Transaction.user_id == current_user.id,
@@ -225,12 +227,13 @@ def get_dashboard(
             "category_id": transaction.category_id,
             "category_name": category_name,
             "category_color": color,
+            "category_icon": icon,
             "amount": Decimal(transaction.amount),
             "type": transaction.type,
             "txn_date": transaction.txn_date,
             "note": transaction.note,
         }
-        for transaction, category_name, color in recent_rows
+        for transaction, category_name, color, icon in recent_rows
     ]
 
     return DashboardOut(

@@ -1,7 +1,6 @@
 import {
   BarChart3,
   Bot,
-  ChevronDown,
   Grid2X2,
   LogOut,
   PiggyBank,
@@ -10,7 +9,8 @@ import {
   Target,
   WalletCards,
 } from "lucide-react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 const navItems = [
   { to: "/dashboard", label: "Tổng quan", icon: Grid2X2 },
@@ -23,6 +23,16 @@ const navItems = [
 ];
 
 export function AppShell() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const initial = user?.username.trim().charAt(0).toLocaleUpperCase("vi") || "?";
+
+  const handleLogout = () => {
+    sessionStorage.setItem("auth_notice", "Bạn đã đăng xuất an toàn.");
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -48,19 +58,19 @@ export function AppShell() {
         </nav>
 
         <div className="sidebar__account">
-          <button type="button" className="account-card">
-            <span className="avatar">A</span>
+          <div className="account-card">
+            <span className="avatar">{initial}</span>
             <span className="account-copy">
-              <strong>admin</strong>
-              <small>admin@domain.com</small>
+              <strong>{user?.username}</strong>
+              <small>{user?.email}</small>
             </span>
-            <ChevronDown size={16} />
-          </button>
-          <button type="button" className="logout-button">
+          </div>
+          <button type="button" className="logout-button" onClick={handleLogout}>
             <LogOut size={20} />
             <span>Đăng xuất</span>
           </button>
         </div>
+        <button type="button" className="compact-logout" onClick={handleLogout} aria-label="Đăng xuất" title="Đăng xuất"><LogOut size={20} /></button>
       </aside>
 
       <main className="main-content">

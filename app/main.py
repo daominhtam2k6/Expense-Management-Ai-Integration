@@ -4,11 +4,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
 from app import models
+from app.core.schema_migrations import ensure_category_icon_column
 from app.database import Base, engine
 from app.routers import auth, budgets, categories, dashboard, goals, transactions
 
 
 Base.metadata.create_all(bind=engine)
+ensure_category_icon_column(engine)
 
 app = FastAPI(title="Expense Management API")
 

@@ -1,10 +1,58 @@
 export type CategoryType = "income" | "expense";
+export type CategoryIconKey =
+  | "circle-dollar-sign"
+  | "wallet"
+  | "utensils"
+  | "shopping-bag"
+  | "house"
+  | "car"
+  | "bus"
+  | "fuel"
+  | "smartphone"
+  | "receipt"
+  | "heart-pulse"
+  | "graduation-cap"
+  | "gamepad-2"
+  | "dog"
+  | "baby"
+  | "dumbbell"
+  | "plane"
+  | "gift"
+  | "piggy-bank"
+  | "banknote"
+  | "briefcase-business"
+  | "trending-up"
+  | "hand-coins"
+  | "badge-dollar-sign";
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatar_url: string | null;
+}
+
+export interface AuthToken {
+  access_token: string;
+  token_type: string;
+}
+
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface MessageResponse {
+  message: string;
+}
 
 export interface Category {
   id: string;
   name: string;
   type: CategoryType;
   color: string;
+  icon: CategoryIconKey;
 }
 
 export interface Budget {
@@ -21,6 +69,7 @@ export interface CategoryPayload {
   name: string;
   type: CategoryType;
   color: string;
+  icon: CategoryIconKey;
 }
 
 export interface BudgetPayload {
@@ -41,6 +90,7 @@ export interface DashboardCategorySpending {
   category_id: string;
   category_name: string;
   color: string;
+  icon: CategoryIconKey;
   amount: number;
   percentage: number;
 }
@@ -57,6 +107,7 @@ export interface DashboardBudget {
   category_id: string;
   category_name: string;
   color: string;
+  icon: CategoryIconKey;
   limit_amount: number;
   spent: number;
   remaining: number;
@@ -80,6 +131,7 @@ export interface DashboardRecentTransaction {
   category_id: string;
   category_name: string;
   category_color: string;
+  category_icon: CategoryIconKey;
   amount: number;
   type: CategoryType;
   txn_date: string;

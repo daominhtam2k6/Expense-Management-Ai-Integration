@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
@@ -43,27 +45,43 @@ def _is_rate_limited(email: str) -> bool:
 
 @router.post("/register", response_model=UserOut)
 def register(payload: UserRegister, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.username == payload.username).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Username đã tồn tại")
+    username = payload.username.strip()
+    email = str(payload.email).strip().lower()
+    if len(username) < 3:
+        raise HTTPException(status_code=400, detail="Tên đăng nhập phải có ít nhất 3 ký tự.")
+
+    existing_username = db.query(User).filter(User.username == username).first()
+    if existing_username:
+        raise HTTPException(status_code=400, detail="Tên đăng nhập đã tồn tại.")
+
+    existing_email = db.query(User).filter(func.lower(User.email) == email).first()
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email đã được sử dụng.")
 
     user = User(
-        username=payload.username,
-        email=payload.email,
+        username=username,
+        email=email,
         password_hash=hash_password(payload.password),
     )
     db.add(user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Tên đăng nhập hoặc email đã được sử dụng.") from exc
     db.refresh(user)
     return user
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == form_data.username).first()
+    identifier = form_data.username.strip()
+    user = db.query(User).filter(User.username == identifier).first()
+    if not user:
+        user = db.query(User).filter(func.lower(User.email) == identifier.lower()).first()
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Sai username hoặc mật khẩu",
+            detail="Tên đăng nhập, email hoặc mật khẩu không đúng.",
         )
     token = create_access_token({"sub": user.id})
     return {"access_token": token, "token_type": "bearer"}
@@ -74,15 +92,16 @@ def me(current_user: User = Depends(get_current_user)):
 
 @router.post("/forgot-password", response_model=MessageResponse)
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    email = str(payload.email).strip().lower()
     generic_response = MessageResponse(
         message="Nếu email tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi."
     )
 
-    if _is_rate_limited(payload.email):
+    if _is_rate_limited(email):
         # Vẫn trả về thông báo chung, chỉ không gửi email nữa
         return generic_response
 
-    user = db.query(User).filter(User.email == payload.email).first()
+    user = db.query(User).filter(func.lower(User.email) == email).first()
     if not user:
         # Không tiết lộ email có tồn tại hay không (chống user enumeration)
         return generic_response
@@ -92,8 +111,8 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
     user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
     db.commit()
 
-    _reset_request_log[payload.email].append(datetime.now(timezone.utc))
-    send_reset_password_email(payload.email, raw_token)
+    _reset_request_log[email].append(datetime.now(timezone.utc))
+    send_reset_password_email(email, raw_token)
 
     return generic_response
 

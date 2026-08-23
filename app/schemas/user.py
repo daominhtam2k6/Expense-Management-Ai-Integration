@@ -4,16 +4,16 @@ from typing import Optional
 class UserRegister(BaseModel):
     username: str = Field(min_length=3, max_length=50)
     password: str = Field(min_length=6)
-    email: Optional[EmailStr] = None
+    email: EmailStr
 
 class UserLogin(BaseModel):
-    username: str
+    identifier: str
     password: str
 
 class UserOut(BaseModel):
     id: str
     username: str
-    email: Optional[str] = None
+    email: str
     avatar_url: Optional[str] = None
 
     class Config:

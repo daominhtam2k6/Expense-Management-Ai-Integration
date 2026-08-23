@@ -17,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { api } from "../lib/api";
+import { getCategoryIcon } from "../lib/categoryIcons";
 import { formatCurrency } from "../lib/format";
 import type { DashboardCategorySpending, DashboardData, DashboardTrendPoint } from "../types";
 
@@ -57,6 +58,7 @@ const compactSpending = (items: DashboardCategorySpending[]): SpendingSlice[] =>
       category_id: "other",
       category_name: `Khác (${remaining.length})`,
       color: "#7c8798",
+      icon: "circle-dollar-sign",
       amount: remaining.reduce((sum, item) => sum + item.amount, 0),
       percentage: remaining.reduce((sum, item) => sum + item.percentage, 0),
     },
@@ -206,14 +208,17 @@ export function DashboardPage() {
                     </div>
                   </div>
                   <div className="chart-legend">
-                    {spending.map((item) => (
-                      <div className="legend-row" key={item.category_id}>
-                        <span className="legend-dot" style={{ background: item.color }} />
-                        <span title={item.category_name}>{item.category_name}</span>
-                        <strong>{formatCurrency(item.amount)}</strong>
-                        <small>{Math.round(item.percentage)}%</small>
-                      </div>
-                    ))}
+                    {spending.map((item) => {
+                      const Icon = getCategoryIcon(item.icon, "expense");
+                      return (
+                        <div className="legend-row" key={item.category_id}>
+                          <span className="legend-category-icon" style={{ color: item.color, backgroundColor: `${item.color}18` }}><Icon size={13} /></span>
+                          <span title={item.category_name}>{item.category_name}</span>
+                          <strong>{formatCurrency(item.amount)}</strong>
+                          <small>{Math.round(item.percentage)}%</small>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -252,12 +257,15 @@ export function DashboardPage() {
           <section className="dashboard-secondary-grid">
             <article className="surface compact-surface">
               <div className="section-heading"><h2>Ngân sách</h2><Link to="/budgets">Xem tất cả</Link></div>
-              {budgetPreview.length === 0 ? <PanelEmpty icon={WalletCards} title="Chưa đặt ngân sách" description="Đặt hạn mức để theo dõi tiến độ chi tiêu." compact /> : budgetPreview.map((budget) => (
-                <div className={`mini-progress-row mini-progress-row--${budget.status}`} key={budget.id}>
-                  <span title={budget.category_name}>{budget.category_name}</span><strong>{Math.round(budget.usage_percentage)}%</strong>
-                  <div className="progress-track"><span style={{ width: `${Math.min(Math.max(budget.usage_percentage, 0), 100)}%` }} /></div>
-                </div>
-              ))}
+              {budgetPreview.length === 0 ? <PanelEmpty icon={WalletCards} title="Chưa đặt ngân sách" description="Đặt hạn mức để theo dõi tiến độ chi tiêu." compact /> : budgetPreview.map((budget) => {
+                const Icon = getCategoryIcon(budget.icon, "expense");
+                return (
+                  <div className={`mini-progress-row mini-progress-row--${budget.status}`} key={budget.id}>
+                    <span className="mini-progress-label" title={budget.category_name}><i style={{ color: budget.color, backgroundColor: `${budget.color}18` }}><Icon size={14} /></i>{budget.category_name}</span><strong>{Math.round(budget.usage_percentage)}%</strong>
+                    <div className="progress-track"><span style={{ width: `${Math.min(Math.max(budget.usage_percentage, 0), 100)}%` }} /></div>
+                  </div>
+                );
+              })}
             </article>
 
             <article className="surface compact-surface">
@@ -275,7 +283,7 @@ export function DashboardPage() {
               <div className="section-heading"><h2>Giao dịch gần đây</h2><span className="unavailable-link" title="Trang Giao dịch sẽ được xây dựng ở giai đoạn tiếp theo">Sắp có</span></div>
               {data.recent_transactions.length === 0 ? <PanelEmpty icon={ReceiptText} title="Chưa có giao dịch" description="Giao dịch trong tháng sẽ xuất hiện tại đây." compact /> : data.recent_transactions.map((transaction, index) => {
                 const income = transaction.type === "income";
-                const Icon = income ? ArrowUpRight : ArrowDownRight;
+                const Icon = getCategoryIcon(transaction.category_icon, transaction.type);
                 const color = safeColor(transaction.category_color, index);
                 const signedAmount = income ? transaction.amount : -transaction.amount;
                 return (

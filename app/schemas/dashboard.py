@@ -16,6 +16,7 @@ class DashboardCategorySpending(BaseModel):
     category_id: str
     category_name: str
     color: str
+    icon: str
     amount: Decimal
     percentage: float
 
@@ -32,6 +33,7 @@ class DashboardBudget(BaseModel):
     category_id: str
     category_name: str
     color: str
+    icon: str
     limit_amount: Decimal
     spent: Decimal = Decimal(0)
     remaining: Decimal = Decimal(0)
@@ -55,6 +57,7 @@ class DashboardRecentTransaction(BaseModel):
     category_id: str
     category_name: str
     category_color: str
+    category_icon: str
     amount: Decimal
     type: str
     txn_date: date

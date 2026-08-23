@@ -14,14 +14,17 @@ import { CategoryAvatar } from "../components/CategoryAvatar";
 import { SidePanel } from "../components/SidePanel";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { api } from "../lib/api";
-import type { Category, CategoryPayload, CategoryType } from "../types";
+import { categoryIconOptions } from "../lib/categoryIcons";
+import type { Category, CategoryIconKey, CategoryPayload, CategoryType } from "../types";
 
 const palette = ["#f04438", "#1785e5", "#f5a800", "#0da86c", "#7757e8", "#27aeb1", "#f97342", "#9b6b56", "#ec4899", "#7c8798"];
-const blankForm: CategoryPayload = { name: "", type: "expense", color: palette[0] };
+const blankForm: CategoryPayload = { name: "", type: "expense", color: palette[0], icon: "wallet" };
+const iconGroups = ["Phổ biến", "Hằng ngày", "Mục tiêu", "Thu nhập & tiết kiệm"] as const;
 
 export function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [query, setQuery] = useState("");
+  const [iconQuery, setIconQuery] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState<CategoryPayload>(blankForm);
@@ -56,10 +59,17 @@ export function CategoriesPage() {
 
   const expense = visible.filter((category) => category.type === "expense");
   const income = visible.filter((category) => category.type === "income");
+  const visibleIcons = useMemo(() => {
+    const normalized = iconQuery.trim().toLocaleLowerCase("vi");
+    return normalized
+      ? categoryIconOptions.filter((option) => option.label.toLocaleLowerCase("vi").includes(normalized))
+      : categoryIconOptions;
+  }, [iconQuery]);
 
   const openCreate = () => {
     setEditing(null);
     setForm(blankForm);
+    setIconQuery("");
     setFormError("");
     setActionError("");
     setPanelOpen(true);
@@ -67,7 +77,8 @@ export function CategoriesPage() {
 
   const openEdit = (category: Category) => {
     setEditing(category);
-    setForm({ name: category.name, type: category.type, color: category.color });
+    setForm({ name: category.name, type: category.type, color: category.color, icon: category.icon });
+    setIconQuery("");
     setFormError("");
     setActionError("");
     setMenuId(null);
@@ -89,7 +100,7 @@ export function CategoriesPage() {
     setFormError("");
     try {
       if (editing) {
-        const updated = await api.updateCategory(editing.id, { name, color: form.color });
+        const updated = await api.updateCategory(editing.id, { name, color: form.color, icon: form.icon });
         setCategories((items) => items.map((item) => item.id === editing.id ? { ...item, ...updated } : item));
       } else {
         const created = await api.createCategory({ ...form, name });
@@ -158,6 +169,41 @@ export function CategoriesPage() {
               <button type="button" className={form.type === "income" ? "is-active is-income" : ""} onClick={() => setForm((current) => ({ ...current, type: "income" as CategoryType }))}><ArrowUpFromLine size={18} /> Thu nhập</button>
             </div>
             {editing && <small>Không thể đổi loại sau khi danh mục đã được tạo.</small>}
+          </fieldset>
+          <fieldset className="field icon-picker-field">
+            <legend>Biểu tượng</legend>
+            <label className="icon-search-field">
+              <Search size={17} aria-hidden="true" />
+              <input value={iconQuery} onChange={(event) => setIconQuery(event.target.value)} placeholder="Tìm biểu tượng" aria-label="Tìm biểu tượng danh mục" />
+            </label>
+            <div className="icon-picker" role="radiogroup" aria-label="Chọn biểu tượng danh mục">
+              {iconGroups.map((group) => {
+                const options = visibleIcons.filter((option) => option.group === group);
+                if (options.length === 0) return null;
+                return (
+                  <section className="icon-picker__group" key={group}>
+                    <h3>{group}</h3>
+                    <div className="icon-options">
+                      {options.map(({ key, label, icon: Icon }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          role="radio"
+                          aria-checked={form.icon === key}
+                          className={form.icon === key ? "is-active" : ""}
+                          onClick={() => setForm((current) => ({ ...current, icon: key as CategoryIconKey }))}
+                          title={label}
+                          aria-label={label}
+                        >
+                          <Icon size={20} />
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+              {visibleIcons.length === 0 && <p className="icon-picker__empty">Không tìm thấy biểu tượng phù hợp.</p>}
+            </div>
           </fieldset>
           <fieldset className="field color-field"><legend>Màu sắc</legend><div className="color-options">{palette.map((color) => <button key={color} type="button" className={form.color === color ? "is-active" : ""} style={{ backgroundColor: color }} onClick={() => setForm((current) => ({ ...current, color }))} aria-label={`Chọn màu ${color}`}><span /></button>)}</div></fieldset>
           {formError && <div className="form-error" role="alert">{formError}</div>}

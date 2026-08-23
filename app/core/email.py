@@ -2,7 +2,7 @@ import os
 import requests
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:8000")
 RESEND_API_URL = "https://api.resend.com/emails"
 
 

@@ -1,19 +1,39 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthContext";
+import { ProtectedRoute, PublicOnlyRoute } from "./auth/RouteGuards";
 import { AppShell } from "./components/AppShell";
+import { AuthLayout } from "./components/auth/AuthLayout";
 import { BudgetsPage } from "./pages/BudgetsPage";
 import { CategoriesPage } from "./pages/CategoriesPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
+import { LoginPage } from "./pages/auth/LoginPage";
+import { RegisterPage } from "./pages/auth/RegisterPage";
+import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-        <Route path="/budgets" element={<BudgetsPage />} />
+    <AuthProvider>
+      <Routes>
+        <Route element={<AuthLayout />}>
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          </Route>
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppShell />}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/budgets" element={<BudgetsPage />} />
+          </Route>
+        </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Route>
-    </Routes>
+      </Routes>
+    </AuthProvider>
   );
 }

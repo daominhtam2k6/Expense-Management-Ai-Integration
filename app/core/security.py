@@ -1,10 +1,15 @@
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY chưa được cấu hình.")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 giờ
 
