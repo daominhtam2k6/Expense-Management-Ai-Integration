@@ -22,3 +22,13 @@ class UserOut(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6)  # khớp rule đăng ký hiện tại (UserRegister)
+
+class MessageResponse(BaseModel):
+    message: str

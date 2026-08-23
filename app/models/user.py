@@ -12,3 +12,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     avatar_url = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Dùng cho chức năng quên mật khẩu (UC002a)
+    reset_token_hash = Column(String, nullable=True)
+    reset_token_expiry = Column(DateTime(timezone=True), nullable=True)
