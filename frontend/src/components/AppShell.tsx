@@ -14,10 +14,10 @@ import { useAuth } from "../auth/AuthContext";
 
 const navItems = [
   { to: "/dashboard", label: "Tổng quan", icon: Grid2X2 },
-  { to: "/transactions", label: "Giao dịch", icon: ReceiptText, disabled: true },
+  { to: "/transactions", label: "Giao dịch", icon: ReceiptText },
   { to: "/categories", label: "Danh mục", icon: Tags },
   { to: "/budgets", label: "Ngân sách", icon: WalletCards },
-  { to: "/goals", label: "Mục tiêu", icon: Target, disabled: true },
+  { to: "/goals", label: "Mục tiêu", icon: Target },
   { to: "/reports", label: "Báo cáo", icon: BarChart3, disabled: true },
   { to: "/assistant", label: "Trợ lý AI", icon: Bot, disabled: true },
 ];

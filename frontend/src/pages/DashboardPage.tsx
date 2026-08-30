@@ -161,9 +161,9 @@ export function DashboardPage() {
         </div>
         <div className="header-actions">
           <ThemeToggle />
-          <button className="button button--primary" type="button" disabled title="Trang Giao dịch sẽ được xây dựng ở giai đoạn tiếp theo">
-            <Plus size={19} /> Thêm giao dịch <small className="control-status">Sắp có</small>
-          </button>
+          <Link className="button button--primary" to="/transactions">
+            <Plus size={19} /> Thêm giao dịch
+          </Link>
         </div>
       </header>
 
@@ -280,7 +280,7 @@ export function DashboardPage() {
             </article>
 
             <article className="surface compact-surface recent-surface">
-              <div className="section-heading"><h2>Giao dịch gần đây</h2><span className="unavailable-link" title="Trang Giao dịch sẽ được xây dựng ở giai đoạn tiếp theo">Sắp có</span></div>
+              <div className="section-heading"><h2>Giao dịch gần đây</h2><Link to="/transactions">Xem tất cả</Link></div>
               {data.recent_transactions.length === 0 ? <PanelEmpty icon={ReceiptText} title="Chưa có giao dịch" description="Giao dịch trong tháng sẽ xuất hiện tại đây." compact /> : data.recent_transactions.map((transaction, index) => {
                 const income = transaction.type === "income";
                 const Icon = getCategoryIcon(transaction.category_icon, transaction.type);

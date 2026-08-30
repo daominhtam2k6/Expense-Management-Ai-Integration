@@ -4,9 +4,17 @@ import type {
   Category,
   CategoryPayload,
   DashboardData,
+  Goal,
+  GoalCompletePayload,
+  GoalItem,
+  GoalPayload,
+  GoalTransaction,
   AuthToken,
   MessageResponse,
   RegisterPayload,
+  Transaction,
+  TransactionFilters,
+  TransactionPayload,
   User,
 } from "../types";
 
@@ -61,6 +69,28 @@ const asNumber = (value: number) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
 };
+
+const normalizeTransaction = (transaction: Transaction): Transaction => ({
+  ...transaction,
+  amount: asNumber(transaction.amount),
+});
+
+const normalizeGoalItem = (item: GoalItem): GoalItem => ({
+  ...item,
+  cost: asNumber(item.cost),
+});
+
+const normalizeGoal = (goal: Goal): Goal => ({
+  ...goal,
+  target_amount: asNumber(goal.target_amount),
+  current_amount: asNumber(goal.current_amount),
+  items: goal.items.map(normalizeGoalItem),
+});
+
+const normalizeGoalTransaction = (transaction: GoalTransaction): GoalTransaction => ({
+  ...transaction,
+  amount: asNumber(transaction.amount),
+});
 
 const normalizeDashboard = (data: DashboardData): DashboardData => ({
   ...data,
@@ -123,10 +153,44 @@ export const api = {
   updateCategory: (id: string, payload: Partial<CategoryPayload>) =>
     request<Category>(`/categories/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteCategory: (id: string) => request<{ message: string }>(`/categories/${id}`, { method: "DELETE" }),
+  listTransactions: (filters: TransactionFilters = {}, signal?: AbortSignal) => {
+    const query = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) query.set(key, value);
+    });
+    const suffix = query.size ? `?${query.toString()}` : "";
+    return request<Transaction[]>(`/transactions/${suffix}`, { signal })
+      .then((items) => items.map(normalizeTransaction));
+  },
+  createTransaction: (payload: TransactionPayload) =>
+    request<Transaction>("/transactions/", { method: "POST", body: JSON.stringify(payload) }).then(normalizeTransaction),
+  updateTransaction: (id: string, payload: Partial<TransactionPayload>) =>
+    request<Transaction>(`/transactions/${id}`, { method: "PUT", body: JSON.stringify(payload) }).then(normalizeTransaction),
+  deleteTransaction: (id: string) => request<{ message: string }>(`/transactions/${id}`, { method: "DELETE" }),
   listBudgets: (month: number, year: number, signal?: AbortSignal) => request<Budget[]>(`/budgets/?month=${month}&year=${year}`, { signal }),
   createBudget: (payload: BudgetPayload) =>
     request<Budget>("/budgets/", { method: "POST", body: JSON.stringify(payload) }),
   updateBudget: (id: string, limitAmount: number) =>
     request<Budget>(`/budgets/${id}`, { method: "PUT", body: JSON.stringify({ limit_amount: limitAmount }) }),
   deleteBudget: (id: string) => request<{ message: string }>(`/budgets/${id}`, { method: "DELETE" }),
+  listGoals: (signal?: AbortSignal) => request<Goal[]>("/goals/", { signal }).then((items) => items.map(normalizeGoal)),
+  createGoal: (payload: GoalPayload) =>
+    request<Goal>("/goals/", { method: "POST", body: JSON.stringify(payload) }).then(normalizeGoal),
+  updateGoal: (id: string, payload: Partial<GoalPayload>) =>
+    request<Goal>(`/goals/${id}`, { method: "PATCH", body: JSON.stringify(payload) }).then(normalizeGoal),
+  deleteGoal: (id: string) => request<{ message: string }>(`/goals/${id}`, { method: "DELETE" }),
+  listGoalTransactions: (id: string, signal?: AbortSignal) =>
+    request<GoalTransaction[]>(`/goals/${id}/transactions`, { signal }).then((items) => items.map(normalizeGoalTransaction)),
+  depositGoal: (id: string, amount: number, note: string | null) =>
+    request<Goal>(`/goals/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount, note }) }).then(normalizeGoal),
+  withdrawGoal: (id: string, amount: number, note: string | null) =>
+    request<Goal>(`/goals/${id}/withdraw`, { method: "POST", body: JSON.stringify({ amount, note }) }).then(normalizeGoal),
+  completeGoal: (id: string, payload: GoalCompletePayload) =>
+    request<Goal>(`/goals/${id}/complete`, { method: "POST", body: JSON.stringify(payload) }).then(normalizeGoal),
+  addGoalItem: (goalId: string, name: string, cost: number) =>
+    request<Goal>(`/goals/${goalId}/items`, { method: "POST", body: JSON.stringify({ name, cost }) }).then(normalizeGoal),
+  updateGoalItem: (goalId: string, itemId: string, payload: Partial<Pick<GoalItem, "name" | "cost" | "is_purchased">>) =>
+    request<Goal>(`/goals/${goalId}/items/${itemId}`, { method: "PATCH", body: JSON.stringify(payload) }).then(normalizeGoal),
+  deleteGoalItem: (goalId: string, itemId: string) =>
+    request<Goal>(`/goals/${goalId}/items/${itemId}`, { method: "DELETE" }).then(normalizeGoal),
 };

@@ -79,6 +79,70 @@ export interface BudgetPayload {
   limit_amount: number;
 }
 
+export type GoalStatus = "active" | "completed";
+export type GoalCompleteMode = "keep" | "release" | "spend";
+
+export interface GoalItem {
+  id: string;
+  name: string;
+  cost: number;
+  is_purchased: boolean;
+}
+
+export interface Goal {
+  id: string;
+  name: string;
+  target_amount: number;
+  deadline: string | null;
+  status: GoalStatus;
+  current_amount: number;
+  items: GoalItem[];
+}
+
+export interface GoalPayload {
+  name: string;
+  target_amount: number;
+  deadline: string | null;
+}
+
+export interface GoalTransaction {
+  id: string;
+  amount: number;
+  type: "deposit" | "withdraw";
+  txn_date: string;
+  note: string | null;
+}
+
+export interface GoalCompletePayload {
+  mode: GoalCompleteMode;
+  category_id?: string;
+  note?: string | null;
+}
+
+export interface Transaction {
+  id: string;
+  category_id: string;
+  amount: number;
+  type: CategoryType;
+  txn_date: string;
+  note: string | null;
+}
+
+export interface TransactionPayload {
+  category_id: string;
+  amount: number;
+  txn_date: string;
+  note: string | null;
+}
+
+export interface TransactionFilters {
+  category_id?: string;
+  type?: CategoryType;
+  from_date?: string;
+  to_date?: string;
+  keyword?: string;
+}
+
 export interface DashboardSummary {
   income: number;
   expense: number;
