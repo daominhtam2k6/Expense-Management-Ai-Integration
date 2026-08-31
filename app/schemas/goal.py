@@ -101,6 +101,8 @@ class GoalOut(BaseModel):
     deadline: Optional[date] = None
     status: str
     current_amount: Decimal = 0
+    completion_amount: Optional[Decimal] = None
+    completion_mode: Optional[Literal["keep", "release", "spend"]] = None
     items: list[GoalItemOut] = Field(default_factory=list)
     class Config:
         from_attributes = True

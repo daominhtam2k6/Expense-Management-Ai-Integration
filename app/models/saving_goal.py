@@ -11,4 +11,6 @@ class SavingGoal(Base):
     target_amount = Column(Numeric(14, 2), nullable=False)
     deadline = Column(Date, nullable=True)
     status = Column(String, nullable=False, default="active")
+    completion_amount = Column(Numeric(14, 2), nullable=True)
+    completion_mode = Column(String, nullable=True)
     # LƯU Ý: không có cột current_amount — tính từ tổng GoalTransaction

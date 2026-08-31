@@ -25,14 +25,39 @@ colors:
   danger-soft-light: "#ffebea"
   danger-dark: "#ff6b6b"
   danger-soft-dark: "#432728"
+  expense-current-light: "#df544a"
+  expense-current-soft-light: "#fff0ee"
+  expense-previous-light: "#8599a8"
+  expense-decrease-light: "#2779c7"
+  expense-current-dark: "#ff786f"
+  expense-current-soft-dark: "#432829"
+  expense-previous-dark: "#8fa2af"
+  expense-decrease-dark: "#72adf0"
+  expense-category-coral: "#e45b4f"
+  expense-category-orange: "#f29b38"
+  expense-category-purple: "#7c5ce7"
+  expense-category-blue: "#3185dc"
+  expense-category-pink: "#c86b98"
+  expense-category-slate: "#708090"
+  expense-category-burnt-orange: "#d17632"
   warning-light: "#f29b00"
+  warning-foreground-light: "#8a4d00"
   warning-soft-light: "#fff7e6"
   warning-dark: "#ffb32e"
+  warning-foreground-dark: "#ffc15a"
   warning-soft-dark: "#44361f"
   info-light: "#2563eb"
   info-soft-light: "#edf4ff"
   info-dark: "#74a5ff"
   info-soft-dark: "#20344d"
+  assistant-analysis-coral-light: "#df5a4d"
+  assistant-analysis-coral-soft-light: "#fff0ee"
+  assistant-analysis-coral-dark: "#ff7b70"
+  assistant-analysis-coral-soft-dark: "#422928"
+  assistant-forecast-violet-light: "#7656d8"
+  assistant-forecast-violet-soft-light: "#f1edff"
+  assistant-forecast-violet-dark: "#ad91ff"
+  assistant-forecast-violet-soft-dark: "#302948"
   ground-dark: "#0d1719"
   surface-dark: "#142124"
   surface-strong-dark: "#18272a"
@@ -131,6 +156,12 @@ components:
     textColor: "{colors.text-light}"
     rounded: "{rounded.surface}"
     padding: "22px"
+  report-comparison-surface-light:
+    backgroundColor: "{colors.surface-light}"
+    textColor: "{colors.text-light}"
+    rounded: "{rounded.surface}"
+    padding: "22px"
+    width: "100%"
   attention-warning-light:
     backgroundColor: "{colors.warning-soft-light}"
     textColor: "{colors.text-light}"
@@ -158,6 +189,23 @@ components:
     backgroundColor: "{colors.surface-light}"
     textColor: "{colors.text-light}"
     width: "min(410px, 100%)"
+  assistant-evidence-light:
+    backgroundColor: "{colors.surface-strong-light}"
+    textColor: "{colors.text-light}"
+    rounded: "{rounded.inset}"
+    padding: "0 13px 13px"
+    width: "100%"
+  assistant-privacy-rail-light:
+    backgroundColor: "{colors.surface-light}"
+    textColor: "{colors.text-light}"
+    rounded: "{rounded.surface}"
+    padding: "17px"
+    width: "250px"
+  assistant-mobile-drawer-light:
+    backgroundColor: "{colors.surface-light}"
+    textColor: "{colors.text-light}"
+    rounded: "{rounded.surface}"
+    width: "min(320px, calc(100vw - 24px))"
 ---
 
 # Design System: Sổ Chi Tiêu
@@ -196,7 +244,11 @@ The palette pairs quiet green-cast neutrals with deep-teal navigation, purposefu
 ### Tertiary
 
 - **Exception Red** (`danger-light`, `danger-dark`): marks overspend, expense, deletion, and error states; its soft companion creates calm alert regions.
-- **Attention Amber** (`warning-light`, `warning-dark`): marks near-limit budget states without escalating them to failure.
+- **Comparison Coral** (`expense-current-light`, `expense-current-dark`): carries current-period expense totals, grouped bars, upward expense deltas, and authoritative expense values; its soft companion supports expense icon wells.
+- **Previous-Period Slate** (`expense-previous-light`, `expense-previous-dark`): provides the quiet comparison series on the same scale without competing with current evidence.
+- **Expense-Decrease Blue** (`expense-decrease-light`, `expense-decrease-dark`): signals a favorable downward movement while the underlying amount remains expense-colored or neutral.
+- **Categorical Expense Scale** (`expense-category-coral`, `expense-category-orange`, `expense-category-purple`, `expense-category-blue`, `expense-category-pink`, `expense-category-slate`, `expense-category-burnt-orange`): distinguishes expense composition categories without borrowing income or action green.
+- **Attention Amber** (`warning-light`, `warning-dark`): marks near-limit budget states without escalating them to failure. Its contrast foreground companions (`warning-foreground-light`, `warning-foreground-dark`) carry amber text and important numeric values; the brighter base amber remains available for icons, progress fills, and low-area accents.
 - **Information Blue** (`info-light`, `info-dark`): identifies neutral informational states; it does not compete with jade actions.
 
 ### Neutral
@@ -214,6 +266,10 @@ The palette pairs quiet green-cast neutrals with deep-teal navigation, purposefu
 **The Two-Jade Rule.** In dark mode, use bright jade for semantic emphasis and the deeper action jade for white-text buttons; never substitute one for the other.
 
 **The Exception Color Rule.** Red means failure, overspend, expense, or destructive action; amber means approaching a limit; blue means neutral information. Do not use these colors as decoration.
+
+**The Semantic Foreground Rule.** Semantic fills and semantic text are separate jobs. Use the contrast-specific warning foreground for amber copy and financial values; reserve the base amber for icons, progress, and other low-area marks.
+
+**The Non-Green Expense Rule.** Expense reports use coral for the current period, slate for the previous period, and a non-green categorical scale for composition. Reserve jade for income, remaining balance, positive status, navigation, and actions.
 
 ## Typography
 
@@ -235,13 +291,17 @@ The palette pairs quiet green-cast neutrals with deep-teal navigation, purposefu
 
 **The Numeric Stability Rule.** Monetary amounts, percentages, and aligned budget values use tabular numerals so changing data does not disturb the scan.
 
+**The Financial Metadata Floor Rule.** Keep monetary context, dates, progress metadata, and audit-history text at 11–12px; never shrink this evidence below 11px to recover layout space.
+
 ## Layout
 
 The desktop shell uses a fixed 248px sidebar and a centered work area capped at 1660px, with page padding of 36px 34px 42px. Headers are compact: title and description lead, while month, theme, and primary action controls align as a focused action cluster. Analytical pages use composed summaries, an authoritative list, and an attention rail rather than treating every datum as an equal tile.
 
-The spacing rhythm is compact and repeated: 14–20px between related controls and rows, 20–24px inside most surfaces, and 28px between the header and content. At 1280px, dense dashboard and budget grids simplify; at 980px, navigation collapses to an 88px icon rail and two-column content becomes one column where needed. At 760px, the shell changes mode: a 66px top brand bar and fixed four-item bottom navigation frame a single-column page with safe-area-aware bottom padding. At 430px, controls and chart surfaces tighten again.
+The spacing rhythm is compact and repeated: 14–20px between related controls and rows, 20–24px inside most surfaces, and 28px between the header and content. At 1280px, dense dashboard and budget grids simplify; at 980px, navigation collapses to an 88px icon rail and two-column content becomes one column where needed. At 760px, the shell changes mode: a 66px top brand bar and fixed five-item bottom navigation frame a single-column page with safe-area-aware bottom padding. At 430px, controls and chart surfaces tighten again.
 
 Side panels are 410px wide on larger screens and become full-width at 760px and below. Their header, scrolling body, and action footer remain separate regions so task actions stay available without losing context.
+
+The Assistant is a bounded inquiry workspace rather than a generic page grid. On wide desktop it uses a 224px saved-history rail, a flexible conversation canvas, and a 250px data/privacy rail with 18px gaps; the canvas fills the available viewport height and keeps its composer anchored below a separately scrolling message region. At 1280px the rails tighten to 200px and 224px. At 1100px both rails leave the grid and become focus-managed drawers over the conversation; at 760px the drawer width is `min(320px, calc(100vw - 24px))`, the starters become one column, and the fixed five-destination mobile navigation keeps Assistant directly reachable.
 
 **The Composed Hierarchy Rule.** Start analytical views with position, then exceptions, then action. Avoid mechanically repeating equal KPI cards when the data has a clearer hierarchy.
 
@@ -302,7 +362,7 @@ Borders are quiet and mostly inset: controls use a single neutral stroke, list r
 
 ### Navigation
 
-Desktop navigation is a fixed deep-teal rail with 50px items, 9px corners, 15px medium labels, and 21px icons. Hover adds a translucent white wash; active items use a translucent jade field and mint text. At 980px labels and account details collapse into an icon rail. At 760px, exactly four primary destinations move into a fixed bottom navigation with icon-over-label items, while the brand remains in a compact top bar.
+Desktop navigation is a fixed deep-teal rail with 50px items, 9px corners, 15px medium labels, and 21px icons. Hover adds a translucent white wash; active items use a translucent jade field and mint text. At 980px labels and account details collapse into an icon rail. At 760px, Overview, Transactions, Reports, Assistant, and More move into a fixed five-item bottom navigation with icon-over-label items, while the brand remains in a compact top bar.
 
 ### Category Avatars
 
@@ -311,6 +371,31 @@ Category avatars are circular semantic anchors in 32px, 43px, and 50px sizes. Ea
 ### Budget Attention Items
 
 Attention items combine a circular status icon, short explanation, and local outline action inside a 12px semantic inset. Warning, over-limit, and information states map strictly to amber, red, and blue. They explain both the condition and the next action without replacing the authoritative budget list.
+
+### Period Comparison Reports
+
+Period comparison is a composed evidence pattern, not a generic KPI dashboard. A single three-part summary establishes income, expense, and remaining balance; the dominant grouped chart compares current coral and previous slate on one shared scale; composition and largest movements remain supporting evidence; and a totalled detail table is the source of truth with links into filtered transactions.
+
+- **Category Scale:** show at most six leading categories plus “Danh mục khác” in charts when the dataset exceeds seven categories. Keep every category as its own row in the detail table.
+- **Overflow:** wide charts and tables live in horizontally scrollable regions with an accessible name, `tabindex="0"`, and the established visible jade focus treatment.
+- **Color Semantics:** raw expense values and marks never use green. A decrease may use the expense-decrease blue signal, but the underlying monetary amount stays expense-colored or neutral.
+- **Responsive Behavior:** the dominant comparison and supporting rail may collapse at compact widths, but their evidence order and the totalled source table remain intact.
+
+### Assistant Inquiry Studio
+
+The Assistant opens with four concrete financial jobs—expense comparison, anomaly detection, cash-flow forecasting, and planning—rather than an empty generic chatbot. Choosing a job fills the composer so the user can review or refine the question before sending; the first send creates the saved thread, and the starters then yield to the conversation.
+
+Assistant answers keep advice and proof in the same reading path. The answer body leads, followed by an open evidence disclosure containing the selected period, current and previous expense totals, a compact category comparison table, an amber confidence note, deterministic links to Reports and filtered Transactions, and two follow-up prompts. The evidence surface uses a 12px inset radius, quiet dividers, tabular numerals, and the existing semantic expense colors; it does not imitate a free-standing report dashboard.
+
+The right rail makes both scope and privacy persistent on desktop. It names which aggregates are used, shows freshness and transaction count, states what is excluded, and repeats that Gemini is advisory-only. Do not bury these assurances in a tooltip or one-time consent screen.
+
+**The Guided Blank-State Rule.** A financial assistant starts from meaningful user jobs and editable example questions, never from a blank chat box as the only affordance.
+
+**The Evidence-Beside-Advice Rule.** Every generated financial interpretation keeps its period, aggregate basis, confidence limits, and source-screen links inspectable beside the answer.
+
+### Mobile Drawers and Navigation
+
+Below 1100px, history and data scope become opposing edge drawers activated from the Assistant header. Each drawer uses a scrim, traps focus while open, closes on Escape, close control, or scrim activation, and restores focus to its opener. At mobile widths the drawers stop above the fixed bottom navigation so close controls, history actions, and the current destination remain reachable. The mobile navigation exposes five items—Overview, Transactions, Reports, Assistant, and More—with Assistant as a direct destination rather than hiding it inside More.
 
 ### Side Panels
 
@@ -325,7 +410,12 @@ Focused create and edit work happens in a right-edge panel with separate header,
 - **Do** make exception colors explain status and pair them with text, iconography, or position rather than color alone.
 - **Do** preserve the 14px surface radius, ambient elevation, compact control scale, and Be Vietnam Pro hierarchy.
 - **Do** keep Vietnamese action labels concise and place focused create/edit work in context-preserving side panels.
-- **Do** collapse to the fixed four-item bottom navigation and full-width panels at the mobile breakpoint.
+- **Do** collapse to the fixed five-item bottom navigation and full-width panels at the mobile breakpoint.
+- **Do** aggregate long report charts into six leading categories plus “Danh mục khác” while retaining every category in the totalled detail table.
+- **Do** give horizontally scrollable financial charts and tables an accessible name, keyboard focus, and a visible focus ring.
+- **Do** begin Assistant with the four demonstrated financial jobs and let each starter populate an editable question before it is sent.
+- **Do** keep aggregate evidence, confidence limits, privacy exclusions, and deterministic source-screen links visible wherever AI advice appears.
+- **Do** turn Assistant history and data scope into focus-managed drawers below 1100px while keeping Assistant directly available in the five-item mobile navigation.
 
 ### Don't:
 
@@ -333,4 +423,7 @@ Focused create and edit work happens in a right-edge panel with separate header,
 - **Don't** flatten every overview into a generic equal KPI grid when position, exception, and action have different importance.
 - **Don't** add hard decorative outlines, glossy gradients, or conspicuous hover shadows to lifted surfaces.
 - **Don't** use red, amber, or blue as ambient decoration or as the sole carrier of meaning.
+- **Don't** use jade or another green for expense amounts, expense bars, or expense-composition categories.
+- **Don't** present AI financial advice without an inspectable period, aggregate basis, confidence statement, and path back to the underlying product screens.
+- **Don't** send or imply access to raw transactions, notes, identity fields, goal names, internal IDs, or user-authored category names; the Assistant's visible privacy rail must match the aggregate-only contract.
 - **Don't** promote a page-specific composition into a global template; preserve this system’s hierarchy while allowing each task surface to compose its own evidence.

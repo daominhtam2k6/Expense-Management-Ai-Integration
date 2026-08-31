@@ -4,13 +4,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
 from app import models
-from app.core.schema_migrations import ensure_category_icon_column
+from app.core.schema_migrations import ensure_category_icon_column, ensure_goal_completion_columns
 from app.database import Base, engine
-from app.routers import auth, budgets, categories, dashboard, goals, transactions
+from app.routers import assistant, auth, budgets, categories, dashboard, goals, reports, transactions
 
 
 Base.metadata.create_all(bind=engine)
 ensure_category_icon_column(engine)
+ensure_goal_completion_columns(engine)
 
 app = FastAPI(title="Expense Management API")
 
@@ -23,6 +24,8 @@ app.include_router(transactions.router, prefix=API_PREFIX)
 app.include_router(budgets.router, prefix=API_PREFIX)
 app.include_router(goals.router, prefix=API_PREFIX)
 app.include_router(dashboard.router, prefix=API_PREFIX)
+app.include_router(reports.router, prefix=API_PREFIX)
+app.include_router(assistant.router, prefix=API_PREFIX)
 
 
 @app.get("/{full_path:path}", include_in_schema=False)

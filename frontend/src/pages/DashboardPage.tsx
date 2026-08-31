@@ -2,7 +2,6 @@ import {
   AlertCircle,
   ArrowDownRight,
   ArrowRight,
-  ArrowUpRight,
   Bot,
   CalendarDays,
   CircleDollarSign,
@@ -269,7 +268,7 @@ export function DashboardPage() {
             </article>
 
             <article className="surface compact-surface">
-              <div className="section-heading"><h2>Mục tiêu tiết kiệm</h2><span className="unavailable-link" title="Trang Mục tiêu sẽ được xây dựng ở giai đoạn tiếp theo">Sắp có</span></div>
+              <div className="section-heading"><h2>Mục tiêu tiết kiệm</h2><Link to="/goals">Xem tất cả</Link></div>
               {data.goals.length === 0 ? <PanelEmpty icon={Target} title="Chưa có mục tiêu" description="Mục tiêu tiết kiệm sẽ xuất hiện tại đây." compact /> : data.goals.map((goal) => (
                 <div className="goal-row" key={goal.id}>
                   <span className="goal-symbol"><Target size={20} /></span>
@@ -298,7 +297,12 @@ export function DashboardPage() {
 
             <article className="surface ai-surface">
               <div className="section-heading"><h2><Sparkles size={19} /> Trợ lý AI</h2></div>
-              <div className="ai-insight"><span><Bot size={24} /></span><strong>Trợ lý sẽ dùng dữ liệu thật để phát hiện biến động và đề xuất hành động phù hợp.</strong><small>Chưa thực hiện phân tích AI</small><button type="button" disabled>Phân tích AI · Sắp có <ArrowUpRight size={16} /></button></div>
+              <div className="ai-insight">
+                <span><Bot size={24} /></span>
+                <strong>Hỏi Gemini về biến động chi tiêu, dòng tiền hoặc kế hoạch tài chính của bạn.</strong>
+                <small>Chỉ dùng dữ liệu tổng hợp đã ẩn danh · AI chỉ tư vấn</small>
+                <Link className="ai-insight__action" to="/assistant">Mở Trợ lý AI <ArrowRight size={16} /></Link>
+              </div>
             </article>
           </section>
         </>

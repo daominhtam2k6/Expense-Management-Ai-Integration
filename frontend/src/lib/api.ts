@@ -1,4 +1,10 @@
 import type {
+  AssistantAskPayload,
+  AssistantContext,
+  AssistantConversation,
+  AssistantConversationSummary,
+  AssistantEvidence,
+  AssistantReply,
   Budget,
   BudgetPayload,
   Category,
@@ -12,6 +18,7 @@ import type {
   AuthToken,
   MessageResponse,
   RegisterPayload,
+  ReportData,
   Transaction,
   TransactionFilters,
   TransactionPayload,
@@ -84,6 +91,7 @@ const normalizeGoal = (goal: Goal): Goal => ({
   ...goal,
   target_amount: asNumber(goal.target_amount),
   current_amount: asNumber(goal.current_amount),
+  completion_amount: goal.completion_amount == null ? null : asNumber(goal.completion_amount),
   items: goal.items.map(normalizeGoalItem),
 });
 
@@ -129,6 +137,84 @@ const normalizeDashboard = (data: DashboardData): DashboardData => ({
   })),
 });
 
+const normalizeReport = (data: ReportData): ReportData => ({
+  ...data,
+  summary: {
+    ...data.summary,
+    current: {
+      income: asNumber(data.summary.current.income),
+      expense: asNumber(data.summary.current.expense),
+      net: asNumber(data.summary.current.net),
+    },
+    previous: {
+      income: asNumber(data.summary.previous.income),
+      expense: asNumber(data.summary.previous.expense),
+      net: asNumber(data.summary.previous.net),
+    },
+    income_difference: asNumber(data.summary.income_difference),
+    expense_difference: asNumber(data.summary.expense_difference),
+    net_difference: asNumber(data.summary.net_difference),
+    income_change_percentage: data.summary.income_change_percentage == null ? null : asNumber(data.summary.income_change_percentage),
+    expense_change_percentage: data.summary.expense_change_percentage == null ? null : asNumber(data.summary.expense_change_percentage),
+    net_change_percentage: data.summary.net_change_percentage == null ? null : asNumber(data.summary.net_change_percentage),
+  },
+  categories: data.categories.map((category) => ({
+    ...category,
+    current_amount: asNumber(category.current_amount),
+    current_share: asNumber(category.current_share),
+    current_transaction_count: asNumber(category.current_transaction_count),
+    previous_amount: asNumber(category.previous_amount),
+    previous_share: asNumber(category.previous_share),
+    previous_transaction_count: asNumber(category.previous_transaction_count),
+    difference: asNumber(category.difference),
+    change_percentage: category.change_percentage == null ? null : asNumber(category.change_percentage),
+  })),
+});
+
+const normalizeAssistantEvidence = (evidence: AssistantEvidence): AssistantEvidence => ({
+  ...evidence,
+  current: {
+    ...evidence.current,
+    income: asNumber(evidence.current.income),
+    expense: asNumber(evidence.current.expense),
+    net: asNumber(evidence.current.net),
+  },
+  previous: {
+    ...evidence.previous,
+    income: asNumber(evidence.previous.income),
+    expense: asNumber(evidence.previous.expense),
+    net: asNumber(evidence.previous.net),
+  },
+  available_balance: asNumber(evidence.available_balance),
+  expense_difference: asNumber(evidence.expense_difference),
+  expense_change_percentage: evidence.expense_change_percentage == null
+    ? null
+    : asNumber(evidence.expense_change_percentage),
+  categories: evidence.categories.map((category) => ({
+    ...category,
+    current_amount: asNumber(category.current_amount),
+    previous_amount: asNumber(category.previous_amount),
+    difference: asNumber(category.difference),
+    current_share: asNumber(category.current_share),
+  })),
+  forecast: {
+    ...evidence.forecast,
+    average_expense_per_day: asNumber(evidence.forecast.average_expense_per_day),
+    projected_expense: asNumber(evidence.forecast.projected_expense),
+    projected_net: asNumber(evidence.forecast.projected_net),
+  },
+  goal_target_total: asNumber(evidence.goal_target_total),
+  goal_saved_total: asNumber(evidence.goal_saved_total),
+});
+
+const normalizeAssistantConversation = (conversation: AssistantConversation): AssistantConversation => ({
+  ...conversation,
+  messages: conversation.messages.map((message) => ({
+    ...message,
+    evidence: message.evidence ? normalizeAssistantEvidence(message.evidence) : null,
+  })),
+});
+
 export const api = {
   login: (identifier: string, password: string) => {
     const body = new URLSearchParams({ username: identifier, password });
@@ -147,6 +233,21 @@ export const api = {
     request<MessageResponse>("/auth/reset-password", { method: "POST", body: JSON.stringify({ token, new_password: newPassword }) }),
   getDashboard: (month: number, year: number, signal?: AbortSignal) =>
     request<DashboardData>(`/dashboard/?month=${month}&year=${year}`, { signal }).then(normalizeDashboard),
+  getReport: (month: number, year: number, signal?: AbortSignal) =>
+    request<ReportData>(`/reports/?month=${month}&year=${year}`, { signal }).then(normalizeReport),
+  getAssistantContext: (month: number, year: number, signal?: AbortSignal) =>
+    request<AssistantContext>(`/assistant/context?month=${month}&year=${year}`, { signal })
+      .then((context) => ({ ...context, evidence: normalizeAssistantEvidence(context.evidence) })),
+  listAssistantConversations: (signal?: AbortSignal) =>
+    request<AssistantConversationSummary[]>("/assistant/conversations", { signal }),
+  getAssistantConversation: (id: string, signal?: AbortSignal) =>
+    request<AssistantConversation>(`/assistant/conversations/${id}`, { signal })
+      .then(normalizeAssistantConversation),
+  askAssistant: (payload: AssistantAskPayload) =>
+    request<AssistantReply>("/assistant/messages", { method: "POST", body: JSON.stringify(payload) })
+      .then((reply) => ({ ...reply, conversation: normalizeAssistantConversation(reply.conversation) })),
+  deleteAssistantConversation: (id: string) =>
+    request<void>(`/assistant/conversations/${id}`, { method: "DELETE" }),
   listCategories: (signal?: AbortSignal) => request<Category[]>("/categories/", { signal }),
   createCategory: (payload: CategoryPayload) =>
     request<Category>("/categories/", { method: "POST", body: JSON.stringify(payload) }),

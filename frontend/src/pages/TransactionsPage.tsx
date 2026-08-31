@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import type { Dispatch, FormEvent, RefObject, SetStateAction } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { CategoryAvatar } from "../components/CategoryAvatar";
 import { SidePanel } from "../components/SidePanel";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -112,19 +112,25 @@ function useIsMobile() {
 }
 
 export function TransactionsPage() {
-  const [period, setPeriod] = useState(currentPeriod);
+  const [searchParams] = useSearchParams();
+  const requestedPeriod = searchParams.get("period");
+  const initialPeriod = requestedPeriod && /^\d{4}-(0[1-9]|1[0-2])$/.test(requestedPeriod) ? requestedPeriod : currentPeriod;
+  const requestedType = searchParams.get("type");
+  const initialType: TransactionTypeFilter = requestedType === "income" || requestedType === "expense" ? requestedType : "all";
+  const initialCategoryId = searchParams.get("category_id") ?? "";
+  const [period, setPeriod] = useState(initialPeriod);
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [form, setForm] = useState<TransactionFormState>({
     type: "expense",
     category_id: "",
     amount: "",
-    txn_date: defaultTransactionDate(currentPeriod),
+    txn_date: defaultTransactionDate(initialPeriod),
     note: "",
   });
   const [filters, setFilters] = useState<TransactionFilterState>(() => {
-    const bounds = periodBounds(currentPeriod);
-    return { query: "", type: "all", category_id: "", from_date: bounds.start, to_date: bounds.end };
+    const bounds = periodBounds(initialPeriod);
+    return { query: "", type: initialType, category_id: initialCategoryId, from_date: bounds.start, to_date: bounds.end };
   });
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [mobileFormOpen, setMobileFormOpen] = useState(false);

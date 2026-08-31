@@ -96,6 +96,8 @@ export interface Goal {
   deadline: string | null;
   status: GoalStatus;
   current_amount: number;
+  completion_amount: number | null;
+  completion_mode: GoalCompleteMode | null;
   items: GoalItem[];
 }
 
@@ -211,4 +213,138 @@ export interface DashboardData {
   budgets: DashboardBudget[];
   goals: DashboardGoal[];
   recent_transactions: DashboardRecentTransaction[];
+}
+
+export interface ReportPeriod {
+  month: number;
+  year: number;
+}
+
+export interface ReportPeriodTotals {
+  income: number;
+  expense: number;
+  net: number;
+}
+
+export interface ReportSummary {
+  current: ReportPeriodTotals;
+  previous: ReportPeriodTotals;
+  income_difference: number;
+  expense_difference: number;
+  net_difference: number;
+  income_change_percentage: number | null;
+  expense_change_percentage: number | null;
+  net_change_percentage: number | null;
+}
+
+export interface ReportCategoryComparison {
+  category_id: string;
+  category_name: string;
+  icon: CategoryIconKey;
+  current_amount: number;
+  current_share: number;
+  current_transaction_count: number;
+  previous_amount: number;
+  previous_share: number;
+  previous_transaction_count: number;
+  difference: number;
+  change_percentage: number | null;
+}
+
+export interface ReportData {
+  current_period: ReportPeriod;
+  previous_period: ReportPeriod;
+  summary: ReportSummary;
+  categories: ReportCategoryComparison[];
+  has_data: boolean;
+}
+
+export interface AssistantPeriod {
+  month: number;
+  year: number;
+}
+
+export interface AssistantTotals {
+  income: number;
+  expense: number;
+  net: number;
+  transaction_count: number;
+}
+
+export interface AssistantCategoryEvidence {
+  label: string;
+  icon: string;
+  current_amount: number;
+  previous_amount: number;
+  difference: number;
+  current_share: number;
+  current_transaction_count: number;
+}
+
+export interface AssistantForecast {
+  elapsed_days: number;
+  days_in_month: number;
+  average_expense_per_day: number;
+  projected_expense: number;
+  projected_net: number;
+  confidence: "low" | "medium";
+}
+
+export interface AssistantEvidence {
+  current_period: AssistantPeriod;
+  previous_period: AssistantPeriod;
+  current: AssistantTotals;
+  previous: AssistantTotals;
+  available_balance: number;
+  expense_difference: number;
+  expense_change_percentage: number | null;
+  categories: AssistantCategoryEvidence[];
+  forecast: AssistantForecast;
+  active_budget_count: number;
+  over_budget_count: number;
+  active_goal_count: number;
+  goal_target_total: number;
+  goal_saved_total: number;
+}
+
+export interface AssistantContext {
+  evidence: AssistantEvidence;
+  has_data: boolean;
+  privacy_notes: string[];
+  model: string;
+}
+
+export interface AssistantMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  context_month: number | null;
+  context_year: number | null;
+  evidence: AssistantEvidence | null;
+  created_at: string;
+}
+
+export interface AssistantConversationSummary {
+  id: string;
+  title: string;
+  preview: string;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AssistantConversation extends AssistantConversationSummary {
+  messages: AssistantMessage[];
+}
+
+export interface AssistantAskPayload {
+  question: string;
+  conversation_id?: string;
+  month: number;
+  year: number;
+}
+
+export interface AssistantReply {
+  conversation: AssistantConversation;
+  model: string;
 }

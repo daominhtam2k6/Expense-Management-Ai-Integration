@@ -25,3 +25,26 @@ def ensure_category_icon_column(engine: Engine) -> None:
                 "SET icon = CASE WHEN type = 'income' THEN 'banknote' ELSE 'wallet' END"
             )
         )
+
+
+def ensure_goal_completion_columns(engine: Engine) -> None:
+    """Add completed-goal snapshots without requiring a destructive migration."""
+    inspector = inspect(engine)
+    if "saving_goals" not in inspector.get_table_names():
+        return
+
+    columns = {column["name"] for column in inspector.get_columns("saving_goals")}
+    with engine.begin() as connection:
+        if "completion_amount" not in columns:
+            connection.execute(text("ALTER TABLE saving_goals ADD COLUMN completion_amount NUMERIC(14, 2)"))
+        if "completion_mode" not in columns:
+            connection.execute(text("ALTER TABLE saving_goals ADD COLUMN completion_mode VARCHAR"))
+
+        # Older completed rows did not retain their finishing balance. The target is
+        # the safest fallback because it preserves their already-completed state.
+        connection.execute(
+            text(
+                "UPDATE saving_goals SET completion_amount = target_amount "
+                "WHERE status = 'completed' AND completion_amount IS NULL"
+            )
+        )
