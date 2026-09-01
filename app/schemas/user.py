@@ -14,10 +14,17 @@ class UserOut(BaseModel):
     id: str
     username: str
     email: str
+    display_name: Optional[str] = None
     avatar_url: Optional[str] = None
 
     class Config:
         from_attributes = True
+
+
+class UserProfileUpdate(BaseModel):
+    display_name: Optional[str] = Field(default=None, max_length=80)
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr
 
 class Token(BaseModel):
     access_token: str

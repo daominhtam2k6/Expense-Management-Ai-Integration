@@ -11,10 +11,10 @@ class TransactionCreate(BaseModel):
 
     @field_validator("txn_date")
     @classmethod
-    def no_future_date(cls, v):
-        if v > date.today():
+    def no_future_date(cls, value: date) -> date:
+        if value > date.today():
             raise ValueError("Không thể tạo giao dịch cho ngày trong tương lai")
-        return v
+        return value
 
 class TransactionUpdate(BaseModel):
     category_id: Optional[str] = None
@@ -24,10 +24,12 @@ class TransactionUpdate(BaseModel):
 
     @field_validator("txn_date")
     @classmethod
-    def no_future_date(cls, v):
-        if v > date.today():
+    def no_future_date(cls, value: Optional[date]) -> date:
+        if value is None:
+            raise ValueError("Ngày giao dịch không được để trống")
+        if value > date.today():
             raise ValueError("Không thể tạo giao dịch cho ngày trong tương lai")
-        return v
+        return value
 
 class TransactionOut(BaseModel):
     id: str

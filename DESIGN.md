@@ -401,6 +401,14 @@ Below 1100px, history and data scope become opposing edge drawers activated from
 
 Focused create and edit work happens in a right-edge panel with separate header, scrolling body, and footer. The panel traps focus, closes on Escape or scrim interaction, restores prior focus, and expands to full width on mobile. Its 300ms entrance uses the same smooth deceleration as page arrival and is removed under reduced-motion preferences.
 
+### Profile Editing Panel
+
+The sidebar account identity is the entry point for editing profile details without leaving the current financial task. The full account card opens the established right-edge Side Panel on desktop; the compact rail and mobile header expose the same action through a profile-edit icon. Keep the standard 410px desktop width, full-width mobile treatment, separated header/body/footer, focus trap, Escape and scrim dismissal, and focus restoration.
+
+- **Avatar:** use a circular 82px preview with an initial fallback and controlled cover crop. Accept PNG, JPEG, or WebP files up to 2 MB; present upload/change as a secondary button and removal as a red text action.
+- **Identity Fields:** keep display name optional, with username and email required because both remain sign-in identities. Use the standard 44px fields, jade focus ring, concise helper text, and inline semantic success or error feedback.
+- **Actions and Continuity:** keep Close secondary and Save Changes jade-primary in the persistent footer. Disable saving until text values are dirty and while profile or avatar work is in progress; after a successful mutation, update the shared account identity immediately so the sidebar name, email, and avatar reflect the result in place.
+
 ## Do's and Don'ts
 
 ### Do:

@@ -23,6 +23,7 @@ import type {
   TransactionFilters,
   TransactionPayload,
   User,
+  UserProfilePayload,
 } from "../types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
@@ -41,10 +42,11 @@ export class ApiError extends Error {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem(TOKEN_KEY);
+  const usesFormData = init?.body instanceof FormData;
   const response = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(!usesFormData ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
@@ -80,6 +82,12 @@ const asNumber = (value: number) => {
 const normalizeTransaction = (transaction: Transaction): Transaction => ({
   ...transaction,
   amount: asNumber(transaction.amount),
+});
+
+const normalizeBudget = (budget: Budget): Budget => ({
+  ...budget,
+  limit_amount: asNumber(budget.limit_amount),
+  spent: asNumber(budget.spent),
 });
 
 const normalizeGoalItem = (item: GoalItem): GoalItem => ({
@@ -227,6 +235,14 @@ export const api = {
   register: (payload: RegisterPayload) =>
     request<User>("/auth/register", { method: "POST", body: JSON.stringify(payload) }),
   getMe: (signal?: AbortSignal) => request<User>("/auth/me", { signal }),
+  updateProfile: (payload: UserProfilePayload) =>
+    request<User>("/auth/me", { method: "PUT", body: JSON.stringify(payload) }),
+  uploadAvatar: (file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    return request<User>("/auth/me/avatar", { method: "POST", body });
+  },
+  deleteAvatar: () => request<User>("/auth/me/avatar", { method: "DELETE" }),
   forgotPassword: (email: string) =>
     request<MessageResponse>("/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }),
   resetPassword: (token: string, newPassword: string) =>
@@ -268,11 +284,13 @@ export const api = {
   updateTransaction: (id: string, payload: Partial<TransactionPayload>) =>
     request<Transaction>(`/transactions/${id}`, { method: "PUT", body: JSON.stringify(payload) }).then(normalizeTransaction),
   deleteTransaction: (id: string) => request<{ message: string }>(`/transactions/${id}`, { method: "DELETE" }),
-  listBudgets: (month: number, year: number, signal?: AbortSignal) => request<Budget[]>(`/budgets/?month=${month}&year=${year}`, { signal }),
+  listBudgets: (month: number, year: number, signal?: AbortSignal) =>
+    request<Budget[]>(`/budgets/?month=${month}&year=${year}`, { signal })
+      .then((items) => items.map(normalizeBudget)),
   createBudget: (payload: BudgetPayload) =>
-    request<Budget>("/budgets/", { method: "POST", body: JSON.stringify(payload) }),
+    request<Budget>("/budgets/", { method: "POST", body: JSON.stringify(payload) }).then(normalizeBudget),
   updateBudget: (id: string, limitAmount: number) =>
-    request<Budget>(`/budgets/${id}`, { method: "PUT", body: JSON.stringify({ limit_amount: limitAmount }) }),
+    request<Budget>(`/budgets/${id}`, { method: "PUT", body: JSON.stringify({ limit_amount: limitAmount }) }).then(normalizeBudget),
   deleteBudget: (id: string) => request<{ message: string }>(`/budgets/${id}`, { method: "DELETE" }),
   listGoals: (signal?: AbortSignal) => request<Goal[]>("/goals/", { signal }).then((items) => items.map(normalizeGoal)),
   createGoal: (payload: GoalPayload) =>

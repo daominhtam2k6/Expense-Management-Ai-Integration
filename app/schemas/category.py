@@ -28,23 +28,24 @@ CategoryIconKey = Literal[
     "hand-coins",
     "badge-dollar-sign",
 ]
+CategoryType = Literal["income", "expense"]
 
 class CategoryCreate(BaseModel):
     name: str
-    type: str          # "income" hoặc "expense"
+    type: CategoryType
     color: Optional[str] = "#D9A441"
     icon: CategoryIconKey = "circle-dollar-sign"
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[CategoryType] = None
     color: Optional[str] = None
     icon: Optional[CategoryIconKey] = None
 
 class CategoryOut(BaseModel):
     id: str
     name: str
-    type: str
+    type: CategoryType
     color: str
     icon: CategoryIconKey
 

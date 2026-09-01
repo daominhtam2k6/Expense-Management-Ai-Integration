@@ -2,8 +2,9 @@ import hashlib
 import secrets
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -13,6 +14,7 @@ from app.models.user import User
 from app.schemas.user import (
     UserRegister,
     UserOut,
+    UserProfileUpdate,
     Token,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -31,6 +33,14 @@ RESET_TOKEN_EXPIRE_MINUTES = 15
 _reset_request_log: dict[str, list[datetime]] = defaultdict(list)
 RESET_RATE_LIMIT_MAX = 3
 RESET_RATE_LIMIT_WINDOW = timedelta(hours=1)
+AVATAR_MAX_BYTES = 2 * 1024 * 1024
+AVATAR_DIRECTORY = Path(__file__).resolve().parents[2] / "uploads" / "avatars"
+AVATAR_DIRECTORY.mkdir(parents=True, exist_ok=True)
+AVATAR_FORMATS = {
+    "image/jpeg": ("jpg", lambda data: data.startswith(b"\xff\xd8\xff")),
+    "image/png": ("png", lambda data: data.startswith(b"\x89PNG\r\n\x1a\n")),
+    "image/webp": ("webp", lambda data: len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP"),
+}
 
 
 def _hash_token(raw_token: str) -> str:
@@ -42,6 +52,13 @@ def _is_rate_limited(email: str) -> bool:
     recent = [t for t in _reset_request_log[email] if now - t < RESET_RATE_LIMIT_WINDOW]
     _reset_request_log[email] = recent
     return len(recent) >= RESET_RATE_LIMIT_MAX
+
+
+def _remove_local_avatar(avatar_url: str | None) -> None:
+    if not avatar_url or not avatar_url.startswith("/uploads/avatars/"):
+        return
+    target = AVATAR_DIRECTORY / Path(avatar_url).name
+    target.unlink(missing_ok=True)
 
 @router.post("/register", response_model=UserOut)
 def register(payload: UserRegister, db: Session = Depends(get_db)):
@@ -88,6 +105,101 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 @router.get("/me", response_model=UserOut)
 def me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.put("/me", response_model=UserOut)
+def update_profile(
+    payload: UserProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    username = payload.username.strip()
+    email = str(payload.email).strip().lower()
+    display_name = (payload.display_name or "").strip() or None
+
+    if len(username) < 3:
+        raise HTTPException(status_code=400, detail="Tên đăng nhập phải có ít nhất 3 ký tự.")
+
+    username_owner = (
+        db.query(User)
+        .filter(User.username == username, User.id != current_user.id)
+        .first()
+    )
+    if username_owner:
+        raise HTTPException(status_code=400, detail="Tên đăng nhập đã tồn tại.")
+
+    email_owner = (
+        db.query(User)
+        .filter(func.lower(User.email) == email, User.id != current_user.id)
+        .first()
+    )
+    if email_owner:
+        raise HTTPException(status_code=400, detail="Email đã được sử dụng.")
+
+    email_changed = current_user.email.lower() != email
+    current_user.display_name = display_name
+    current_user.username = username
+    current_user.email = email
+    if email_changed:
+        current_user.reset_token_hash = None
+        current_user.reset_token_expiry = None
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Tên đăng nhập hoặc email đã được sử dụng.") from exc
+    db.refresh(current_user)
+    return current_user
+
+
+@router.post("/me/avatar", response_model=UserOut)
+def upload_avatar(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    avatar_format = AVATAR_FORMATS.get(file.content_type or "")
+    if not avatar_format:
+        raise HTTPException(status_code=415, detail="Ảnh đại diện phải là tệp PNG, JPEG hoặc WebP.")
+
+    content = file.file.read(AVATAR_MAX_BYTES + 1)
+    file.file.close()
+    if not content:
+        raise HTTPException(status_code=400, detail="Tệp ảnh đại diện đang trống.")
+    if len(content) > AVATAR_MAX_BYTES:
+        raise HTTPException(status_code=413, detail="Ảnh đại diện không được vượt quá 2 MB.")
+
+    extension, matches_signature = avatar_format
+    if not matches_signature(content):
+        raise HTTPException(status_code=415, detail="Nội dung tệp không khớp với định dạng ảnh đã chọn.")
+
+    filename = f"{current_user.id}-{secrets.token_hex(6)}.{extension}"
+    destination = AVATAR_DIRECTORY / filename
+    destination.write_bytes(content)
+    previous_avatar = current_user.avatar_url
+    current_user.avatar_url = f"/uploads/avatars/{filename}"
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        destination.unlink(missing_ok=True)
+        raise
+    db.refresh(current_user)
+    _remove_local_avatar(previous_avatar)
+    return current_user
+
+
+@router.delete("/me/avatar", response_model=UserOut)
+def delete_avatar(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    previous_avatar = current_user.avatar_url
+    current_user.avatar_url = None
+    db.commit()
+    db.refresh(current_user)
+    _remove_local_avatar(previous_avatar)
     return current_user
 
 @router.post("/forgot-password", response_model=MessageResponse)

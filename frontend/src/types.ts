@@ -29,7 +29,14 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  display_name: string | null;
   avatar_url: string | null;
+}
+
+export interface UserProfilePayload {
+  display_name: string | null;
+  username: string;
+  email: string;
 }
 
 export interface AuthToken {

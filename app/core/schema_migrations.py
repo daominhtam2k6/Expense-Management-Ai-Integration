@@ -48,3 +48,17 @@ def ensure_goal_completion_columns(engine: Engine) -> None:
                 "WHERE status = 'completed' AND completion_amount IS NULL"
             )
         )
+
+
+def ensure_user_profile_columns(engine: Engine) -> None:
+    """Add optional profile fields for databases created before profile editing."""
+    inspector = inspect(engine)
+    if "users" not in inspector.get_table_names():
+        return
+
+    columns = {column["name"] for column in inspector.get_columns("users")}
+    if "display_name" in columns:
+        return
+
+    with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE users ADD COLUMN display_name VARCHAR"))

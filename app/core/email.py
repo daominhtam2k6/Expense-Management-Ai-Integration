@@ -1,8 +1,16 @@
 import os
 import requests
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:8000")
+RESEND_FROM_EMAIL = os.getenv(
+    "RESEND_FROM_EMAIL",
+    "Expense Management AI <onboarding@resend.dev>",
+).strip()
 RESEND_API_URL = "https://api.resend.com/emails"
 
 
@@ -11,7 +19,7 @@ def send_reset_password_email(to_email: str, reset_token: str) -> bool:
     reset_link = f"{FRONTEND_URL}/reset-password?token={reset_token}"
 
     payload = {
-        "from": "Expense Management AI <onboarding@resend.dev>",
+        "from": RESEND_FROM_EMAIL,
         "to": [to_email],
         "subject": "Yêu cầu đặt lại mật khẩu",
         "html": f"""

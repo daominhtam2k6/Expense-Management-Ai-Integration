@@ -8,11 +8,13 @@ import {
   ReceiptText,
   Tags,
   Target,
+  UserRoundPen,
   WalletCards,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { ProfileAvatar, ProfilePanel } from "./ProfilePanel";
 
 const navItems = [
   { to: "/dashboard", label: "Tổng quan", icon: Grid2X2 },
@@ -30,7 +32,8 @@ export function AppShell() {
   const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
-  const initial = user?.username.trim().charAt(0).toLocaleUpperCase("vi") || "?";
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileLabel = user?.display_name?.trim() || user?.username || "Người dùng";
 
   useEffect(() => {
     navRef.current?.querySelector<HTMLElement>(".nav-item.is-active")?.scrollIntoView({
@@ -38,6 +41,7 @@ export function AppShell() {
       inline: "center",
     });
     setMobileMoreOpen(false);
+    setProfileOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -94,24 +98,29 @@ export function AppShell() {
         )}
 
         <div className="sidebar__account">
-          <div className="account-card">
-            <span className="avatar">{initial}</span>
+          <button className="account-card" type="button" onClick={() => setProfileOpen(true)} title="Chỉnh sửa thông tin cá nhân">
+            <ProfileAvatar avatarUrl={user?.avatar_url ?? null} label={profileLabel} />
             <span className="account-copy">
-              <strong>{user?.username}</strong>
+              <strong>{profileLabel}</strong>
               <small>{user?.email}</small>
             </span>
-          </div>
+            <UserRoundPen className="account-edit-icon" size={16} />
+          </button>
           <button type="button" className="logout-button" onClick={handleLogout}>
             <LogOut size={20} />
             <span>Đăng xuất</span>
           </button>
         </div>
-        <button type="button" className="compact-logout" onClick={handleLogout} aria-label="Đăng xuất" title="Đăng xuất"><LogOut size={20} /></button>
+        <div className="compact-account-actions">
+          <button type="button" className="compact-profile" onClick={() => setProfileOpen(true)} aria-label="Chỉnh sửa thông tin cá nhân" title="Thông tin cá nhân"><UserRoundPen size={20} /></button>
+          <button type="button" className="compact-logout" onClick={handleLogout} aria-label="Đăng xuất" title="Đăng xuất"><LogOut size={20} /></button>
+        </div>
       </aside>
 
       <main className="main-content">
         <Outlet />
       </main>
+      <ProfilePanel open={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
 }
