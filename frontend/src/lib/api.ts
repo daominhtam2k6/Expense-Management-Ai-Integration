@@ -26,7 +26,7 @@ import type {
   UserProfilePayload,
 } from "../types";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "/api").replace(/\/+$/, "");
 export const TOKEN_KEY = "access_token";
 export const AUTH_UNAUTHORIZED_EVENT = "auth:unauthorized";
 

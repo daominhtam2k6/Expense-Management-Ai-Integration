@@ -6,7 +6,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:8000")
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
+FRONTEND_URL = os.getenv("FRONTEND_URL") or (
+    f"https://{RENDER_EXTERNAL_HOSTNAME}"
+    if RENDER_EXTERNAL_HOSTNAME
+    else "http://127.0.0.1:8000"
+)
 RESEND_FROM_EMAIL = os.getenv(
     "RESEND_FROM_EMAIL",
     "Expense Management AI <onboarding@resend.dev>",

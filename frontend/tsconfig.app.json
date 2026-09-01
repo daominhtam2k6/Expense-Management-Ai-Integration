@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vite-plugin-pwa/client"],
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,

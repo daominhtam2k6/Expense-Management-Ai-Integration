@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
 import { ProtectedRoute, PublicOnlyRoute } from "./auth/RouteGuards";
 import { AppShell } from "./components/AppShell";
+import { ConnectionStatus } from "./components/ConnectionStatus";
 import { AuthLayout } from "./components/auth/AuthLayout";
 import { BudgetsPage } from "./pages/BudgetsPage";
 import { AssistantPage } from "./pages/AssistantPage";
@@ -18,6 +19,7 @@ import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
 export default function App() {
   return (
     <AuthProvider>
+      <ConnectionStatus />
       <Routes>
         <Route element={<AuthLayout />}>
           <Route element={<PublicOnlyRoute />}>
