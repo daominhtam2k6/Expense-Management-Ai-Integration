@@ -39,6 +39,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate Azure Compose configuration
+        env:
+          APP_DOMAIN: expense-ci.example.com
+          POSTGRES_PASSWORD: ci-only-database-password
+          SECRET_KEY: ci-only-secret-key
+        run: docker compose -f compose.yaml -f compose.azure.yaml config --quiet
       - uses: docker/setup-buildx-action@v3
       - uses: docker/build-push-action@v6
         with:

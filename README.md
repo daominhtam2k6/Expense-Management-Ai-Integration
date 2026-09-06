@@ -38,6 +38,12 @@ Set-Location ..
 
 Ứng dụng chạy tại `http://127.0.0.1:8000`. Trong development, `AUTO_CREATE_SCHEMA=true` cho phép ứng dụng tiếp tục dùng SQLite và tự tạo schema như trước.
 
+## Deploy web lên Azure for Students
+
+Lộ trình hiện tại: triển khai web, kiểm tra với người dùng thử, rồi phát hành
+Windows Tauri kết nối cùng backend. Xem [hướng dẫn Azure](docs/AZURE_DEPLOY.md)
+để chọn VM, cấu hình HTTPS, lưu dữ liệu, sao lưu và kiểm tra sau triển khai.
+
 ## Deploy web bằng Docker
 
 Production mặc định dùng PostgreSQL và hai volume bền vững cho database và avatar.
@@ -67,40 +73,6 @@ Production mặc định dùng PostgreSQL và hai volume bền vững cho databa
    ```
 
 Container tự chạy `alembic upgrade head` trước khi khởi động API. Reverse proxy hoặc cloud load balancer phải cung cấp HTTPS và chuyển tiếp traffic tới cổng ứng dụng.
-
-## Deploy trên Render
-
-Repo có [Render Blueprint](render.yaml) tạo đồng thời:
-
-- Docker web service tại region Singapore.
-- Render PostgreSQL 18 trên private network.
-- Persistent disk 1 GB gắn tại `/app/uploads` để giữ avatar qua các lần deploy.
-- Health check `/api/health` và migration Alembic tự động khi container khởi động.
-
-Blueprint sử dụng gói web `0.5c-512mb` và PostgreSQL `0.1c-256mb`. Đây là cấu hình trả phí tối thiểu phù hợp với dữ liệu lâu dài; persistent disk không hoạt động trên web service Free và Render PostgreSQL Free chỉ dành cho thử nghiệm ngắn hạn.
-
-Các bước tạo dịch vụ:
-
-1. Push repo lên GitHub hoặc GitLab.
-2. Trong Render Dashboard, chọn **New → Blueprint** và kết nối repo.
-3. Render tự đọc `render.yaml`. Kiểm tra hai tài nguyên và chi phí trước khi xác nhận tạo Blueprint instance.
-4. Trong màn hình khởi tạo, nhập `AI_API_KEY`, `RESEND_API_KEY` và `RESEND_FROM_EMAIL`. Có thể để trống AI/email lúc đầu, nhưng trợ lý AI và email đặt lại mật khẩu sẽ chưa hoạt động.
-5. Sau deploy, mở `https://<render-host>/api/health` và `/api/ready` để xác nhận.
-
-Render tự sinh `SECRET_KEY` và truyền private connection string của PostgreSQL vào `DATABASE_URL`. Ứng dụng tự chuyển chuỗi `postgresql://` của Render sang driver Psycopg 3.
-
-Khi thêm custom domain, đặt thêm:
-
-```dotenv
-FRONTEND_URL=https://finance.example.com
-TRUSTED_HOSTS=finance.example.com
-```
-
-Sau khi có URL Render thật, cập nhật `frontend/.env.desktop` trước khi build Windows:
-
-```dotenv
-VITE_API_BASE_URL=https://<render-host>/api
-```
 
 ### Database đã tồn tại
 

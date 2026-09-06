@@ -69,18 +69,6 @@ def upgrade() -> None:
     )
     op.create_index("ix_ai_conversations_user_id", "ai_conversations", ["user_id"])
     op.create_table(
-        "ai_reports",
-        sa.Column("id", sa.String(), nullable=False),
-        sa.Column("user_id", sa.String(), nullable=False),
-        sa.Column("month", sa.Integer(), nullable=False),
-        sa.Column("year", sa.Integer(), nullable=False),
-        sa.Column("summary", sa.Text(), nullable=True),
-        sa.Column("suggestions", sa.Text(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
         "budgets",
         sa.Column("id", sa.String(), nullable=False),
         sa.Column("user_id", sa.String(), nullable=False),
@@ -149,7 +137,6 @@ def downgrade() -> None:
     op.drop_table("goal_items")
     op.drop_table("transactions")
     op.drop_table("budgets")
-    op.drop_table("ai_reports")
     op.drop_index("ix_ai_conversations_user_id", table_name="ai_conversations")
     op.drop_table("ai_conversations")
     op.drop_table("saving_goals")
