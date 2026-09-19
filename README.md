@@ -1,5 +1,9 @@
 # Sổ Chi Tiêu
 
+> Hồ sơ AI-Augmented SDLC: xem [đánh giá tuân thủ](docs/sdlc-compliance-audit.md),
+> [prompt register](docs/prompts.md), [thư viện prompt mẫu](docs/prompt-library.md), [human gates](docs/human-gates.md) và
+> [nhật ký AI](docs/ai-process-log.md).
+
 Ứng dụng quản lý tài chính cá nhân gồm một backend FastAPI dùng chung cho hai kênh phát hành:
 
 - Web responsive/PWA cho Windows, Android và iOS.
@@ -15,7 +19,7 @@ Windows/Tauri ─────┘          ├── persistent uploads
                               └── Resend
 ```
 
-Bản Windows hiện là online-first. Dữ liệu không được lưu thành một database riêng trên từng máy, nhờ đó tài khoản và số liệu luôn đồng bộ với web.
+Bản Windows hiện yêu cầu kết nối Internet cho toàn bộ chức năng. Dữ liệu không được lưu thành một database nghiệp vụ riêng trên từng máy, nhờ đó tài khoản và số liệu dùng chung nguồn dữ liệu với web. Offline chỉ được xem xét trong tương lai nếu phản hồi người dùng cho thấy nhu cầu đủ lớn.
 
 ## Chạy local
 

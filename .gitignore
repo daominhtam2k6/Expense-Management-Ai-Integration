@@ -59,7 +59,6 @@ Desktop.ini
 
 # Local AI/tooling state
 .codex/
-.agents/
 .impeccable/
 
 # Local planning notes
