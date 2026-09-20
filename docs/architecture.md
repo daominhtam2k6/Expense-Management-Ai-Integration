@@ -2,6 +2,8 @@
 
 > Thiết kế mục tiêu theo baseline requirements v1.1 đã được phê duyệt tại Requirements Gate ngày 06/09/2026. Tài liệu này không xác nhận implementation hiện tại đã đáp ứng thiết kế và không thay đổi trạng thái Human Gate.
 
+Artifact thiết kế lớp chi tiết: [Class Diagram — thuộc tính và phương thức](diagrams/class-diagram-with-methods.png). Sơ đồ trình bày 9 lớp entity cùng các phương thức nghiệp vụ as-built đặt tại Router/Core; đây là cập nhật cách trình bày, không thay đổi quyết định kiến trúc đã phê duyệt.
+
 ## 1. Phạm vi và nguyên tắc
 
 Kiến trúc bao phủ React/PWA, Windows Tauri, FastAPI, SQLAlchemy/Alembic, PostgreSQL production, SQLite development, Gemini, Resend và avatar storage. Offline, ngân hàng, thanh toán, đầu tư tự động, AI sửa dữ liệu và quản trị nằm ngoài phạm vi.

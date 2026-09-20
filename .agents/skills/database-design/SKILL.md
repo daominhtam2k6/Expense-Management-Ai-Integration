@@ -5,6 +5,21 @@ description: Thiết kế và rà soát schema quan hệ, migration, constraint,
 
 # Thiết kế cơ sở dữ liệu
 
-Đọc yêu cầu đã phê duyệt, kiến trúc, model SQLAlchemy và migration Alembic. Kiểm tra entity, quan hệ, chuẩn hóa, PK/FK, nullability, uniqueness, CHECK constraint, index, độ chính xác tiền tệ, hành vi xóa và khả năng cô lập theo người dùng.
+## Quy trình
 
-Ghi riêng các khoảng trống so với schema đã triển khai. Không thay đổi mã ứng dụng. Cập nhật `docs/database-design.md`; mọi thay đổi schema phải dùng Alembic migration và yêu cầu Database Gate trong `docs/human-gates.md` trước khi triển khai.
+1. Đọc requirements đã phê duyệt, `docs/architecture.md`, `docs/human-gates.md`, toàn bộ model SQLAlchemy và Alembic migration hiện có.
+2. Lập danh sách entity, thuộc tính, khóa chính, khóa ngoại, quan hệ và chủ sở hữu dữ liệu.
+3. Đối chiếu schema triển khai với yêu cầu; ghi riêng trạng thái “đã có”, “thiếu”, “khác thiết kế” và “chưa kiểm chứng”.
+4. Kiểm tra normalization, nullability, uniqueness, CHECK constraint, default, kiểu dữ liệu và độ chính xác tiền tệ.
+5. Kiểm tra mọi quan hệ theo `ON DELETE`/cascade/restrict, khả năng tạo orphan và tính nguyên tử của luồng nghiệp vụ.
+6. Kiểm tra cô lập theo người dùng: `user_id`, ownership FK/composite constraint và nguy cơ tham chiếu chéo tài khoản.
+7. Đánh giá index theo khóa ngoại, bộ lọc, sắp xếp, uniqueness và truy vấn tổng hợp; chỉ đề xuất index có workload hoặc query hỗ trợ.
+8. Thiết kế kế hoạch migration gồm preflight, xử lý collision, upgrade, kiểm chứng, rollback/restore và khác biệt PostgreSQL/SQLite.
+9. Cập nhật `docs/database-design.md` với schema mục tiêu, schema hiện tại, gap, traceability và migration plan.
+10. Kiểm tra Database Gate trước khi bàn giao cho implementation.
+
+## Điểm dừng và đầu ra
+
+- Không sửa application code hoặc tạo migration khi Database Gate chưa được phê duyệt.
+- Mọi schema change phải đi qua Alembic migration; không sửa database production trực tiếp.
+- Đầu ra: `docs/database-design.md`, danh sách gap và kế hoạch migration có thể kiểm chứng.

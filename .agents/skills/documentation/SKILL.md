@@ -5,6 +5,21 @@ description: Duy trì tài liệu người dùng, API, kiến trúc, cơ sở d�
 
 # Tài liệu hóa
 
-Đọc implementation và tài liệu hiện có trước khi chỉnh sửa. Chỉ ghi lại hành vi đã được triển khai; đánh dấu rõ kế hoạch và bằng chứng được tái dựng. Duy trì các lệnh cài đặt có thể thực thi, tên biến môi trường nhất quán với mã và liên kết hợp lệ.
+## Quy trình
 
-Duy trì `README.md`, `docs/api.md`, `docs/architecture.md`, `docs/database-design.md`, `docs/deployment.md` và `docs/user-guide.md` khi phù hợp. Không tuyên bố đã thực hiện test, security scan, phê duyệt của con người, sử dụng MCP hoặc prompt lịch sử nếu không có bằng chứng.
+1. Xác định tài liệu bị ảnh hưởng và nguồn sự thật tương ứng trong requirements, mã, config, migration, test hoặc deployment.
+2. Đọc implementation và phiên bản tài liệu hiện có trước khi chỉnh sửa; không suy đoán hành vi từ tên file hoặc kế hoạch.
+3. Phân loại nội dung thành đã triển khai, thiết kế mục tiêu, đề xuất, giới hạn và bằng chứng lịch sử; gắn nhãn rõ ràng.
+4. Cập nhật tài liệu phù hợp: `README.md`, `docs/api.md`, `docs/architecture.md`, `docs/database-design.md`, `docs/deployment.md`, `docs/user-guide.md` hoặc artifact SDLC liên quan.
+5. Đồng bộ endpoint, request/response, biến môi trường, command, port, dependency và đường dẫn với mã/config hiện tại.
+6. Với hướng dẫn setup/deploy, bảo đảm lệnh có thứ tự, prerequisite, môi trường chạy và kết quả mong đợi rõ ràng.
+7. Với tài liệu API/user guide, mô tả cả validation, permission, lỗi và giới hạn quan trọng; không chỉ mô tả happy path.
+8. Kiểm tra liên kết nội bộ, đường dẫn file, heading, thuật ngữ, ID truy vết và mâu thuẫn giữa các tài liệu.
+9. Đối chiếu mọi tuyên bố test, coverage, scan, approval, MCP hoặc prompt lịch sử với bằng chứng thực tế và ngày thực hiện.
+10. Rà soát diff để bảo đảm không ghi đè lịch sử hợp lệ hoặc biến kế hoạch thành tuyên bố đã hoàn thành.
+
+## Quy tắc bằng chứng
+
+- Không tuyên bố hành vi đã triển khai nếu chỉ tồn tại trong thiết kế.
+- Không tự tạo kết quả test, security scan, human approval, MCP usage hoặc historical prompt.
+- Giữ tài liệu ngắn gọn nhưng đủ để người khác thực thi hoặc kiểm chứng độc lập.
