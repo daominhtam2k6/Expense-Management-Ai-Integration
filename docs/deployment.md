@@ -4,7 +4,7 @@
 
 ## 1. Mục tiêu, phạm vi và quyết định còn mở
 
-Phạm vi gồm build/release, HTTPS, PostgreSQL, migration, avatar bền vững, secrets, health/readiness, log, metric, backup/restore/retention và incident runbook. Deployment tham chiếu `Dockerfile`, `compose.yaml`, `compose.azure.yaml`, `deploy/Caddyfile` và [hướng dẫn Azure](AZURE_DEPLOY.md); tài liệu này không thay đổi source code hay hạ tầng.
+Phạm vi gồm build/release, HTTPS, PostgreSQL, migration, avatar bền vững, secrets, health/readiness, log, metric, backup/restore/retention và incident runbook. Deployment tham chiếu `Dockerfile`, `compose.yaml`, `compose.azure.yaml`, `deploy/Caddyfile` và [hướng dẫn Azure](azure-deploy.md); tài liệu này không thay đổi source code hay hạ tầng.
 
 Các mục tiêu baseline đã duyệt:
 
@@ -191,4 +191,4 @@ Không được đóng Release Gate chỉ vì checklist tồn tại. Mỗi ô c�
 6. Secret store, rotation cadence, backup key ownership và break-glass procedure.
 7. Maintenance window/downtime chấp nhận được và chiến lược migration job tách khỏi web entrypoint.
 
-Hướng dẫn thao tác VM hiện có ở [AZURE_DEPLOY.md](AZURE_DEPLOY.md). Khi proposal này được duyệt và automation thực sự tồn tại, hướng dẫn đó cần được đồng bộ để không còn mô tả backup thủ công như kiểm soát production đầy đủ.
+Hướng dẫn thao tác VM hiện có ở [azure-deploy.md](azure-deploy.md). Khi proposal này được duyệt và automation thực sự tồn tại, hướng dẫn đó cần được đồng bộ để không còn mô tả backup thủ công như kiểm soát production đầy đủ.

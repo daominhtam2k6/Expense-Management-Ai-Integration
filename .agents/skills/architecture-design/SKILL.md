@@ -1,11 +1,10 @@
 ---
 name: architecture-design
-description: Design or revise the Sổ Chi Tiêu architecture from human-approved requirements with explicit rationale and traceability.
+description: Thiết kế hoặc điều chỉnh kiến trúc Sổ Chi Tiêu từ các yêu cầu đã được con người phê duyệt, với lập luận và khả năng truy vết rõ ràng.
 ---
 
-# Architecture Design
+# Thiết kế kiến trúc
 
-Read the requirements artifacts and require an approved Requirements Gate in `docs/human-gates.md`. If absent, produce a draft only and identify the blocker.
+Đọc các artifact yêu cầu và yêu cầu Requirements Gate đã được phê duyệt trong `docs/human-gates.md`. Nếu chưa có, chỉ tạo bản nháp và xác định rõ điểm chặn.
 
-Describe components, responsibilities, dependencies, data flow, external services, trust boundaries, and requirement coverage. Preserve the chosen FastAPI, React, SQLAlchemy, PostgreSQL/SQLite, Gemini, Resend, and Tauri constraints unless a human approves a change. Do not implement code. Update `docs/architecture.md` and `docs/architecture-decisions.md`.
-
+Mô tả thành phần, trách nhiệm, dependency, luồng dữ liệu, dịch vụ ngoài, trust boundary và mức bao phủ yêu cầu. Giữ nguyên các ràng buộc đã chọn gồm FastAPI, React, SQLAlchemy, PostgreSQL/SQLite, Gemini, Resend và Tauri, trừ khi con người phê duyệt thay đổi. Không triển khai mã. Cập nhật `docs/architecture.md` và `docs/architecture-decisions.md`.

@@ -1,13 +1,12 @@
 ---
 name: requirements-analysis
-description: Analyze requirements for Sổ Chi Tiêu and produce traceable requirements, stories, acceptance criteria, and unresolved issues before design or implementation.
+description: Phân tích yêu cầu cho Sổ Chi Tiêu và tạo yêu cầu, user story, tiêu chí chấp nhận cùng các vấn đề chưa giải quyết có khả năng truy vết trước khi thiết kế hoặc triển khai.
 ---
 
-# Requirements Analysis
+# Phân tích yêu cầu
 
-Read `docs/customer-requirement.md` and existing product documentation. Separate confirmed requirements, assumptions, and unresolved questions. Do not write code or silently derive business rules from the current implementation.
+Đọc `docs/customer-requirement.md` và tài liệu sản phẩm hiện có. Phân tách rõ yêu cầu đã xác nhận, giả định và câu hỏi chưa giải quyết. Không viết mã hoặc âm thầm suy diễn quy tắc nghiệp vụ từ implementation hiện tại.
 
-Use stable IDs (`FR-*`, `NFR-*`, `US-*`, `AC-*`). Trace each story and acceptance criterion to requirements. Update `docs/requirements.md`, `docs/user-stories.md`, `docs/acceptance-criteria.md`, and `docs/requirements-issues.md`.
+Dùng ID ổn định (`FR-*`, `NFR-*`, `US-*`, `AC-*`). Truy vết từng user story và tiêu chí chấp nhận về yêu cầu tương ứng. Cập nhật `docs/requirements.md`, `docs/user-stories.md`, `docs/acceptance-criteria.md` và `docs/requirements-issues.md`.
 
-Stop before architecture or implementation when an unresolved issue materially changes behavior. Record a human decision in `docs/human-gates.md`; never mark a gate approved on the user's behalf.
-
+Dừng trước bước kiến trúc hoặc triển khai nếu một vấn đề chưa giải quyết có thể làm thay đổi đáng kể hành vi. Ghi quyết định của con người trong `docs/human-gates.md`; không bao giờ tự đánh dấu gate đã được phê duyệt thay người dùng.

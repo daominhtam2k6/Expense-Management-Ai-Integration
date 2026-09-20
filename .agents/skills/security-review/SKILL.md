@@ -1,11 +1,10 @@
 ---
 name: security-review
-description: Conduct a read-only security review of Sổ Chi Tiêu across authentication, authorization, input, uploads, secrets, AI privacy, dependencies, and deployment.
+description: Thực hiện rà soát bảo mật chỉ đọc cho Sổ Chi Tiêu trên các khía cạnh xác thực, phân quyền, đầu vào, upload, secret, quyền riêng tư AI, dependency và triển khai.
 ---
 
-# Security Review
+# Rà soát bảo mật
 
-Do not fix code during the review. Check injection, XSS, CSRF applicability, authentication, object-level authorization, password/token handling, reset flows, uploads, secrets, CORS/hosts, error leakage, dependency risk, and Gemini data boundaries. Verify every data query is scoped to the authenticated owner and that AI receives only documented aggregates.
+Không sửa mã trong quá trình rà soát. Kiểm tra injection, XSS, khả năng áp dụng CSRF, xác thực, phân quyền cấp đối tượng, xử lý mật khẩu/token, luồng reset, upload, secret, CORS/host, rò rỉ lỗi, rủi ro dependency và ranh giới dữ liệu Gemini. Xác minh mọi truy vấn dữ liệu đều giới hạn theo chủ sở hữu đã xác thực và AI chỉ nhận dữ liệu tổng hợp đã được lập tài liệu.
 
-Classify evidence-backed findings by severity and record limitations (including scans not run) in `docs/security-review.md`. A human must accept or remediate open HIGH/CRITICAL findings before the Security Gate is approved.
-
+Phân loại các phát hiện có bằng chứng theo mức độ nghiêm trọng và ghi nhận giới hạn, bao gồm các scan chưa chạy, trong `docs/security-review.md`. Con người phải chấp nhận hoặc khắc phục các phát hiện HIGH/CRITICAL còn mở trước khi Security Gate được phê duyệt.

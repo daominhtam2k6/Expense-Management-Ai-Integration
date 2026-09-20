@@ -1,11 +1,10 @@
 ---
 name: implementation
-description: Implement approved Sổ Chi Tiêu changes while preserving requirements, architecture, database boundaries, and verifiable evidence.
+description: Triển khai các thay đổi Sổ Chi Tiêu đã được phê duyệt, đồng thời bảo toàn yêu cầu, kiến trúc, ranh giới cơ sở dữ liệu và bằng chứng có thể kiểm chứng.
 ---
 
-# Implementation
+# Triển khai
 
-Read the approved requirement, acceptance criteria, architecture, and database design relevant to the task. If specification is insufficient and the ambiguity changes externally visible behavior, stop and record the issue instead of inventing a rule.
+Đọc yêu cầu, tiêu chí chấp nhận, kiến trúc và thiết kế cơ sở dữ liệu đã được phê duyệt có liên quan đến tác vụ. Nếu đặc tả chưa đủ và điểm mơ hồ làm thay đổi hành vi bên ngoài, hãy dừng và ghi nhận vấn đề thay vì tự đặt ra quy tắc.
 
-Make the smallest coherent change. Keep user ownership filters on all financial data, secrets in environment variables, Gemini aggregate-only, and database changes migration-backed. Add or update tests, run scoped tests and build/lint-equivalent checks, review the diff, and append commands/results plus changed artifacts to `docs/ai-process-log.md`.
-
+Thực hiện thay đổi nhất quán nhỏ nhất. Duy trì bộ lọc quyền sở hữu người dùng trên toàn bộ dữ liệu tài chính, giữ secret trong biến môi trường, chỉ gửi dữ liệu tổng hợp cho Gemini và mọi thay đổi cơ sở dữ liệu phải có migration. Thêm hoặc cập nhật test, chạy test theo phạm vi cùng kiểm tra tương đương build/lint, rà soát diff, rồi ghi lệnh, kết quả và artifact đã thay đổi vào `docs/ai-process-log.md`.

@@ -260,7 +260,7 @@ Bạn là DevOps/SRE Architect cho hệ thống quy mô nhỏ, online-only.
 - docs/architecture.md
 - docs/database-design.md
 - README.md
-- docs/AZURE_DEPLOY.md
+- docs/azure-deploy.md
 - Dockerfile, compose*.yaml, deploy/Caddyfile, .env.example
 
 MỤC TIÊU
@@ -285,4 +285,3 @@ RÀNG BUỘC
 KIỂM CHỨNG
 Mỗi NFR vận hành có metric/evidence hoặc được đánh dấu chưa quyết định; không tuyên bố SLA/security compliance nếu chưa đo hoặc kiểm thử.
 ```
-

@@ -1,5 +1,14 @@
 # Nhật ký AI-Augmented SDLC
 
+## Phiên 20/09/2026 — Rà soát và chuẩn hóa cấu trúc
+
+- **Yêu cầu:** rà soát toàn bộ hệ thống, đưa `.agents/skills` và `docs` về bộ khung SDLC đã cung cấp, không sửa app và bảo toàn tài nguyên.
+- **Phạm vi thay đổi:** chỉ cập nhật evidence trong `docs/code-review.md`, `docs/security-review.md`, `docs/test-report.md`, `docs/ai-process-log.md`; giữ nguyên các tài liệu bổ sung ngoài 13 artifact lõi để tránh mất dữ liệu.
+- **Kiểm tra cấu trúc:** đủ 8 skill và đủ 13 artifact lõi đúng tên; không đổi tên repository vì có thể làm hỏng đường dẫn/deployment.
+- **Kiểm tra:** Python hệ thống collection fail do thiếu FastAPI; venv pytest 4 failed/71 passed/22 subtests/7 warnings; Vitest 50 passed; Vite/PWA build pass.
+- **Integrity evidence:** trước thay đổi, 118 tệp trong `app`, `frontend/src`, `frontend/public`, `frontend/src-tauri`, `alembic`, `tests` có manifest SHA-256 tổng hợp `65A5AF9B438DB1947D0FE07622EB3B8B85CF10B7AB28B96A892361D86E7B119E`. Sau thay đổi phải trùng khớp.
+- **Human gate:** không thay đổi approval; Release vẫn `PENDING`. Không sửa source app, migration, test hay tài nguyên runtime.
+
 Tài liệu này bắt đầu ngày 06/09/2026; không tái tạo giả các prompt hoặc human correction trước đó.
 
 Prompt nguyên văn và liên kết artifact được lưu tại `docs/prompts.md`; tài liệu này chỉ giữ tóm tắt quá trình.
@@ -64,3 +73,19 @@ Prompt nguyên văn và liên kết artifact được lưu tại `docs/prompts.m
 - **Artifact:** `docs/prompt-library.md` gồm bảy prompt SDLC có role, context, input, objective, scope, constraints, outputs, verification và stopping/human-gate conditions.
 - **Evidence label:** prompt hồi tố/mẫu, chưa thực thi; không được trình bày như prompt tạo implementation cũ.
 - **Code status:** không sửa source code.
+
+## Phiên 20/09/2026 — Dọn artifact cục bộ
+
+- **Human prompt:** dọn các file/folder thừa.
+- **Phạm vi đã xóa:** cache Python/pytest, frontend coverage/build, và TypeScript build metadata; tất cả đều có thể tái tạo.
+- **Phạm vi giữ lại:** dependency (`venv`, `frontend/node_modules`), dữ liệu/runtime (`.env`, `expense.db`, `uploads`), deliverables và file được Git theo dõi.
+- **Kiểm chứng:** xem trước bằng `git clean -ndX`, xóa theo đường dẫn giới hạn bằng `git clean -fdX`, rồi kiểm tra lại `git status --short --ignored`.
+- **Code status:** không sửa source code; không chạy test vì chỉ xóa artifact sinh tự động.
+
+## Phiên 20/09/2026 — Chuẩn hóa vị trí tài liệu
+
+- **Human prompt:** di chuyển các file Markdown chưa đúng vị trí và cập nhật tham chiếu.
+- **Thay đổi:** chuyển báo cáo kiểm thử hộp trắng vào `docs/white-box-test-report-2026-08-31.md`; chuẩn hóa hướng dẫn Azure thành `docs/azure-deploy.md`.
+- **Đồng bộ:** cập nhật tham chiếu trong README, Compose và các tài liệu liên quan.
+- **Kiểm chứng:** tìm tên file cũ trên toàn repository và kiểm tra toàn bộ liên kết Markdown tương đối.
+- **Code status:** không sửa hành vi ứng dụng và không chạy test mã nguồn.

@@ -1,5 +1,15 @@
 # Security review report
 
+## Rà soát lại ngày 20/09/2026
+
+Review chỉ đọc xác nhận các query nghiệp vụ chính vẫn scope theo `current_user.id`; Gemini dùng context tổng hợp và request `store: false`. Không sửa app và không chạy SAST/DAST/dependency scan trong đợt này.
+
+- Không phát hiện HIGH/CRITICAL mới qua source review.
+- **MEDIUM — SEC-006:** hai invariant AC-018/AC-019 đang chỉ được kỳ vọng ở application và hiện tại còn thiếu; schema/migration cũng chưa có unique normalized category và CHECK năm ngân sách. Đây là integrity gap, có thể tạo dữ liệu không hợp lệ qua API hoặc regression sau này.
+- Các finding SEC-001..SEC-005 bên dưới vẫn mở; đặc biệt token 24 giờ không revoke sớm, rate limit reset password in-memory, public avatar storage và thiếu vulnerability scan.
+
+Giới hạn: không kiểm tra production TLS, PostgreSQL, backup retention, malware scan, secret history, container image hay dịch vụ ngoài live. Vì vậy báo cáo này không phải chứng nhận an toàn và Security/Release Gate không được tự động phê duyệt.
+
 Ngày review: 06/09/2026. Phương pháp: source review và test hiện có; **chưa chạy** SAST/DAST/dependency vulnerability scanner nên không được hiểu là chứng nhận an toàn.
 
 ## Findings
@@ -17,4 +27,3 @@ Bcrypt password hashing; JWT expiry; secret từ environment; SQLAlchemy paramet
 ## CSRF/XSS
 
 Bearer token không dùng cookie làm giảm CSRF truyền thống; nếu chuyển sang cookie phải bổ sung SameSite/CSRF token. React escaping và việc Gemini cấm HTML giảm XSS, nhưng vẫn cần CSP và kiểm thử render ở deployment thật.
-

@@ -1,4 +1,4 @@
-# Run from the repository root with both Compose files (see docs/AZURE_DEPLOY.md).
+# Run from the repository root with both Compose files (see docs/azure-deploy.md).
 services:
   web:
     environment:

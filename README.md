@@ -45,7 +45,7 @@ Set-Location ..
 ## Deploy web lên Azure for Students
 
 Lộ trình hiện tại: triển khai web, kiểm tra với người dùng thử, rồi phát hành
-Windows Tauri kết nối cùng backend. Xem [hướng dẫn Azure](docs/AZURE_DEPLOY.md)
+Windows Tauri kết nối cùng backend. Xem [hướng dẫn Azure](docs/azure-deploy.md)
 để chọn VM, cấu hình HTTPS, lưu dữ liệu, sao lưu và kiểm tra sau triển khai.
 
 ## Deploy web bằng Docker

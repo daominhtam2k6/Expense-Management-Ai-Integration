@@ -1,5 +1,18 @@
 # Test report
 
+## Tái kiểm tra cấu trúc — 20/09/2026
+
+Không sửa source app, frontend, migration hoặc test. Kết quả quan sát:
+
+| Lệnh | Kết quả |
+|---|---|
+| `python -m pytest -q` | FAIL tại collection: Python hệ thống (`D:\\Anaconda`) không có `fastapi`; 13 module collection error. Đây là lỗi môi trường, không phải kết quả test logic. |
+| `.\\venv\\Scripts\\python.exe -m pytest -q` | **FAIL — 4 failed, 71 passed, 22 subtests passed, 7 warnings, 9.48s**. Bốn fail tại AC-018/AC-019, khớp DEF-018/DEF-019 đã ghi nhận. |
+| `npm.cmd test -- --coverage` | **PASS — 5 files, 50 tests**; statements 62.86%, branches 46.55%, functions 57.68%, lines 67.90%. |
+| `npm.cmd run build` | **PASS** — TypeScript/Vite/PWA; 35 precache entries, 785.87 KiB. |
+
+Kết luận: frontend đạt bộ kiểm tra hiện có; backend suite chạy được trong venv nhưng baseline vẫn fail. Hệ thống chưa đủ điều kiện Release Gate cho đến khi AC-018/AC-019 được sửa theo quy trình implementation/database migration đã phê duyệt và test lại.
+
 ## Dịch vụ thực tế và trình duyệt — 19/09/2026
 
 Đã cập nhật file Word trước đó tại Downloads, giữ 4 bảng của mẫu, sửa FT-06/FT-08 thành Fail và bổ sung LIVE-01..07. Bản sao phát hành: `deliverables/05_functional_testing_live_20260919.docx`. Bản trước cập nhật được giữ với hậu tố `_before_live_20260919` trong Downloads.
@@ -61,5 +74,5 @@ Lần chạy đầu của `pytest -q` thu thập nhầm 15 module test trong `de
 ## Cảnh báo và giới hạn
 
 - 7 schema dùng class-based Pydantic config đã deprecated; chưa lỗi ở Pydantic 2 nhưng cần chuyển sang `ConfigDict` trước Pydantic 3.
-- Coverage frontend hiện thấp hơn số ghi trong `WHITE_BOX_TEST_REPORT.md` ngày 31/08/2026 ở cả bốn chỉ số; báo cáo cũ là snapshot lịch sử, không phải bằng chứng chạy hiện tại.
+- Coverage frontend hiện thấp hơn số ghi trong [white-box-test-report-2026-08-31.md](white-box-test-report-2026-08-31.md) ngày 31/08/2026 ở cả bốn chỉ số; báo cáo cũ là snapshot lịch sử, không phải bằng chứng chạy hiện tại.
 - Chưa chạy E2E browser, test production PostgreSQL, migration trên database thật, dependency vulnerability scan hoặc external Gemini/Resend live test trong đợt này.

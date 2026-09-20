@@ -1,11 +1,10 @@
 ---
 name: testing
-description: Plan, implement, execute, and report requirement-traceable tests for the Sổ Chi Tiêu backend and frontend.
+description: Lập kế hoạch, triển khai, thực thi và báo cáo các kiểm thử có khả năng truy vết về yêu cầu cho backend và frontend Sổ Chi Tiêu.
 ---
 
-# Testing
+# Kiểm thử
 
-Read requirements, stories, and acceptance criteria. Cover positive, negative, boundary, authorization/ownership, error, and integration paths. Never weaken expectations merely to make a test pass.
+Đọc yêu cầu, user story và tiêu chí chấp nhận. Bao phủ luồng tích cực, tiêu cực, giá trị biên, phân quyền/quyền sở hữu, lỗi và tích hợp. Không bao giờ hạ thấp kỳ vọng chỉ để làm test pass.
 
-Run backend tests with `python -m pytest -q`, frontend tests with `npm.cmd test -- --coverage`, and the production frontend build when relevant. Report exact observed results and date in `docs/test-report.md`; do not copy stale counts. Map gaps to requirement IDs in `docs/test-plan.md`.
-
+Chạy backend test bằng `python -m pytest -q`, frontend test bằng `npm.cmd test -- --coverage` và production frontend build khi có liên quan. Ghi đúng kết quả quan sát được cùng ngày thực hiện trong `docs/test-report.md`; không sao chép số liệu cũ. Ánh xạ khoảng trống kiểm thử tới ID yêu cầu trong `docs/test-plan.md`.
