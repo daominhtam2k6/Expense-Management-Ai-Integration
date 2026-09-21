@@ -60,7 +60,7 @@ entries=[
 ]
 for tid,feature,desc,pre,data,expected,status,observed,severity in entries:
     for table,values in [(doc.tables[2],[tid,feature,desc,pre,data,expected,'Live check 19/09/2026']),
-                         (report,[tid,'19/09/2026','Tự động; chưa duyệt thủ công',status,severity,observed,'Bằng chứng: deliverables/live-*-results-20260919.json; docs/test-report.md'])]:
+                         (report,[tid,'19/09/2026','Tự động; chưa duyệt thủ công',status,severity,observed,'Bằng chứng: deliverables/live-*-results-20260919.json; docs/software/testing/test-report.md'])]:
         table._tbl.append(deepcopy(table.rows[1]._tr))
         for c,v in zip(table.rows[-1].cells,values):
             cell(c,v)

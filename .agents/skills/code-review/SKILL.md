@@ -5,7 +5,13 @@ description: Rà soát chỉ đọc dựa trên bằng chứng đối với Sổ
 
 # Rà soát mã nguồn
 
+## Phạm vi nhiệm vụ
+
+Áp dụng [hợp đồng context](../../../docs/ai-engineering/context.md); prompt tương ứng: [AIP-REVIEW-001](../../../docs/ai-engineering/prompts.md#aip-review-001). Các bước ghi file bên dưới chỉ áp dụng khi nhiệm vụ cho phép cập nhật artifact đó. Với yêu cầu tư vấn, phân tích hoặc review không ghi file, trả kết quả trong câu trả lời; không tự chạy toàn quy trình hay chuyển sang triển khai. Quyết định đã được người dùng chốt là đầu vào, không hỏi lại cùng quyết định.
+
 ## Quy trình
+
+Khi review diff hoặc thay đổi qua nhiều tầng, đọc [Review theo phạm vi và hồi quy](references/review-modes.md). Chỉ nạp phần phù hợp nhiệm vụ.
 
 1. Xác định phạm vi review: diff, commit, module hoặc toàn hệ thống; ghi rõ phần bị loại khỏi phạm vi.
 2. Đọc requirements, acceptance criteria, kiến trúc và database design liên quan trước khi đánh giá mã.
@@ -16,7 +22,7 @@ description: Rà soát chỉ đọc dựa trên bằng chứng đối với Sổ
 7. Đánh giá test: requirement coverage, negative/boundary/ownership path, độ cô lập và khả năng phát hiện regression.
 8. Với mỗi finding, ghi severity `CRITICAL`, `HIGH`, `MEDIUM` hoặc `LOW`, trạng thái confirmed/risk/gap, bằng chứng file:dòng, tác động và hướng khắc phục.
 9. Sắp xếp finding theo severity; ghi riêng điều đã kiểm tra không có finding và điều chưa kiểm tra.
-10. Cập nhật `docs/code-review.md` với ngày, phạm vi, phương pháp, finding và giới hạn.
+10. Cập nhật `docs/software/testing/code-review.md` với ngày, phạm vi, phương pháp, finding và giới hạn.
 
 ## Ràng buộc
 

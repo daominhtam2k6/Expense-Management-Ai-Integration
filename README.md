@@ -1,8 +1,10 @@
 # Sổ Chi Tiêu
 
-> Hồ sơ AI-Augmented SDLC: xem [đánh giá tuân thủ](docs/sdlc-compliance-audit.md),
-> [prompt register](docs/prompts.md), [thư viện prompt mẫu](docs/prompt-library.md), [human gates](docs/human-gates.md) và
-> [nhật ký AI](docs/ai-process-log.md).
+> Tra cứu tài liệu theo nhóm tại [docs/README.md](docs/README.md).
+>
+> Hồ sơ AI-Augmented SDLC: xem [đánh giá tuân thủ](docs/governance/sdlc-compliance-audit.md),
+> [prompt register](docs/ai-engineering/history/prompts.md), [thư viện prompt mẫu](docs/ai-engineering/prompt-library.md), [human gates](docs/governance/human-gates.md) và
+> [nhật ký AI](docs/ai-engineering/history/ai-process-log.md).
 
 Ứng dụng quản lý tài chính cá nhân gồm một backend FastAPI dùng chung cho hai kênh phát hành:
 
@@ -45,7 +47,7 @@ Set-Location ..
 ## Deploy web lên Azure for Students
 
 Lộ trình hiện tại: triển khai web, kiểm tra với người dùng thử, rồi phát hành
-Windows Tauri kết nối cùng backend. Xem [hướng dẫn Azure](docs/azure-deploy.md)
+Windows Tauri kết nối cùng backend. Xem [hướng dẫn Azure](docs/software/deployment/azure-deploy.md)
 để chọn VM, cấu hình HTTPS, lưu dữ liệu, sao lưu và kiểm tra sau triển khai.
 
 ## Deploy web bằng Docker
