@@ -16,6 +16,7 @@ from app.core.security import decode_access_token, hash_password, verify_passwor
 from app.database import Base
 from app.models.user import User
 from app.routers.auth import (
+    change_password,
     delete_avatar,
     forgot_password,
     login,
@@ -24,7 +25,13 @@ from app.routers.auth import (
     update_profile,
     upload_avatar,
 )
-from app.schemas.user import ForgotPasswordRequest, ResetPasswordRequest, UserProfileUpdate, UserRegister
+from app.schemas.user import (
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    UserProfileUpdate,
+    UserRegister,
+)
 
 
 class AuthApiTest(unittest.TestCase):
@@ -109,6 +116,46 @@ class AuthApiTest(unittest.TestCase):
             )
         self.assertEqual(context.exception.status_code, 400)
         self.assertEqual(context.exception.detail, "Email đã được sử dụng.")
+
+    def test_authenticated_user_can_change_password(self):
+        result = change_password(
+            payload=ChangePasswordRequest(
+                current_password="secret123",
+                new_password="new-secret",
+            ),
+            db=self.db,
+            current_user=self.user,
+        )
+
+        self.assertEqual(result.message, "Đổi mật khẩu thành công.")
+        self.assertTrue(verify_password("new-secret", self.user.password_hash))
+        self.assertFalse(verify_password("secret123", self.user.password_hash))
+
+    def test_change_password_rejects_wrong_current_password(self):
+        original_hash = self.user.password_hash
+        with self.assertRaises(HTTPException) as context:
+            change_password(
+                payload=ChangePasswordRequest(
+                    current_password="wrong-password",
+                    new_password="new-secret",
+                ),
+                db=self.db,
+                current_user=self.user,
+            )
+
+        self.assertEqual(context.exception.status_code, 400)
+        self.assertEqual(context.exception.detail, "Mật khẩu hiện tại không đúng.")
+        self.assertEqual(self.user.password_hash, original_hash)
+
+    def test_change_password_request_has_stable_vietnamese_validation(self):
+        cases = (
+            ({"current_password": "", "new_password": "new-secret"}, "Mật khẩu hiện tại không được để trống."),
+            ({"current_password": "secret123", "new_password": "short"}, "Mật khẩu mới phải có ít nhất 6 ký tự."),
+        )
+        for payload, expected_message in cases:
+            with self.subTest(payload=payload), self.assertRaises(ValidationError) as context:
+                ChangePasswordRequest(**payload)
+            self.assertIn(expected_message, str(context.exception))
 
     def test_avatar_upload_and_delete(self):
         with TemporaryDirectory() as directory, patch(

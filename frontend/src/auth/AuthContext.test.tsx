@@ -27,6 +27,7 @@ describe("AuthProvider", () => {
     vi.spyOn(api, "getMe").mockResolvedValue(user);
     vi.spyOn(api, "login").mockResolvedValue({ access_token: "new-token", token_type: "bearer" });
     vi.spyOn(api, "updateProfile").mockResolvedValue({ ...user, username: "updated" });
+    vi.spyOn(api, "changePassword").mockResolvedValue({ message: "Đổi mật khẩu thành công." });
     vi.spyOn(api, "uploadAvatar").mockResolvedValue({ ...user, avatar_url: "/avatar.png" });
     vi.spyOn(api, "deleteAvatar").mockResolvedValue({ ...user, avatar_url: null });
   });
@@ -64,6 +65,13 @@ describe("AuthProvider", () => {
       await currentAuth.updateProfile({ display_name: "Owner", username: "updated", email: user.email });
     });
     expect(screen.getByText("updated")).toBeInTheDocument();
+    await act(async () => {
+      await currentAuth.changePassword({ current_password: "secret", new_password: "new-secret" });
+    });
+    expect(api.changePassword).toHaveBeenCalledWith({
+      current_password: "secret",
+      new_password: "new-secret",
+    });
     await act(async () => { await currentAuth.uploadAvatar(new File(["x"], "a.png")); });
     expect(currentAuth.user?.avatar_url).toBe("/avatar.png");
     await act(async () => { await currentAuth.deleteAvatar(); });

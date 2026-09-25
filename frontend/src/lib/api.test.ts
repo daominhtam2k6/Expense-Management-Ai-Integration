@@ -213,6 +213,7 @@ describe("api request and normalization", () => {
     vi.mocked(fetch).mockResolvedValue(response({ message: "ok" }) as unknown as Response);
     await api.getMe();
     await api.updateProfile({ display_name: "A", username: "a", email: "a@example.com" });
+    await api.changePassword({ current_password: "old-secret", new_password: "new-secret" });
     await api.deleteAvatar();
     await api.forgotPassword("a@example.com");
     await api.resetPassword("token", "secret");
@@ -225,6 +226,6 @@ describe("api request and normalization", () => {
     await api.deleteTransaction("t");
     await api.deleteBudget("b");
     await api.deleteGoal("g");
-    expect(fetch).toHaveBeenCalledTimes(14);
+    expect(fetch).toHaveBeenCalledTimes(15);
   });
 });

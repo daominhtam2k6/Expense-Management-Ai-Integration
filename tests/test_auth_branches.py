@@ -16,6 +16,7 @@ from app.database import Base
 from app.models.user import User
 from app.routers import auth
 from app.schemas.user import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
     UserProfileUpdate,
@@ -119,6 +120,21 @@ class AuthBranchTests(unittest.TestCase):
                 self.db,
                 self.user,
             )
+
+    def test_change_password_commit_failure_rolls_back(self):
+        with patch.object(self.db, "commit", side_effect=RuntimeError("database unavailable")), patch.object(
+            self.db, "rollback"
+        ) as rollback:
+            error = self.assert_error(
+                500,
+                auth.change_password,
+                ChangePasswordRequest(current_password="secret1", new_password="new-secret"),
+                self.db,
+                self.user,
+            )
+
+        self.assertEqual(error.detail, "Không thể đổi mật khẩu. Vui lòng thử lại.")
+        rollback.assert_called_once_with()
 
     def test_avatar_validation_and_commit_cleanup(self):
         bad_type = SimpleNamespace(content_type="text/plain", file=BytesIO(b"text"))

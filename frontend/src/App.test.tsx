@@ -126,6 +126,7 @@ describe("application route smoke tests", () => {
     });
     vi.spyOn(api, "listAssistantConversations").mockResolvedValue(conversations);
     vi.spyOn(api, "updateProfile").mockResolvedValue({ ...user, display_name: "Owner Updated" });
+    vi.spyOn(api, "changePassword").mockResolvedValue({ message: "Đổi mật khẩu thành công." });
     vi.spyOn(api, "uploadAvatar").mockResolvedValue({ ...user, avatar_url: "/avatar.png" });
     vi.spyOn(api, "deleteAvatar").mockResolvedValue(user);
   });
@@ -182,6 +183,29 @@ describe("application route smoke tests", () => {
 
     fireEvent.change(input, { target: { files: [new File(["x"], "ok.png", { type: "image/png" })] } });
     await waitFor(() => expect(api.uploadAvatar).toHaveBeenCalledOnce());
+  });
+
+  it("validates and changes the password from the profile panel", async () => {
+    renderApp("/dashboard");
+    await screen.findByRole("heading", { level: 1, name: "Tổng quan" });
+    await userEvent.click(screen.getAllByTitle("Chỉnh sửa thông tin cá nhân")[0]);
+
+    await userEvent.type(screen.getByLabelText("Mật khẩu hiện tại"), "secret");
+    await userEvent.type(screen.getByLabelText(/^Mật khẩu mới/), "new-secret");
+    await userEvent.type(screen.getByLabelText("Xác nhận mật khẩu mới"), "different");
+    await userEvent.click(screen.getByRole("button", { name: "Đổi mật khẩu" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("chưa khớp");
+    expect(api.changePassword).not.toHaveBeenCalled();
+
+    await userEvent.clear(screen.getByLabelText("Xác nhận mật khẩu mới"));
+    await userEvent.type(screen.getByLabelText("Xác nhận mật khẩu mới"), "new-secret");
+    await userEvent.click(screen.getByRole("button", { name: "Đổi mật khẩu" }));
+    expect(await screen.findByText("Đổi mật khẩu thành công.")).toBeInTheDocument();
+    expect(api.changePassword).toHaveBeenCalledWith({
+      current_password: "secret",
+      new_password: "new-secret",
+    });
+    expect(screen.getByLabelText("Mật khẩu hiện tại")).toHaveValue("");
   });
 
   it("shows and retries dashboard load errors", async () => {
