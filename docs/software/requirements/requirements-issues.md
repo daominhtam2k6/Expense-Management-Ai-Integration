@@ -17,7 +17,7 @@ Người quyết định: Đào Minh Tâm. Ngày: 06/09/2026.
 
 Ngày ghi nhận: 20/09/2026. Nguồn: người dùng chốt trực tiếp trong cuộc trao đổi về góp ý của giảng viên. Quyết định này bổ sung cho các quyết định ngày 06/09/2026 ở trên.
 
-**Trạng thái:** Đã chốt phương án; mới ghi nhận quyết định, chưa cập nhật đồng bộ SRS, sơ đồ hoặc implementation.
+**Trạng thái:** Đã chốt phương án; requirements và sơ đồ UML liên quan đã được đồng bộ. Quyết định không yêu cầu thay đổi implementation hoặc database.
 
 > “vậy chốt gộp 2 tác nhân, giữ lớp USER lưu thông tin người dùng đã đăng ký, tồn tại ngay cả khi đã đăng xuất, đặt thao tác xác thực về đúng vị trí. Hãy ghi nhận phương án này.”
 
@@ -27,7 +27,20 @@ Ngày ghi nhận: 20/09/2026. Nguồn: người dùng chốt trực tiếp trong
 - Đặt thao tác xác thực về đúng thành phần chịu trách nhiệm. Các hàm đăng ký, đăng nhập, yêu cầu khôi phục và đặt lại mật khẩu hiện nằm trong `app/routers/auth.py`; không mô tả chúng là phương thức đã triển khai của entity `User`. Khi cập nhật sơ đồ, phản ánh đúng thành phần thực tế và phân biệt rõ thiết kế đề xuất với hiện trạng.
 - Quyết định này không yêu cầu tạo service/lớp mới, đổi tên lớp/bảng, thay đổi schema hoặc migration. Việc tái cấu trúc tầng xử lý, nếu có, là công việc riêng; không phát sinh tự động từ việc gộp tác nhân.
 
-**Truy vết:** `FR-AUTH-001`, `FR-AUTH-002`, `NFR-SEC-001`, `US-001`; `app/models/user.py`, `app/routers/auth.py`. Các tài liệu/sơ đồ hiện hữu chưa phản ánh quyết định này cần được đồng bộ trong đợt chỉnh sửa tiếp theo; việc ghi nhận không xác nhận chúng đã được sửa hoặc kiểm chứng lại.
+**Truy vết:** `FR-AUTH-001`, `FR-AUTH-002`, `NFR-SEC-001`, `US-001`; `app/models/user.py`, `app/routers/auth.py`; `docs/diagrams/uml/use-case-overview`; `docs/diagrams/uml/class-as-built`. Việc đồng bộ tài liệu không xác nhận các yêu cầu chưa triển khai đã được hoàn thành.
+
+## RQ-010 — Phân biệt khôi phục và đổi mật khẩu
+
+Ngày ghi nhận: 24/09/2026. Nguồn: người dùng chốt trực tiếp khi đối chiếu danh sách chỉnh sửa.
+
+**Trạng thái:** Đã chốt mô hình yêu cầu và đồng bộ SRS/sơ đồ; việc triển khai đổi mật khẩu cần được kiểm chứng riêng với mã nguồn.
+
+- Giữ **UC004 – Khôi phục mật khẩu** cho người sử dụng chưa đăng nhập hoặc không thể đăng nhập vì quên mật khẩu. Bước nhập và lưu mật khẩu mới thuộc luồng UC004, không tách thành một use case tổng quan “Đặt lại mật khẩu”.
+- **Đổi mật khẩu** khi đã đăng nhập là chức năng con của **UC005 – Quản lý hồ sơ**, cùng nhóm với xem hồ sơ, cập nhật thông tin và thay đổi ảnh đại diện.
+- UC004 có thể `«extend»` UC002 tại điều kiện “quên mật khẩu”. Đổi mật khẩu không `«extend»` UC002 và không dùng tác nhân Resend nếu người sử dụng đổi trực tiếp bằng mật khẩu hiện tại.
+- Quyết định mô hình hóa này không tự xác nhận endpoint đổi mật khẩu đã được triển khai.
+
+**Truy vết:** `UC002`, `UC004`, `UC005`, `FR01`; `docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.puml`; SRS yêu cầu phần Quản lý tài khoản.
 
 ## Chi tiết còn phải chốt ở Database/Release Gate
 

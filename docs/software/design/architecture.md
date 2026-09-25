@@ -2,7 +2,12 @@
 
 > Thiết kế mục tiêu theo baseline requirements v1.1 đã được phê duyệt tại Requirements Gate ngày 06/09/2026. Tài liệu này không xác nhận implementation hiện tại đã đáp ứng thiết kế và không thay đổi trạng thái Human Gate.
 
-Artifact thiết kế lớp chi tiết: [Class Diagram — thuộc tính và phương thức](../../diagrams/class-diagram-with-methods.png). Sơ đồ trình bày 9 lớp entity cùng các phương thức nghiệp vụ as-built đặt tại Router/Core; đây là cập nhật cách trình bày, không thay đổi quyết định kiến trúc đã phê duyệt.
+Artifact UML liên quan:
+
+- [Use Case tổng quan](../../diagrams/uml/use-case-overview/use-case-overview.png): giữ nguyên 11 use case ban đầu và chỉ tách “Đăng nhập và đăng xuất” thành hai use case, tạo thành đúng 12 use case; dùng một tác nhân **Người sử dụng** theo RQ-009.
+- [Class Diagram — As-built](../../diagrams/uml/class-as-built/class-as-built.png): 9 entity ORM và các module router đang thực thi thao tác. `User` chỉ biểu diễn dữ liệu tài khoản đã đăng ký; các hàm xác thực thuộc `AuthRouter`, không phải phương thức của entity.
+
+Các sơ đồ này đồng bộ cách mô tả với mã hiện tại và RQ-009; chúng không thay đổi kiến trúc, schema hoặc trạng thái Human Gate.
 
 ## 1. Phạm vi và nguyên tắc
 

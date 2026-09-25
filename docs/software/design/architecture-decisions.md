@@ -111,3 +111,11 @@
 - **Trade-off:** Có thể chặn deployment.
 
 Các mục `ARCH-HG-001`–`ARCH-HG-010` trong `docs/software/design/architecture.md` vẫn mở. Không ADR nào được chuyển khỏi `PROPOSED` nếu chưa có quyết định của người có thẩm quyền.
+
+## ADR-016 — Mức trừu tượng của Class và Sequence Diagram trong ORD
+
+- **Status:** ACCEPTED cho tài liệu ORD ngày 25/09/2026 theo quyết định trực tiếp của người dùng; không phải phê duyệt tái cấu trúc mã.
+- **Context:** ORD cần thể hiện thiết kế hướng đối tượng có lớp, thuộc tính và phương thức, trong khi implementation hiện tại phân tán hành vi ở Router/Core. Sequence Diagram liệt kê mọi module/hàm làm hình quá rối.
+- **Decision:** Class Diagram ORD là mô hình thiết kế mục tiêu gồm entity có trạng thái/hành vi và các lớp `«control»` cho hành vi liên đối tượng; phải ghi rõ không đồng nhất với Model/Schema/Router hiện tại. Sequence Diagram thao tác dùng đúng bốn lifeline: Người sử dụng, giao diện cụ thể, Backend (Router + Core) và CSDL. Không dùng thành phần `Helper`; tích hợp ngoài được mô tả trong thông điệp Backend khi cần.
+- **Rationale:** Giữ đúng mục tiêu thiết kế hướng đối tượng, đồng thời duy trì khả năng đọc và giải thích trong tài liệu học thuật.
+- **Trade-off:** Sequence Diagram không truy vết đến từng hàm/module; Class Diagram có thể chứa lớp/phương thức thiết kế chưa tồn tại nguyên dạng trong implementation nên luôn phải mang nhãn thiết kế mục tiêu.
