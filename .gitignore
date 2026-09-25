@@ -60,6 +60,7 @@ Desktop.ini
 # Local AI/tooling state
 .codex/
 .impeccable/
+.tools/
 
 # Local planning notes
 PRODUCT.md
