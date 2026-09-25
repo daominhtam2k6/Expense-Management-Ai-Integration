@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional
 
 class UserRegister(BaseModel):
@@ -25,6 +25,25 @@ class UserProfileUpdate(BaseModel):
     display_name: Optional[str] = Field(default=None, max_length=80)
     username: str = Field(min_length=3, max_length=50)
     email: EmailStr
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+    @field_validator("current_password")
+    @classmethod
+    def validate_current_password(cls, value: str) -> str:
+        if not value:
+            raise ValueError("Mật khẩu hiện tại không được để trống.")
+        return value
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, value: str) -> str:
+        if len(value) < 6:
+            raise ValueError("Mật khẩu mới phải có ít nhất 6 ký tự.")
+        return value
 
 class Token(BaseModel):
     access_token: str

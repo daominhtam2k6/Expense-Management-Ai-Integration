@@ -15,6 +15,7 @@ from app.schemas.user import (
     UserRegister,
     UserOut,
     UserProfileUpdate,
+    ChangePasswordRequest,
     Token,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -151,6 +152,28 @@ def update_profile(
         raise HTTPException(status_code=400, detail="Tên đăng nhập hoặc email đã được sử dụng.") from exc
     db.refresh(current_user)
     return current_user
+
+
+@router.put("/me/password", response_model=MessageResponse)
+def change_password(
+    payload: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Mật khẩu hiện tại không đúng.")
+
+    current_user.password_hash = hash_password(payload.new_password)
+    try:
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Không thể đổi mật khẩu. Vui lòng thử lại.",
+        ) from exc
+
+    return MessageResponse(message="Đổi mật khẩu thành công.")
 
 
 @router.post("/me/avatar", response_model=UserOut)
