@@ -1,6 +1,6 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { api, AUTH_UNAUTHORIZED_EVENT, TOKEN_KEY } from "../lib/api";
-import type { User, UserProfilePayload } from "../types";
+import type { ChangePasswordPayload, MessageResponse, User, UserProfilePayload } from "../types";
 
 interface AuthContextValue {
   user: User | null;
@@ -8,6 +8,7 @@ interface AuthContextValue {
   login: (identifier: string, password: string) => Promise<User>;
   logout: () => void;
   updateProfile: (payload: UserProfilePayload) => Promise<User>;
+  changePassword: (payload: ChangePasswordPayload) => Promise<MessageResponse>;
   uploadAvatar: (file: File) => Promise<User>;
   deleteAvatar: () => Promise<User>;
 }
@@ -85,6 +86,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return updated;
   }, []);
 
+  const changePassword = useCallback((payload: ChangePasswordPayload) => api.changePassword(payload), []);
+
   const deleteAvatar = useCallback(async () => {
     const updated = await api.deleteAvatar();
     setUser(updated);
@@ -92,8 +95,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, logout, updateProfile, uploadAvatar, deleteAvatar }),
-    [deleteAvatar, loading, login, logout, updateProfile, uploadAvatar, user],
+    () => ({ user, loading, login, logout, updateProfile, changePassword, uploadAvatar, deleteAvatar }),
+    [changePassword, deleteAvatar, loading, login, logout, updateProfile, uploadAvatar, user],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

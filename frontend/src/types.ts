@@ -39,6 +39,11 @@ export interface UserProfilePayload {
   email: string;
 }
 
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+}
+
 export interface AuthToken {
   access_token: string;
   token_type: string;

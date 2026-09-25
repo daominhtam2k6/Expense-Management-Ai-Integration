@@ -7,6 +7,7 @@ import type {
   AssistantReply,
   Budget,
   BudgetPayload,
+  ChangePasswordPayload,
   Category,
   CategoryPayload,
   DashboardData,
@@ -237,6 +238,8 @@ export const api = {
   getMe: (signal?: AbortSignal) => request<User>("/auth/me", { signal }),
   updateProfile: (payload: UserProfilePayload) =>
     request<User>("/auth/me", { method: "PUT", body: JSON.stringify(payload) }),
+  changePassword: (payload: ChangePasswordPayload) =>
+    request<MessageResponse>("/auth/me/password", { method: "PUT", body: JSON.stringify(payload) }),
   uploadAvatar: (file: File) => {
     const body = new FormData();
     body.append("file", file);

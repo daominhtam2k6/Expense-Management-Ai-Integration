@@ -1,4 +1,4 @@
-import { Camera, ImagePlus, Trash2, UserRound } from "lucide-react";
+import { Camera, ImagePlus, KeyRound, Trash2, UserRound } from "lucide-react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
@@ -13,7 +13,7 @@ const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 const AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
-  const { user, updateProfile, uploadAvatar, deleteAvatar } = useAuth();
+  const { user, updateProfile, changePassword, uploadAvatar, deleteAvatar } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -21,6 +21,12 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
   const [avatarBusy, setAvatarBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -30,6 +36,11 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
     setEmail(user.email);
     setError("");
     setSuccess("");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordError("");
+    setPasswordSuccess("");
   }, [open, user?.id]);
 
   const dirty = useMemo(() => Boolean(user) && (
@@ -55,6 +66,37 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
       setError(cause instanceof Error ? cause.message : "Chưa thể lưu thông tin cá nhân.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const savePassword = async (event: FormEvent) => {
+    event.preventDefault();
+    if (passwordSaving) return;
+    setPasswordError("");
+    setPasswordSuccess("");
+    if (newPassword.length < 6) {
+      setPasswordError("Mật khẩu mới phải có ít nhất 6 ký tự.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Mật khẩu xác nhận chưa khớp.");
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      const result = await changePassword({
+        current_password: currentPassword,
+        new_password: newPassword,
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setPasswordSuccess(result.message);
+    } catch (cause) {
+      setPasswordError(cause instanceof Error ? cause.message : "Chưa thể đổi mật khẩu.");
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -201,6 +243,59 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
 
           {error && <div className="profile-form-message profile-form-message--error" role="alert">{error}</div>}
           {success && <div className="profile-form-message profile-form-message--success" role="status">{success}</div>}
+        </form>
+      )}
+      {user && (
+        <form className="form-stack profile-form profile-password-form" onSubmit={savePassword}>
+          <div className="profile-section-heading">
+            <KeyRound size={18} />
+            <div><strong>Đổi mật khẩu</strong><small>Xác nhận mật khẩu hiện tại trước khi đặt mật khẩu mới.</small></div>
+          </div>
+
+          <label className="field">
+            <span>Mật khẩu hiện tại</span>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(event) => { setCurrentPassword(event.target.value); setPasswordSuccess(""); }}
+              autoComplete="current-password"
+              required
+              disabled={passwordSaving}
+            />
+          </label>
+
+          <label className="field">
+            <span>Mật khẩu mới</span>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(event) => { setNewPassword(event.target.value); setPasswordSuccess(""); }}
+              minLength={6}
+              autoComplete="new-password"
+              required
+              disabled={passwordSaving}
+            />
+            <small>Sử dụng ít nhất 6 ký tự.</small>
+          </label>
+
+          <label className="field">
+            <span>Xác nhận mật khẩu mới</span>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => { setConfirmPassword(event.target.value); setPasswordSuccess(""); }}
+              minLength={6}
+              autoComplete="new-password"
+              required
+              disabled={passwordSaving}
+            />
+          </label>
+
+          {passwordError && <div className="profile-form-message profile-form-message--error" role="alert">{passwordError}</div>}
+          {passwordSuccess && <div className="profile-form-message profile-form-message--success" role="status">{passwordSuccess}</div>}
+          <button className="button button--secondary" type="submit" disabled={passwordSaving}>
+            {passwordSaving ? "Đang đổi…" : "Đổi mật khẩu"}
+          </button>
         </form>
       )}
     </SidePanel>
