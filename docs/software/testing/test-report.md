@@ -1,5 +1,21 @@
 # Test report
 
+## Quy tắc danh mục và ngân sách — 26/09/2026
+
+Phạm vi: BR-001/AC-018, BR-002/AC-019, phần category/budget của BR-003/AC-020 và kiểm tra xóa category đang được budget sử dụng.
+
+| Lệnh / kiểm tra | Kết quả |
+|---|---|
+| Audit read-only `expense.db` | PASS — 10 category: 0 blank, 0 normalized collision; 4 budget: 0 năm ngoài miền. Không chạy migration trực tiếp. |
+| `.\venv\Scripts\python.exe -m pytest -q tests/test_baseline_requirements.py tests/test_crud_routes.py tests/test_category_budget_migration.py` | **PASS — 13 passed, 3 warnings, 6.24s** |
+| Migration SQLite tạm `20260925_0002` → `20260926_0003` → `20260925_0002` | PASS — backfill đúng, category normalized UNIQUE và budget year CHECK chặn ghi sai, downgrade bỏ schema mới. |
+| Fixture có category collision và budget year 1999 | PASS — upgrade dừng trước DDL, báo ID xung đột và giữ nguyên row. |
+| `.\venv\Scripts\python.exe -m pytest -q` | **PASS — 89 passed, 24 subtests passed, 7 warnings, 20.48s** |
+| Frontend test/build | NOT RUN — không có file frontend hoặc hợp đồng API response thay đổi. |
+| PostgreSQL migration/rehearsal | NOT RUN — Compose chưa được cung cấp `POSTGRES_PASSWORD`; không tự tạo secret hoặc chạm volume. |
+
+Giới hạn: bằng chứng migration hiện tại là SQLite cô lập, không thay thế kiểm chứng lock, constraint và ghi cạnh tranh trên PostgreSQL production-like.
+
 ## Chuẩn hóa username/email — 26/09/2026
 
 Phạm vi: RQ-001, AC-010 và phần identity của BR-003/AC-020. Thuật toán đích là Unicode NFKC → trim → casefold; không sửa dữ liệu hiển thị khi backfill và không tự xử lý collision.

@@ -1,5 +1,17 @@
 # Test plan
 
+## Quy tắc danh mục và ngân sách — 26/09/2026
+
+| Yêu cầu | Tầng kiểm thử | File / bằng chứng | Trạng thái |
+|---|---|---|---|
+| BR-001, AC-018 | Schema/router/model: NFKC, trim, casefold; create/update collision; khác owner/loại; lỗi race qua UNIQUE | `tests/test_baseline_requirements.py`, `tests/test_crud_routes.py` | PASS trên SQLite cô lập |
+| BR-002, AC-019 | Schema chặn năm ngoài 2000–2100; database CHECK chặn ghi trực tiếp | `tests/test_baseline_requirements.py`, `tests/test_category_budget_migration.py` | PASS trên SQLite tạm |
+| BR-003, AC-020 | Backfill `name_normalized`; migration dừng trước DDL khi category collision hoặc budget year sai; upgrade/downgrade | `tests/test_category_budget_migration.py` | PASS trên SQLite tạm |
+| FR-CAT-001 | Không xóa category đang được transaction hoặc budget sử dụng | `tests/test_crud_routes.py` | PASS |
+| NFR-DATA-001 | Migration/constraint và ghi cạnh tranh trên PostgreSQL đại diện | Compose/PostgreSQL thử nghiệm | NOT RUN — chưa có môi trường cung cấp `POSTGRES_PASSWORD` |
+
+Frontend không đổi trong phạm vi Giai đoạn 3 nên component test/build được đánh dấu NOT RUN cho đợt này.
+
 ## Chuẩn hóa định danh — 26/09/2026
 
 | Yêu cầu | Tầng kiểm thử | File / bằng chứng | Trạng thái |

@@ -111,6 +111,22 @@ class CrudRoutesTest(unittest.TestCase):
 
         self.assert_http_error(404, delete_category, "missing", self.db, self.user)
         self.assert_http_error(400, delete_category, self.food.id, self.db, self.user)
+        budget_only = create_category(
+            CategoryCreate(name="Dự phòng", type="expense"),
+            self.db,
+            self.user,
+        )
+        self.db.add(Budget(
+            id="budget-only",
+            user_id=self.user.id,
+            category_id=budget_only.id,
+            month=8,
+            year=2026,
+            limit_amount=Decimal("100"),
+        ))
+        self.db.commit()
+        error = self.assert_http_error(400, delete_category, budget_only.id, self.db, self.user)
+        self.assertIn("ngân sách", error.detail)
         self.assertEqual(delete_category(created.id, self.db, self.user), {"message": "Đã xóa danh mục"})
 
     def test_transaction_filters_and_all_mutation_branches(self):
