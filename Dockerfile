@@ -27,6 +27,7 @@ COPY docker-entrypoint.sh ./
 COPY --from=frontend-builder /build/frontend/dist ./frontend/dist
 
 RUN mkdir -p /app/uploads \
+    && sed -i 's/\r$//' /app/docker-entrypoint.sh \
     && chmod +x /app/docker-entrypoint.sh \
     && adduser --disabled-password --gecos "" appuser \
     && chown -R appuser:appuser /app
