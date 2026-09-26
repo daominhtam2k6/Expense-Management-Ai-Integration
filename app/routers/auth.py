@@ -6,7 +6,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -22,6 +21,7 @@ from app.schemas.user import (
     MessageResponse,
 )
 from app.core.security import hash_password, verify_password, create_access_token
+from app.core.normalization import canonicalize_identity, normalize_identity
 from app.core.deps import get_current_user
 from app.core.email import send_reset_password_email
 
@@ -63,16 +63,18 @@ def _remove_local_avatar(avatar_url: str | None) -> None:
 
 @router.post("/register", response_model=UserOut)
 def register(payload: UserRegister, db: Session = Depends(get_db)):
-    username = payload.username.strip()
-    email = str(payload.email).strip().lower()
+    username = canonicalize_identity(payload.username)
+    username_normalized = normalize_identity(username)
+    email = normalize_identity(str(payload.email))
+    email_normalized = email
     if len(username) < 3:
         raise HTTPException(status_code=400, detail="Tên đăng nhập phải có ít nhất 3 ký tự.")
 
-    existing_username = db.query(User).filter(User.username == username).first()
+    existing_username = db.query(User).filter(User.username_normalized == username_normalized).first()
     if existing_username:
         raise HTTPException(status_code=400, detail="Tên đăng nhập đã tồn tại.")
 
-    existing_email = db.query(User).filter(func.lower(User.email) == email).first()
+    existing_email = db.query(User).filter(User.email_normalized == email_normalized).first()
     if existing_email:
         raise HTTPException(status_code=400, detail="Email đã được sử dụng.")
 
@@ -92,10 +94,10 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    identifier = form_data.username.strip()
-    user = db.query(User).filter(User.username == identifier).first()
-    if not user:
-        user = db.query(User).filter(func.lower(User.email) == identifier.lower()).first()
+    identifier = normalize_identity(form_data.username)
+    user = db.query(User).filter(
+        (User.username_normalized == identifier) | (User.email_normalized == identifier)
+    ).first()
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -115,8 +117,10 @@ def update_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    username = payload.username.strip()
-    email = str(payload.email).strip().lower()
+    username = canonicalize_identity(payload.username)
+    username_normalized = normalize_identity(username)
+    email = normalize_identity(str(payload.email))
+    email_normalized = email
     display_name = (payload.display_name or "").strip() or None
 
     if len(username) < 3:
@@ -124,7 +128,7 @@ def update_profile(
 
     username_owner = (
         db.query(User)
-        .filter(User.username == username, User.id != current_user.id)
+        .filter(User.username_normalized == username_normalized, User.id != current_user.id)
         .first()
     )
     if username_owner:
@@ -132,13 +136,13 @@ def update_profile(
 
     email_owner = (
         db.query(User)
-        .filter(func.lower(User.email) == email, User.id != current_user.id)
+        .filter(User.email_normalized == email_normalized, User.id != current_user.id)
         .first()
     )
     if email_owner:
         raise HTTPException(status_code=400, detail="Email đã được sử dụng.")
 
-    email_changed = current_user.email.lower() != email
+    email_changed = current_user.email_normalized != email_normalized
     current_user.display_name = display_name
     current_user.username = username
     current_user.email = email
@@ -227,7 +231,7 @@ def delete_avatar(
 
 @router.post("/forgot-password", response_model=MessageResponse)
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    email = str(payload.email).strip().lower()
+    email = normalize_identity(str(payload.email))
     generic_response = MessageResponse(
         message="Nếu email tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi."
     )
@@ -236,7 +240,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
         # Vẫn trả về thông báo chung, chỉ không gửi email nữa
         return generic_response
 
-    user = db.query(User).filter(func.lower(User.email) == email).first()
+    user = db.query(User).filter(User.email_normalized == email).first()
     if not user:
         # Không tiết lộ email có tồn tại hay không (chống user enumeration)
         return generic_response
