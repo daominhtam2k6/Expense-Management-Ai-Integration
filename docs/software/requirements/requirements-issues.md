@@ -42,6 +42,20 @@ Ngày ghi nhận: 24/09/2026. Nguồn: người dùng chốt trực tiếp khi �
 
 **Truy vết:** `UC002`, `UC004`, `UC005`, `FR01`; `docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.puml`; SRS yêu cầu phần Quản lý tài khoản.
 
+## RQ-011 — Xóa tài khoản là chức năng con của UC005
+
+Ngày ghi nhận: 26/09/2026. Nguồn: người dùng chốt trực tiếp khi xác định phạm vi chức năng xóa tài khoản.
+
+**Trạng thái:** Đã chốt yêu cầu và mô hình hóa; chưa xác nhận implementation đã tồn tại.
+
+- **Xóa tài khoản và dữ liệu cá nhân** là chức năng con `UC005e` của **UC005 – Quản lý hồ sơ**, không tạo thêm use case tổng quan và không thay đổi tổng số 12 use case ở sơ đồ tổng quan.
+- Người sử dụng phải đang đăng nhập, nhập đúng mật khẩu hiện tại và xác nhận chính xác chuỗi `XÓA TÀI KHOẢN` ngay trong yêu cầu xóa. Không tạo endpoint re-auth riêng hoặc proof trung gian cho baseline này.
+- Backend chỉ nhận danh tính từ phiên xác thực, không nhận `user_id` có thẩm quyền từ client. Toàn bộ dữ liệu active thuộc tài khoản bị hard delete trong một transaction; lỗi quan hệ phải rollback toàn bộ và không ảnh hưởng tài khoản khác.
+- Avatar được dọn idempotent sau khi transaction database commit. Client chỉ xóa token/cache/bản nháp và chuyển về màn hình công khai sau khi server trả thành công.
+- Backup có thể còn dữ liệu đã xóa trong thời gian retention nhưng phải hết hạn trong tối đa 30 ngày; tài liệu hóa yêu cầu này không phải bằng chứng automation retention đã vận hành.
+
+**Truy vết:** `UC005`, `UC005e`, `RQ-005`, `BR-004`, `AC-012`, `AC-021`; `DELETE /api/auth/me`; `docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.puml`; `docs/diagrams/uml/class-method-sequences/delete-account.puml`.
+
 ## Chi tiết còn phải chốt ở Database/Release Gate
 
 - Baseline đề xuất cho “tải bình thường”: một người dùng thao tác tương tác, không chạy bulk import và máy chủ chưa báo quá tải; cần định lượng concurrency/dataset nếu sau này dùng làm release SLA.

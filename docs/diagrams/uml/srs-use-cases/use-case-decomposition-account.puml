@@ -27,11 +27,13 @@ rectangle "HỆ THỐNG SỔ CHI TIÊU — TÀI KHOẢN" {
   usecase "Cập nhật thông tin" as UC005b
   usecase "Thay đổi ảnh đại diện" as UC005c
   usecase "Đổi mật khẩu" as UC005d
+  usecase "Xóa tài khoản và\ndữ liệu cá nhân" as UC005e
   UC004 ..> UC002 : <<extend>>\n[quên mật khẩu]
   UC005a -|> UC005
   UC005b -|> UC005
   UC005c -|> UC005
   UC005d -|> UC005
+  UC005e -|> UC005
 }
 
 User -- UC001

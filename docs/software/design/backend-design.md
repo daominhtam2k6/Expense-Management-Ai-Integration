@@ -4,14 +4,14 @@
 
 ## 1. Trạng thái và giới hạn quyết định
 
-Thiết kế dưới đây tuân theo `docs/software/requirements/requirements.md`, `docs/software/requirements/acceptance-criteria.md`, `docs/software/design/architecture.md` và `docs/software/design/database-design.md`. Các điểm `ARCH-HG-005`, `ARCH-HG-006`, `ARCH-HG-009`, `ARCH-HG-010` còn mở nên chỉ xác định boundary và hành vi an toàn tối thiểu, không tự đặt giá trị nghiệp vụ:
+Thiết kế dưới đây tuân theo `docs/software/requirements/requirements.md`, `docs/software/requirements/acceptance-criteria.md`, `docs/software/design/architecture.md` và `docs/software/design/database-design.md`. Các điểm `ARCH-HG-005`, `ARCH-HG-006`, `ARCH-HG-009` còn mở nên chỉ xác định boundary và hành vi an toàn tối thiểu, không tự đặt giá trị nghiệp vụ. `ARCH-HG-010` đã được RQ-011 chốt theo phương án mật khẩu hiện tại và chuỗi xác nhận trong cùng lệnh xóa:
 
 | Điểm mở | Phần có thể thiết kế | Phần bị chặn đến Human Gate |
 |---|---|---|
 | Reset password | token ngẫu nhiên, chỉ lưu hash, có expiry, response chống enumeration, email adapter | lifetime cụ thể, single-use/invalidation policy đầy đủ |
 | Avatar/upload | authenticated command, server-generated key, content validation, storage adapter, cleanup retry | MIME/size/quota/transform/malware/public-URL policy cụ thể |
 | AI evidence/confidence | aggregate-only DTO, allow-list, period/evidence/confidence bắt buộc về mặt cấu trúc | thang đo, threshold và semantics confidence/evidence |
-| Re-auth account deletion | credential proof + explicit confirmation ngay trước delete command | recent-auth window hoặc phương thức thay thế password cụ thể |
+| Re-auth account deletion | `current_password` + xác nhận chính xác `XÓA TÀI KHOẢN` trong cùng `DELETE /auth/me` | Đã chốt tại RQ-011; không dùng proof trung gian hoặc recent-auth window trong baseline này |
 
 Do đó, các endpoint trên có thể được mô tả ở mức contract nhưng chưa được coi là implementation-ready ở phần policy còn mở. Nếu việc triển khai đòi hỏi chọn các giá trị này, phải dừng và đưa lại Requirements/Security/Architecture Gate; không dùng giá trị as-built làm quyết định mặc định.
 
@@ -122,8 +122,7 @@ Forbidden: router -> commit; adapter -> repository; Gemini -> database;
 | `PUT /auth/me` | replace editable profile fields → public profile | `ProfileService.update` | T1 | K1 |
 | `POST /auth/forgot-password` | email → generic accepted message regardless of account existence | `IdentityService.request_reset` | T2 | dedupe/rate policy pending |
 | `POST /auth/reset-password` | reset token + new password → success message | `IdentityService.reset_password` | T1 | single consumption pending HG-005 |
-| `POST /auth/me/reauth` | current password/approved proof → short-lived deletion proof | `IdentityService.reauthenticate` | read/artifact | pending HG-010 |
-| `DELETE /auth/me` | deletion proof + explicit confirmation → `204` | `AccountDeletionService.delete` | T3 | K2 |
+| `DELETE /auth/me` | current password + confirmation `XÓA TÀI KHOẢN` → `204` | `AccountDeletionService.delete` | T3 | K2 |
 | `POST /auth/me/avatar` | multipart file → public profile | `ProfileService.replace_avatar` | T4 | K1 |
 | `DELETE /auth/me/avatar` | remove avatar reference → public profile or `204` | `ProfileService.remove_avatar` | T4 | naturally idempotent target |
 | `GET /categories/` | own categories | `CategoryService.list` | read | safe |
@@ -310,7 +309,7 @@ Required evidence includes unit tests for services/policies, repository integrat
 | As-built quan sát được | Target / tác động |
 |---|---|
 | Routers trực tiếp query model, thực thi rule và `db.commit()` | tách service/UoW/repository; một commit tại use-case boundary |
-| Chưa có endpoint re-auth/account deletion | thêm contract re-auth + hard-delete; chi tiết proof chờ HG-010 |
+| Chưa có endpoint account deletion | thêm `DELETE /auth/me` với mật khẩu hiện tại + chuỗi xác nhận theo RQ-011; hard-delete dữ liệu active trong transaction |
 | `users` chưa có normalized identity columns; username lookup còn case-sensitive | dùng approved normalized fields/indexes và migration fail-fast |
 | Category duplicate dùng `func.lower(name)` nhưng không trim/normalize persisted; model thiếu unique target | shared normalization + service check + approved DB uniqueness |
 | Budget schema create không giới hạn year 2000–2100; model thiếu checks/unique/composite ownership FK | validate trước DB và áp dụng database design qua migration ở phase implementation |
@@ -336,7 +335,7 @@ Required evidence includes unit tests for services/policies, repository integrat
 
 Phần category/transaction/budget/goal/analytics, common errors, user-scoped repositories và DB-only probes có thể lập implementation plan dựa trên Gate đã duyệt. Trước khi triển khai đầy đủ reset, account deletion proof, avatar policy, AI confidence/evidence và durable idempotency, cần:
 
-1. Human decision cho `ARCH-HG-005`, `006`, `009`, `010` (và `008` nếu đặt retention hội thoại).
+1. Human decision cho `ARCH-HG-005`, `006`, `009` (và `008` nếu đặt retention hội thoại). `ARCH-HG-010` đã được RQ-011 giải quyết.
 2. Database/migration review cho reset artifact/outbox/idempotency nếu target cần bảng/cột mới; không sửa migration đã phát hành.
 3. Security review cho upload delivery, reset/re-auth proof, error redaction và Gemini payload contract.
 4. PostgreSQL integration/concurrency tests cho cascade, composite ownership, duplicate races, T3 và T5.

@@ -288,7 +288,7 @@ Account card/icon mở `ProfilePanel` mà không rời tác vụ hiện tại. P
 4. Chỉ sau server success: clear token, user, caches/drafts, đóng stream/request và replace tới public confirmation/login.
 5. Mất mạng/timeout: không đăng xuất và không nói đã xóa; hiển thị “Chưa thể xác nhận”, sau kết nối phải kiểm tra session/account trước khi retry.
 
-Hiện endpoint re-auth/delete account chưa có trong shared API client; `ARCH-HG-010` còn mở. Vì vậy flow này là **blocked for implementation**, không phải quyền tự thêm endpoint/payload.
+Hiện endpoint delete account chưa có trong shared API client. RQ-011 đã chốt payload mục tiêu gồm mật khẩu hiện tại và chuỗi xác nhận `XÓA TÀI KHOẢN` trong cùng lệnh `DELETE /auth/me`; flow không còn bị chặn bởi `ARCH-HG-010`, nhưng vẫn là **chưa triển khai** cho tới khi có mã và test tương ứng.
 
 ## 7. Loading, empty, validation, error và retry
 
@@ -470,7 +470,7 @@ Các issue này không thay đổi contract đã duyệt và phải được gi�
 
 | ID | Vấn đề | Ảnh hưởng frontend |
 |---|---|---|
-| FE-API-001 / ARCH-HG-010 | re-auth recent window, proof format và endpoint delete account chưa duyệt | không thể implement DeleteAccountDialog command |
+| FE-API-001 / RQ-011 | endpoint delete account chưa triển khai; contract đã chốt mật khẩu hiện tại + xác nhận chính xác trong cùng request | có thể lập implementation cho DeleteAccountDialog; chưa đánh dấu hoàn thành trước khi API/test tồn tại |
 | FE-API-002 / ARCH-HG-006 | avatar MIME/size/quota/transform/URL/malware policy chưa duyệt | UI có thể mô tả target từ DESIGN.md nhưng validation authoritative chưa khóa |
 | FE-API-003 / ARCH-HG-007 | token client storage/revoke/đa thiết bị chưa duyệt | giữ access-token flow hiện tại; không tự thêm refresh/revoke |
 | FE-API-004 | stable machine error code/field mapping/correlation ID chưa đồng nhất | copy chi tiết conflict/retry không được parse từ message tự do |

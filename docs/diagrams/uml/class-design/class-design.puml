@@ -24,6 +24,7 @@ class AccountController <<control>> {
   + resetPassword(token, newPassword): void
   + updateAvatar(userId, file): User
   + deleteAvatar(userId): User
+  + deleteAccount(userId, currentPassword, confirmation): void
 }
 
 class FinancialController <<control>> {
@@ -194,4 +195,3 @@ SavingGoal "1" *-- "0..*" GoalItem : gồm
 SavingGoal "1" *-- "0..*" GoalTransaction : lịch sử
 AIConversation "1" *-- "0..*" AIMessage : gồm
 @enduml
-
