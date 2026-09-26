@@ -23,26 +23,108 @@ Windows/Tauri ─────┘          ├── persistent uploads
 
 Bản Windows hiện yêu cầu kết nối Internet cho toàn bộ chức năng. Dữ liệu không được lưu thành một database nghiệp vụ riêng trên từng máy, nhờ đó tài khoản và số liệu dùng chung nguồn dữ liệu với web. Offline chỉ được xem xét trong tương lai nếu phản hồi người dùng cho thấy nhu cầu đủ lớn.
 
-## Chạy local
+## Clone và chạy thử trên local
 
-Yêu cầu:
+### 1. Yêu cầu môi trường
 
-- Python 3.13
-- Node.js 24
+- Git.
+- Python 3.13.
+- Node.js 24, kèm npm.
 
-Tạo file môi trường từ [`.env.example`](.env.example), đặt một `SECRET_KEY` dài và ngẫu nhiên, sau đó:
+Kiểm tra các công cụ trong PowerShell:
+
+```powershell
+git --version
+python --version
+node --version
+npm.cmd --version
+```
+
+### 2. Clone repository
+
+```powershell
+git clone https://github.com/daominhtam2k6/Expense-Management-Ai-Integration.git
+Set-Location Expense-Management-Ai-Integration
+```
+
+Nếu đã clone từ trước, cập nhật nhánh chính bằng `git pull origin main` và bảo đảm
+không có thay đổi local cần giữ trước khi pull.
+
+### 3. Tạo cấu hình local
+
+Sao chép file môi trường mẫu:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Mở `.env` và thay `SECRET_KEY` bằng một giá trị riêng, dài và ngẫu nhiên. Có thể
+tạo giá trị bằng Python:
+
+```powershell
+python -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+Cấu hình mặc định trong `.env.example` sử dụng SQLite tại `expense.db`, bật
+`AUTO_CREATE_SCHEMA=true` và không yêu cầu PostgreSQL. Các chức năng Gemini và
+gửi email là tùy chọn; để trống `AI_API_KEY` và `RESEND_API_KEY` nếu chỉ kiểm thử
+các chức năng local cơ bản. Không commit file `.env`.
+
+### 4. Cài dependency và build frontend
+
+Từ thư mục gốc repository:
 
 ```powershell
 python -m venv venv
+.\venv\Scripts\python.exe -m pip install --upgrade pip
 .\venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 Set-Location frontend
 npm.cmd ci
 npm.cmd run build
 Set-Location ..
+```
+
+Lệnh build tạo `frontend/dist`; FastAPI sẽ phục vụ frontend này cùng API trên
+một cổng. Không cần chạy Vite riêng cho quy trình kiểm thử local cơ bản.
+
+### 5. Khởi động ứng dụng
+
+```powershell
 .\venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
 
-Ứng dụng chạy tại `http://127.0.0.1:8000`. Trong development, `AUTO_CREATE_SCHEMA=true` cho phép ứng dụng tiếp tục dùng SQLite và tự tạo schema như trước.
+Giữ cửa sổ PowerShell này đang chạy, sau đó truy cập:
+
+- Ứng dụng: `http://127.0.0.1:8000`
+- Kiểm tra API: `http://127.0.0.1:8000/api/health`
+- Kiểm tra database: `http://127.0.0.1:8000/api/ready`
+- Swagger UI: `http://127.0.0.1:8000/api/docs`
+
+Kết quả mong đợi của hai endpoint kiểm tra lần lượt là `{"status":"ok"}` và
+`{"status":"ready"}`. Ở lần chạy đầu, ứng dụng tự tạo schema SQLite vì cấu
+hình local bật `AUTO_CREATE_SCHEMA=true`.
+
+### 6. Chạy kiểm thử tự động
+
+Dừng server bằng `Ctrl+C` hoặc mở một cửa sổ PowerShell khác tại thư mục gốc:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest -q
+Set-Location frontend
+npm.cmd test
+npm.cmd run build
+Set-Location ..
+```
+
+Nếu cổng `8000` đang được chương trình khác sử dụng, có thể chạy thử ở cổng khác:
+
+```powershell
+.\venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8001
+```
+
+Khi đó mở `http://127.0.0.1:8001`. Nếu frontend chưa được build, API sẽ trả lỗi
+`503` ở trang chính; chạy lại `npm.cmd ci` và `npm.cmd run build` trong thư mục
+`frontend`.
 
 ## Deploy web lên Azure for Students
 
