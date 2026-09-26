@@ -1,5 +1,21 @@
 # Test report
 
+## Chuẩn hóa username/email — 26/09/2026
+
+Phạm vi: RQ-001, AC-010 và phần identity của BR-003/AC-020. Thuật toán đích là Unicode NFKC → trim → casefold; không sửa dữ liệu hiển thị khi backfill và không tự xử lý collision.
+
+| Lệnh / kiểm tra | Kết quả |
+|---|---|
+| Audit read-only `expense.db` bằng hàm Python đích | PASS — 3 user; username/email đều 0 blank, 0 collision. Database không có bảng `alembic_version`; không chạy migration trực tiếp. |
+| `.\venv\Scripts\python.exe -m pytest -q tests/test_auth.py tests/test_auth_branches.py tests/test_user_identity_migration.py` | **PASS — 26 passed, 5 subtests passed, 1 warning, 17.18s** |
+| Migration SQLite tạm từ `20260901_0001` → `20260925_0002` → `20260901_0001` | PASS — backfill đúng, normalized UNIQUE chặn duplicate, downgrade bỏ hai cột mới. |
+| Fixture có `Minh` và `  ＭINH  ` | PASS — upgrade dừng trước DDL, báo ID xung đột, giữ nguyên 2 row. |
+| `.\venv\Scripts\python.exe -m pytest -q` | **FAIL — 4 failed, 81 passed, 24 subtests passed, 7 warnings, 15.74s**. Bốn fail vẫn là DEF-018/DEF-019 thuộc category và budget, ngoài Giai đoạn 2. |
+| `.\venv\Scripts\python.exe -m compileall -q app alembic tests` | PASS |
+| `docker compose ps --format json` | BLOCKED/NOT RUN cho PostgreSQL — Compose yêu cầu `POSTGRES_PASSWORD`, không tự tạo secret hoặc chạm volume. |
+
+Giới hạn: SQLite không chứng minh hành vi khóa/cạnh tranh hoặc migration trên PostgreSQL production-like. Cần rehearsal trên bản sao PostgreSQL đã khử nhạy cảm trước Release Gate.
+
 ## Tái kiểm tra cấu trúc — 20/09/2026
 
 Không sửa source app, frontend, migration hoặc test. Kết quả quan sát:

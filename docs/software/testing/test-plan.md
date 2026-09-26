@@ -1,5 +1,15 @@
 # Test plan
 
+## Chuẩn hóa định danh — 26/09/2026
+
+| Yêu cầu | Tầng kiểm thử | File / bằng chứng | Trạng thái |
+|---|---|---|---|
+| RQ-001, AC-010 | Unit/integration auth: NFKC, trim, casefold; đăng ký trùng; đăng nhập username/email; cập nhật hồ sơ collision | `tests/test_auth.py` | PASS trên SQLite cô lập |
+| BR-003, AC-020 | Migration từ `20260901_0001`: backfill, normalized UNIQUE, downgrade; collision phải dừng trước DDL và giữ nguyên row | `tests/test_user_identity_migration.py` | PASS trên SQLite tạm |
+| NFR-DATA-001 | Cùng migration trên PostgreSQL đại diện, gồm kiểm tra lock và UNIQUE cạnh tranh | Compose/PostgreSQL thử nghiệm | NOT RUN — môi trường chưa có `POSTGRES_PASSWORD` |
+
+Frontend và hợp đồng API không đổi trong phạm vi này; không cần thêm test component. Không dùng `expense.db` làm fixture migration: file này chỉ được audit read-only và không có collision trong 3 user hiện hữu.
+
 ## Kiểm thử live bổ sung 19/09/2026
 
 - FR-AI-001, NFR-REL-001: adapter gọi Gemini thật bằng aggregates giả, có phản hồi; chưa đánh giá đầy đủ chất lượng nội dung hoặc mọi lỗi provider.

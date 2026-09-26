@@ -13,6 +13,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.security import decode_access_token, hash_password, verify_password
+from app.core.normalization import canonicalize_identity, normalize_identity
 from app.database import Base
 from app.models.user import User
 from app.routers.auth import (
@@ -71,12 +72,31 @@ class AuthApiTest(unittest.TestCase):
         )
         self.assertEqual(decode_access_token(token["access_token"])["sub"], self.user.id)
 
+    def test_identity_normalization_uses_nfkc_trim_and_casefold(self):
+        self.assertEqual(canonicalize_identity("  Ｍinh  "), "Minh")
+        self.assertEqual(normalize_identity("  ＭINH  "), "minh")
+        self.assertEqual(normalize_identity("Straße"), normalize_identity("STRASSE"))
+
+    def test_login_accepts_username_case_insensitively(self):
+        token = login(
+            form_data=SimpleNamespace(username="  ＭINH  ", password="secret123"),
+            db=self.db,
+        )
+        self.assertEqual(decode_access_token(token["access_token"])["sub"], self.user.id)
+
     def test_login_accepts_email_case_insensitively(self):
         token = login(
             form_data=SimpleNamespace(username="MINH@EXAMPLE.COM", password="secret123"),
             db=self.db,
         )
         self.assertEqual(decode_access_token(token["access_token"])["sub"], self.user.id)
+
+    def test_registration_rejects_normalized_username_duplicate(self):
+        payload = UserRegister(username="  ＭINH  ", email="fresh@example.com", password="secret123")
+        with self.assertRaises(HTTPException) as context:
+            register(payload=payload, db=self.db)
+        self.assertEqual(context.exception.status_code, 400)
+        self.assertEqual(context.exception.detail, "Tên đăng nhập đã tồn tại.")
 
     def test_profile_updates_display_name_username_and_email(self):
         result = update_profile(
@@ -116,6 +136,30 @@ class AuthApiTest(unittest.TestCase):
             )
         self.assertEqual(context.exception.status_code, 400)
         self.assertEqual(context.exception.detail, "Email đã được sử dụng.")
+
+    def test_profile_rejects_normalized_username_collision(self):
+        self.db.add(
+            User(
+                id="user-2",
+                username="Other",
+                email="other@example.com",
+                password_hash=hash_password("secret123"),
+            )
+        )
+        self.db.commit()
+
+        with self.assertRaises(HTTPException) as context:
+            update_profile(
+                payload=UserProfileUpdate(
+                    display_name="Minh",
+                    username="  ＯTHER  ",
+                    email=self.user.email,
+                ),
+                db=self.db,
+                current_user=self.user,
+            )
+        self.assertEqual(context.exception.status_code, 400)
+        self.assertEqual(context.exception.detail, "Tên đăng nhập đã tồn tại.")
 
     def test_authenticated_user_can_change_password(self):
         result = change_password(
