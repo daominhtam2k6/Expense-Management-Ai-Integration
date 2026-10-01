@@ -79,6 +79,62 @@ Caddy tự cấp và gia hạn chứng chỉ khi DNS trỏ đúng và 80/443 tru
 Database, uploads và chứng chỉ được giữ bằng named volumes. Không chạy
 `docker compose down -v` trên hệ thống có dữ liệu cần giữ.
 
+## Backup hằng ngày và retention 30 ngày
+
+Các volume giúp dữ liệu tồn tại sau khi container khởi động lại nhưng không phải
+là backup. Bộ script tại `scripts/backup/` tạo một restore point nhất quán gồm
+PostgreSQL và avatar, mã hóa AES-256, kiểm tra checksum, hỗ trợ bản sao ngoài VM,
+restore test và tự xóa restore point quá 30 ngày.
+
+Tạo tệp mật khẩu riêng ngoài repository và giới hạn quyền đọc:
+
+```bash
+sudo install -d -m 700 /etc/expense-management-ai
+openssl rand -base64 48 | sudo tee /etc/expense-management-ai/backup-password >/dev/null
+sudo chmod 600 /etc/expense-management-ai/backup-password
+sudo install -d -m 700 /var/backups/expense-management-ai
+```
+
+Ổ hoặc storage ngoài VM cần được mount tại một đường dẫn riêng, ví dụ
+`/mnt/expense-backups`. Chạy backup từ thư mục gốc repository:
+
+```bash
+sudo env \
+  BACKUP_ENCRYPTION_PASSWORD_FILE=/etc/expense-management-ai/backup-password \
+  BACKUP_ROOT=/var/backups/expense-management-ai \
+  OFFSITE_BACKUP_ROOT=/mnt/expense-backups \
+  REQUIRE_OFFSITE_COPY=true \
+  bash scripts/backup/backup.sh
+```
+
+Kiểm tra restore point và phục hồi thử vào database cô lập:
+
+```bash
+sudo env BACKUP_ENCRYPTION_PASSWORD_FILE=/etc/expense-management-ai/backup-password \
+  bash scripts/backup/verify.sh /var/backups/expense-management-ai/RESTORE_POINT_ID
+sudo env BACKUP_ENCRYPTION_PASSWORD_FILE=/etc/expense-management-ai/backup-password \
+  bash scripts/backup/restore-test.sh /var/backups/expense-management-ai/RESTORE_POINT_ID
+```
+
+Xem trước retention mà không xóa, kể cả khi cần giả lập ngày demo:
+
+```bash
+sudo env BACKUP_RETENTION_DAYS=30 bash scripts/backup/prune.sh \
+  --root /var/backups/expense-management-ai --dry-run
+sudo env BACKUP_RETENTION_DAYS=30 bash scripts/backup/prune.sh \
+  --root /var/backups/expense-management-ai --dry-run --now 2026-11-15T00:00:00Z
+```
+
+Sau khi chạy và restore test thủ công thành công, thêm cron chạy lúc ít người dùng:
+
+```cron
+0 2 * * * cd /opt/Expense-Management-Ai-Integration && BACKUP_ENCRYPTION_PASSWORD_FILE=/etc/expense-management-ai/backup-password BACKUP_ROOT=/var/backups/expense-management-ai OFFSITE_BACKUP_ROOT=/mnt/expense-backups REQUIRE_OFFSITE_COPY=true bash scripts/backup/backup.sh >> /var/log/expense-backup.log 2>&1
+```
+
+Không lưu mật khẩu mã hóa trong Git, manifest hoặc log. Mất tệp mật khẩu đồng
+nghĩa không thể phục hồi backup. Chỉ coi job thành công khi có `BACKUP_OK`, bản
+sao ngoài VM qua checksum và restore test định kỳ cho kết quả `RESTORE_TEST_OK`.
+
 ## 3. Kiểm tra trước khi mời người dùng
 
 ```bash
