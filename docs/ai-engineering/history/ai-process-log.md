@@ -70,7 +70,7 @@ Prompt nguyên văn và liên kết artifact được lưu tại `docs/ai-engine
 ## Phiên 06/09/2026 — Tạo thư viện prompt mẫu
 
 - **Human authorization:** cho phép bổ sung prompt đầy đủ để hoàn thiện số lượng và hình thức hồ sơ.
-- **Artifact:** `docs/ai-engineering/prompt-library.md` gồm bảy prompt SDLC có role, context, input, objective, scope, constraints, outputs, verification và stopping/human-gate conditions.
+- **Artifact:** phần TP-* kế thừa trong `docs/ai-engineering/prompts.md` gồm bảy prompt SDLC có role, context, input, objective, scope, constraints, outputs, verification và stopping/human-gate conditions; nội dung này ban đầu nằm trong `prompt-library.md` trước khi được hợp nhất.
 - **Evidence label:** prompt hồi tố/mẫu, chưa thực thi; không được trình bày như prompt tạo implementation cũ.
 - **Code status:** không sửa source code.
 

@@ -4,7 +4,7 @@
 
 Người dùng yêu cầu bắt đầu từ skills và prompt theo nhánh AI Engineering trong ảnh: Prompt, Skill, Agent, Context, Evaluation; chưa sửa SRS hoặc hệ thống, không tái cấu trúc nhánh Traditional Software.
 
-Nguồn: yêu cầu trực tiếp và ảnh trong hội thoại, 8 skill hiện hữu, docs/ai-engineering/prompt-library.md, docs/ai-engineering/history/prompts.md, docs/ai-engineering/history/ai-process-log.md và RQ-009. Skill dùng để xây dựng bộ này: skill-creator; nguyên tắc documentation dùng để phân biệt hiện trạng, mục tiêu và evidence. Các mẫu AIP-* mới chưa được chạy để sửa sản phẩm.
+Nguồn: yêu cầu trực tiếp và ảnh trong hội thoại, 8 skill hiện hữu, phần TP-* kế thừa nay được hợp nhất trong docs/ai-engineering/prompts.md, docs/ai-engineering/history/prompts.md, docs/ai-engineering/history/ai-process-log.md và RQ-009. Skill dùng để xây dựng bộ này: skill-creator; nguyên tắc documentation dùng để phân biệt hiện trạng, mục tiêu và evidence. Các mẫu AIP-* mới chưa được chạy để sửa sản phẩm.
 
 ## Kết quả tạo artifact
 

@@ -11,7 +11,7 @@ Registry duy nhất là [.agents/skills](../.agents/skills). Reference chi tiế
 
 ## Cách thực hiện
 
-Chọn profile phù hợp, điền prompt, đọc skill chính và skill bổ trợ liên quan; không nạp mọi skill. Khi yêu cầu chỉ chẩn đoán, review hoặc lập kế hoạch, chế độ đó ưu tiên hơn tên vai trò. Có thể bỏ qua các giai đoạn không cần thiết. Critic rà soát artifact theo loại; không bắt requirements phải qua code-review.
+Chọn profile phù hợp và điền đủ các trường trong `prompt.md`: skill bắt buộc, skill bổ trợ nếu cần, nhiệm vụ, đầu vào/phiên bản, chế độ, phạm vi đọc, phạm vi ghi/tác động, phần giữ nguyên và tiêu chí hoàn tất. Agent phải đọc đầy đủ `SKILL.md` được chỉ định trước khi thực hiện; không nạp mọi skill. Khi yêu cầu chỉ chẩn đoán, review hoặc lập kế hoạch, chế độ đó ưu tiên hơn tên vai trò. Có thể bỏ qua các giai đoạn không cần thiết. Critic rà soát artifact theo loại; không bắt requirements phải qua code-review.
 
 Bàn giao input/version, quyết định, file đầu ra, checks và giới hạn. Critic REVISE trả về tác vụ cần sửa trong phạm vi đã giao; không có vòng retry tự động vô hạn. ACCEPT không thay human approval và không kích hoạt deploy. Việc chạy nhiều agent chỉ khi được giao rõ; các profile không tự cấp quyền spawn.
 

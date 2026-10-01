@@ -10,7 +10,7 @@ Tổ chức theo mục đích; nguồn chính của mỗi tài liệu chỉ có 
 | **Phần mềm — vận hành/sử dụng** | [Triển khai](software/deployment/deployment.md), [Azure](software/deployment/azure-deploy.md), [hướng dẫn người dùng](software/user-guide.md) |
 | **Quản lý SDLC dùng chung** | [Human gates](governance/human-gates.md), [audit tuân thủ](governance/sdlc-compliance-audit.md) |
 | **AI Engineering** | [Tổng quan](ai-engineering/README.md), [skill registry](ai-engineering/skills.md), [prompt mẫu](ai-engineering/prompts.md), [context](ai-engineering/context.md), [evaluation](ai-engineering/evaluation.md) |
-| **Lịch sử AI** | [Prompt thực tế](ai-engineering/history/prompts.md), [nhật ký](ai-engineering/history/ai-process-log.md), [thư viện prompt trước đây](ai-engineering/prompt-library.md), [bản ghi xây dựng/kiểm chứng](ai-engineering/runs) |
+| **Lịch sử AI** | [Prompt thực tế](ai-engineering/history/prompts.md), [nhật ký](ai-engineering/history/ai-process-log.md), [thư viện prompt hợp nhất](ai-engineering/prompts.md), [bản ghi xây dựng/kiểm chứng](ai-engineering/runs) |
 | **Artifact xuất bản** | [Sơ đồ](diagrams), [Word và tài liệu xuất](outputs) |
 
 ## Quy ước lưu

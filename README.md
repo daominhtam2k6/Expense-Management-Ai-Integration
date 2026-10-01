@@ -3,7 +3,7 @@
 > Tra cứu tài liệu theo nhóm tại [docs/README.md](docs/README.md).
 >
 > Hồ sơ AI-Augmented SDLC: xem [đánh giá tuân thủ](docs/governance/sdlc-compliance-audit.md),
-> [prompt register](docs/ai-engineering/history/prompts.md), [thư viện prompt mẫu](docs/ai-engineering/prompt-library.md), [human gates](docs/governance/human-gates.md) và
+> [prompt register](docs/ai-engineering/history/prompts.md), [thư viện prompt mẫu](docs/ai-engineering/prompts.md), [human gates](docs/governance/human-gates.md) và
 > [nhật ký AI](docs/ai-engineering/history/ai-process-log.md).
 
 Ứng dụng quản lý tài chính cá nhân gồm một backend FastAPI dùng chung cho hai kênh phát hành:

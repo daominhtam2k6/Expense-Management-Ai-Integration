@@ -20,8 +20,8 @@ Giữ nguyên nhánh Traditional Software: requirements, design, coding, testing
 
 Bản mở rộng ngày 21/09/2026 có 17 skill/prompt, gồm chẩn đoán lỗi, phân tích ảnh hưởng, API, migration, sản xuất Word/PDF và đánh giá phát hành. Xem [danh mục và cách chọn skill](skills.md). Đây là bộ quy trình để áp dụng theo từng prompt, không yêu cầu mọi tác vụ phải đi qua cả 17 skill.
 
-1. Chọn prompt và vai trò tương ứng; điền nhiệm vụ, chế độ và phạm vi file.
-2. Agent đọc context liên quan và skill được chọn, xác định nguồn hiện trạng và nguồn yêu cầu.
+1. Chọn prompt và vai trò tương ứng; điền đủ skill bắt buộc, nhiệm vụ, chế độ, phạm vi đọc/ghi, loại trừ và tiêu chí hoàn tất.
+2. Agent đọc đầy đủ `SKILL.md` được chỉ định, context liên quan và chỉ nạp skill bổ trợ khi nhiệm vụ thật sự cần.
 3. Thực hiện đúng chế độ: phân tích, đề xuất hoặc thực thi. Prompt mẫu không tự cấp quyền sửa file, triển khai hay chuyển sang bước kế tiếp.
 4. Kiểm tra đầu ra bằng tiêu chí của prompt và rubric Evaluation; lưu bằng chứng thực tế.
 5. Bàn giao kết quả cùng phần còn thiếu. Con người quyết định nghiệp vụ và release; ghi nhận quyết định đã có, không hỏi lại chỉ vì đổi vai trò.
@@ -30,6 +30,6 @@ Một agent có thể đảm nhiệm các vai trò tuần tự. Bộ này không
 
 ## Quan hệ với hồ sơ cũ
 
-- [Thư viện prompt trước đây](prompt-library.md) giữ nguyên ID TP-* và nhãn prompt mẫu; bộ mới bổ sung ID AIP-* bao phủ mọi skill dự án.
+- [Thư viện prompt hợp nhất](prompts.md) giữ cả ID TP-* kế thừa và ID AIP-* hiện hành trong một nguồn duy nhất.
 - [Prompt register](history/prompts.md) và [nhật ký AI](history/ai-process-log.md) giữ lịch sử, không dùng mẫu mới để tái dựng các lần chạy cũ.
 - [Bản ghi đợt xây dựng này](runs/2026-09-20-foundation.md) phân biệt việc tạo bộ nền tảng, kiểm tra cấu trúc và các ca đánh giá hành vi chưa chạy.
