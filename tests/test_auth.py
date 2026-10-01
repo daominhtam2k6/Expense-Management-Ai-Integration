@@ -16,8 +16,16 @@ from app.core.security import decode_access_token, hash_password, verify_passwor
 from app.core.normalization import canonicalize_identity, normalize_identity
 from app.database import Base
 from app.models.user import User
+from app.models.ai_conversation import AIConversation, AIMessage
+from app.models.budget import Budget
+from app.models.category import Category
+from app.models.goal_item import GoalItem
+from app.models.goal_transaction import GoalTransaction
+from app.models.saving_goal import SavingGoal
+from app.models.transaction import Transaction
 from app.routers.auth import (
     change_password,
+    delete_account,
     delete_avatar,
     forgot_password,
     login,
@@ -28,6 +36,7 @@ from app.routers.auth import (
 )
 from app.schemas.user import (
     ChangePasswordRequest,
+    DeleteAccountRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
     UserProfileUpdate,
@@ -200,6 +209,60 @@ class AuthApiTest(unittest.TestCase):
             with self.subTest(payload=payload), self.assertRaises(ValidationError) as context:
                 ChangePasswordRequest(**payload)
             self.assertIn(expected_message, str(context.exception))
+
+    def test_delete_account_removes_owned_data_and_avatar(self):
+        category = Category(id="c1", user_id=self.user.id, name="Ăn uống", type="expense")
+        goal = SavingGoal(id="g1", user_id=self.user.id, name="Quỹ", target_amount=100)
+        conversation = AIConversation(id="ai1", user_id=self.user.id, title="Tư vấn")
+        self.db.add_all([category, goal, conversation])
+        self.db.flush()
+        self.db.add_all([
+            Transaction(id="t1", user_id=self.user.id, category_id=category.id, amount=10, type="expense", txn_date=datetime.now().date()),
+            Budget(id="b1", user_id=self.user.id, category_id=category.id, month=10, year=2026, limit_amount=100),
+            GoalItem(id="i1", goal_id=goal.id, name="Mục", cost=20),
+            GoalTransaction(id="gt1", goal_id=goal.id, amount=5, type="deposit", txn_date=datetime.now().date()),
+            AIMessage(id="m1", conversation_id=conversation.id, role="user", content="Xin chào"),
+        ])
+        self.db.commit()
+
+        with TemporaryDirectory() as directory, patch(
+            "app.routers.auth.AVATAR_DIRECTORY", Path(directory)
+        ):
+            avatar = Path(directory) / "avatar.png"
+            avatar.write_bytes(b"avatar")
+            self.user.avatar_url = "/uploads/avatars/avatar.png"
+            self.db.commit()
+            result = delete_account(
+                payload=DeleteAccountRequest(
+                    current_password="secret123",
+                    confirmation="XÓA TÀI KHOẢN",
+                ),
+                db=self.db,
+                current_user=self.user,
+            )
+
+            self.assertIn("đã được xóa", result.message)
+            self.assertFalse(avatar.exists())
+
+        for model in (AIMessage, AIConversation, GoalItem, GoalTransaction, SavingGoal, Budget, Transaction, Category, User):
+            self.assertEqual(self.db.query(model).count(), 0)
+
+    def test_delete_account_rejects_wrong_password_and_confirmation(self):
+        with self.assertRaises(ValidationError) as validation:
+            DeleteAccountRequest(current_password="secret123", confirmation="xóa")
+        self.assertIn('XÓA TÀI KHOẢN', str(validation.exception))
+
+        with self.assertRaises(HTTPException) as context:
+            delete_account(
+                payload=DeleteAccountRequest(
+                    current_password="wrong",
+                    confirmation="XÓA TÀI KHOẢN",
+                ),
+                db=self.db,
+                current_user=self.user,
+            )
+        self.assertEqual(context.exception.status_code, 400)
+        self.assertEqual(self.db.query(User).count(), 1)
 
     def test_avatar_upload_and_delete(self):
         with TemporaryDirectory() as directory, patch(

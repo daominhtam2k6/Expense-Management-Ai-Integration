@@ -13,7 +13,7 @@ const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 const AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
-  const { user, updateProfile, changePassword, uploadAvatar, deleteAvatar } = useAuth();
+  const { user, updateProfile, changePassword, deleteAccount, uploadAvatar, deleteAvatar } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -27,6 +27,11 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [deleteExpanded, setDeleteExpanded] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -41,6 +46,10 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
     setConfirmPassword("");
     setPasswordError("");
     setPasswordSuccess("");
+    setDeleteExpanded(false);
+    setDeletePassword("");
+    setDeleteConfirmation("");
+    setDeleteError("");
   }, [open, user?.id]);
 
   const dirty = useMemo(() => Boolean(user) && (
@@ -66,6 +75,27 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
       setError(cause instanceof Error ? cause.message : "Chưa thể lưu thông tin cá nhân.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const removeAccount = async (event: FormEvent) => {
+    event.preventDefault();
+    if (deleteBusy) return;
+    setDeleteError("");
+    if (deleteConfirmation !== "XÓA TÀI KHOẢN") {
+      setDeleteError('Vui lòng nhập chính xác "XÓA TÀI KHOẢN".');
+      return;
+    }
+    setDeleteBusy(true);
+    try {
+      await deleteAccount({
+        current_password: deletePassword,
+        confirmation: deleteConfirmation,
+      });
+      onClose();
+    } catch (cause) {
+      setDeleteError(cause instanceof Error ? cause.message : "Chưa thể xóa tài khoản.");
+      setDeleteBusy(false);
     }
   };
 
@@ -297,6 +327,56 @@ export function ProfilePanel({ open, onClose }: ProfilePanelProps) {
             {passwordSaving ? "Đang đổi…" : "Đổi mật khẩu"}
           </button>
         </form>
+      )}
+      {user && (
+        <section className="profile-danger-zone" aria-labelledby="delete-account-title">
+          <div className="profile-section-heading profile-section-heading--danger">
+            <Trash2 size={18} />
+            <div>
+              <strong id="delete-account-title">Xóa tài khoản</strong>
+              <small>Xóa vĩnh viễn tài khoản cùng toàn bộ dữ liệu thu chi, ngân sách, mục tiêu và hội thoại AI.</small>
+            </div>
+          </div>
+          {!deleteExpanded ? (
+            <button className="button button--danger-text" type="button" onClick={() => setDeleteExpanded(true)}>
+              <Trash2 size={17} /> Bắt đầu xóa tài khoản
+            </button>
+          ) : (
+            <form className="form-stack profile-delete-form" onSubmit={removeAccount}>
+              <div className="profile-delete-warning">
+                Thao tác này không thể hoàn tác. Bản sao lưu có thể còn tồn tại tối đa 30 ngày theo chính sách lưu trữ.
+              </div>
+              <label className="field">
+                <span>Mật khẩu hiện tại</span>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(event) => { setDeletePassword(event.target.value); setDeleteError(""); }}
+                  autoComplete="current-password"
+                  required
+                  disabled={deleteBusy}
+                />
+              </label>
+              <label className="field">
+                <span>Nhập XÓA TÀI KHOẢN để xác nhận</span>
+                <input
+                  value={deleteConfirmation}
+                  onChange={(event) => { setDeleteConfirmation(event.target.value); setDeleteError(""); }}
+                  autoComplete="off"
+                  required
+                  disabled={deleteBusy}
+                />
+              </label>
+              {deleteError && <div className="profile-form-message profile-form-message--error" role="alert">{deleteError}</div>}
+              <div className="profile-delete-actions">
+                <button className="button button--secondary" type="button" onClick={() => { setDeleteExpanded(false); setDeleteError(""); }} disabled={deleteBusy}>Hủy</button>
+                <button className="button button--danger" type="submit" disabled={deleteBusy || !deletePassword || deleteConfirmation !== "XÓA TÀI KHOẢN"}>
+                  <Trash2 size={17} /> {deleteBusy ? "Đang xóa…" : "Xóa vĩnh viễn"}
+                </button>
+              </div>
+            </form>
+          )}
+        </section>
       )}
     </SidePanel>
   );

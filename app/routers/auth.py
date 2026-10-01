@@ -10,11 +10,19 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
+from app.models.ai_conversation import AIConversation, AIMessage
+from app.models.budget import Budget
+from app.models.category import Category
+from app.models.goal_item import GoalItem
+from app.models.goal_transaction import GoalTransaction
+from app.models.saving_goal import SavingGoal
+from app.models.transaction import Transaction
 from app.schemas.user import (
     UserRegister,
     UserOut,
     UserProfileUpdate,
     ChangePasswordRequest,
+    DeleteAccountRequest,
     Token,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -178,6 +186,51 @@ def change_password(
         ) from exc
 
     return MessageResponse(message="Đổi mật khẩu thành công.")
+
+
+@router.delete("/me", response_model=MessageResponse)
+def delete_account(
+    payload: DeleteAccountRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Mật khẩu hiện tại không đúng.")
+
+    user_id = current_user.id
+    previous_avatar = current_user.avatar_url
+    goal_ids = db.query(SavingGoal.id).filter(SavingGoal.user_id == user_id)
+    conversation_ids = db.query(AIConversation.id).filter(AIConversation.user_id == user_id)
+
+    try:
+        db.query(AIMessage).filter(AIMessage.conversation_id.in_(conversation_ids)).delete(
+            synchronize_session=False
+        )
+        db.query(AIConversation).filter(AIConversation.user_id == user_id).delete(
+            synchronize_session=False
+        )
+        db.query(GoalItem).filter(GoalItem.goal_id.in_(goal_ids)).delete(synchronize_session=False)
+        db.query(GoalTransaction).filter(GoalTransaction.goal_id.in_(goal_ids)).delete(
+            synchronize_session=False
+        )
+        db.query(SavingGoal).filter(SavingGoal.user_id == user_id).delete(synchronize_session=False)
+        db.query(Budget).filter(Budget.user_id == user_id).delete(synchronize_session=False)
+        db.query(Transaction).filter(Transaction.user_id == user_id).delete(synchronize_session=False)
+        db.query(Category).filter(Category.user_id == user_id).delete(synchronize_session=False)
+        db.delete(current_user)
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Không thể xóa tài khoản. Dữ liệu của bạn chưa bị thay đổi.",
+        ) from exc
+
+    try:
+        _remove_local_avatar(previous_avatar)
+    except OSError:
+        pass
+    return MessageResponse(message="Tài khoản và dữ liệu cá nhân đã được xóa.")
 
 
 @router.post("/me/avatar", response_model=UserOut)

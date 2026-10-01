@@ -28,6 +28,7 @@ describe("AuthProvider", () => {
     vi.spyOn(api, "login").mockResolvedValue({ access_token: "new-token", token_type: "bearer" });
     vi.spyOn(api, "updateProfile").mockResolvedValue({ ...user, username: "updated" });
     vi.spyOn(api, "changePassword").mockResolvedValue({ message: "Đổi mật khẩu thành công." });
+    vi.spyOn(api, "deleteAccount").mockResolvedValue({ message: "Tài khoản và dữ liệu cá nhân đã được xóa." });
     vi.spyOn(api, "uploadAvatar").mockResolvedValue({ ...user, avatar_url: "/avatar.png" });
     vi.spyOn(api, "deleteAvatar").mockResolvedValue({ ...user, avatar_url: null });
   });
@@ -92,6 +93,20 @@ describe("AuthProvider", () => {
     });
     expect(failure).toEqual(new Error("failed"));
     await waitFor(() => expect(localStorage.getItem(TOKEN_KEY)).toBeNull());
+  });
+
+  it("clears the session after account deletion succeeds", async () => {
+    localStorage.setItem(TOKEN_KEY, "stored");
+    render(<AuthProvider><Probe /></AuthProvider>);
+    await screen.findByText("owner");
+    await act(async () => {
+      await currentAuth.deleteAccount({
+        current_password: "secret",
+        confirmation: "XÓA TÀI KHOẢN",
+      });
+    });
+    expect(screen.getByText("anonymous")).toBeInTheDocument();
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
   });
 
   it("logs out for unauthorized and cross-tab removal events", async () => {

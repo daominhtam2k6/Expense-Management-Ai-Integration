@@ -45,6 +45,25 @@ class ChangePasswordRequest(BaseModel):
             raise ValueError("Mật khẩu mới phải có ít nhất 6 ký tự.")
         return value
 
+
+class DeleteAccountRequest(BaseModel):
+    current_password: str
+    confirmation: str
+
+    @field_validator("current_password")
+    @classmethod
+    def validate_delete_password(cls, value: str) -> str:
+        if not value:
+            raise ValueError("Mật khẩu hiện tại không được để trống.")
+        return value
+
+    @field_validator("confirmation")
+    @classmethod
+    def validate_delete_confirmation(cls, value: str) -> str:
+        if value != "XÓA TÀI KHOẢN":
+            raise ValueError('Vui lòng nhập chính xác "XÓA TÀI KHOẢN".')
+        return value
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"

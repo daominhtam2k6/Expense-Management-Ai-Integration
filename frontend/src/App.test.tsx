@@ -127,6 +127,7 @@ describe("application route smoke tests", () => {
     vi.spyOn(api, "listAssistantConversations").mockResolvedValue(conversations);
     vi.spyOn(api, "updateProfile").mockResolvedValue({ ...user, display_name: "Owner Updated" });
     vi.spyOn(api, "changePassword").mockResolvedValue({ message: "Đổi mật khẩu thành công." });
+    vi.spyOn(api, "deleteAccount").mockResolvedValue({ message: "Tài khoản và dữ liệu cá nhân đã được xóa." });
     vi.spyOn(api, "uploadAvatar").mockResolvedValue({ ...user, avatar_url: "/avatar.png" });
     vi.spyOn(api, "deleteAvatar").mockResolvedValue(user);
   });
@@ -206,6 +207,26 @@ describe("application route smoke tests", () => {
       new_password: "new-secret",
     });
     expect(screen.getByLabelText("Mật khẩu hiện tại")).toHaveValue("");
+  });
+
+  it("requires both account deletion confirmations and returns to login", async () => {
+    renderApp("/dashboard");
+    await screen.findByRole("heading", { level: 1, name: "Tổng quan" });
+    await userEvent.click(screen.getAllByTitle("Chỉnh sửa thông tin cá nhân")[0]);
+    await userEvent.click(screen.getByRole("button", { name: "Bắt đầu xóa tài khoản" }));
+
+    const deleteButton = screen.getByRole("button", { name: "Xóa vĩnh viễn" });
+    expect(deleteButton).toBeDisabled();
+    await userEvent.type(screen.getAllByLabelText("Mật khẩu hiện tại")[1], "secret");
+    await userEvent.type(screen.getByLabelText("Nhập XÓA TÀI KHOẢN để xác nhận"), "XÓA TÀI KHOẢN");
+    expect(deleteButton).toBeEnabled();
+    await userEvent.click(deleteButton);
+
+    expect(api.deleteAccount).toHaveBeenCalledWith({
+      current_password: "secret",
+      confirmation: "XÓA TÀI KHOẢN",
+    });
+    expect(await screen.findByRole("heading", { name: "Chào mừng bạn trở lại" })).toBeInTheDocument();
   });
 
   it("shows and retries dashboard load errors", async () => {

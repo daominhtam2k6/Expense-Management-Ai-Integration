@@ -141,6 +141,8 @@ a { color: inherit; text-decoration: none; text-underline-offset: 3px; }
 .button--outline:hover:not(:disabled) { background: var(--jade-soft); }
 .button--small { min-height: 34px; padding-inline: 11px; font-size: 12px; }
 .button--danger-text { color: var(--red); background: transparent; }
+.button--danger { color: #fff; background: var(--red); box-shadow: 0 7px 17px color-mix(in srgb, var(--red) 20%, transparent); }
+.button--danger:hover:not(:disabled) { background: color-mix(in srgb, var(--red) 86%, #000); }
 .text-button { padding: 0; border: 0; display: inline-flex; align-items: center; gap: 6px; color: var(--jade); background: transparent; font-weight: 600; cursor: pointer; }
 .icon-button { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 9px; display: inline-grid; place-items: center; color: var(--text-muted); background: transparent; cursor: pointer; }
 .icon-button:hover { color: var(--text); background: var(--line-soft); }
@@ -335,6 +337,11 @@ a { color: inherit; text-decoration: none; text-underline-offset: 3px; }
 .profile-form-message { padding: 11px 12px; border-radius: 9px; font-size: 11px; line-height: 1.5; }
 .profile-form-message--error { color: var(--red); background: var(--red-soft); }
 .profile-form-message--success { color: var(--jade); background: var(--jade-soft); }
+.profile-danger-zone { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line-soft); display: grid; gap: 18px; }
+.profile-section-heading--danger { color: var(--red); }
+.profile-delete-form { gap: 16px; }
+.profile-delete-warning { padding: 12px 13px; border-radius: 10px; color: var(--red); background: var(--red-soft); font-size: 11px; line-height: 1.55; }
+.profile-delete-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 9px; }
 .segmented-control { display: grid; grid-template-columns: repeat(2,1fr); }.segmented-control button { min-height: 48px; border: 1px solid var(--line); color: var(--text-muted); background: transparent; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }.segmented-control button:first-child { border-radius: 9px 0 0 9px; }.segmented-control button:last-child { margin-left: -1px; border-radius: 0 9px 9px 0; }.segmented-control button.is-expense { z-index: 1; color: var(--red); border-color: color-mix(in srgb, var(--red) 50%, var(--line)); background: var(--red-soft); }.segmented-control button.is-income { z-index: 1; color: var(--jade); border-color: color-mix(in srgb, var(--jade) 50%, var(--line)); background: var(--jade-soft); }.field:disabled { opacity: .7; }
 .icon-picker-field { gap: 11px; }
 .icon-search-field { height: 40px; padding: 0 11px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 9px; color: var(--text-muted); background: var(--surface); }

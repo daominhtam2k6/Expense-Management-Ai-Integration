@@ -8,6 +8,7 @@ import type {
   Budget,
   BudgetPayload,
   ChangePasswordPayload,
+  DeleteAccountPayload,
   Category,
   CategoryPayload,
   DashboardData,
@@ -240,6 +241,8 @@ export const api = {
     request<User>("/auth/me", { method: "PUT", body: JSON.stringify(payload) }),
   changePassword: (payload: ChangePasswordPayload) =>
     request<MessageResponse>("/auth/me/password", { method: "PUT", body: JSON.stringify(payload) }),
+  deleteAccount: (payload: DeleteAccountPayload) =>
+    request<MessageResponse>("/auth/me", { method: "DELETE", body: JSON.stringify(payload) }),
   uploadAvatar: (file: File) => {
     const body = new FormData();
     body.append("file", file);

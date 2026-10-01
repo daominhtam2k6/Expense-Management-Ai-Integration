@@ -44,6 +44,11 @@ export interface ChangePasswordPayload {
   new_password: string;
 }
 
+export interface DeleteAccountPayload {
+  current_password: string;
+  confirmation: string;
+}
+
 export interface AuthToken {
   access_token: string;
   token_type: string;
