@@ -1,6 +1,7 @@
 # Environment variables and local secrets
 .env
 backups/
+.tmp/
 .env.*
 !.env.example
 !frontend/.env.desktop.example
