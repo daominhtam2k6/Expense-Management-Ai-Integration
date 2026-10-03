@@ -1,5 +1,7 @@
 # Kiến trúc tổng quan Sổ Chi Tiêu
 
+> Phạm vi hiện tại được thu hẹp thành web/PWA theo RQ-012 ngày 03/10/2026. Các phê duyệt ngày 06/09/2026 là lịch sử; thay đổi này không tự phê duyệt Release Gate.
+
 > Thiết kế mục tiêu theo baseline requirements v1.1 đã được phê duyệt tại Requirements Gate ngày 06/09/2026. Tài liệu này không xác nhận implementation hiện tại đã đáp ứng thiết kế và không thay đổi trạng thái Human Gate.
 
 Artifact UML liên quan:
@@ -11,9 +13,9 @@ Các sơ đồ này đồng bộ cách mô tả với mã hiện tại và RQ-00
 
 ## 1. Phạm vi và nguyên tắc
 
-Kiến trúc bao phủ React/PWA, Windows Tauri, FastAPI, SQLAlchemy/Alembic, PostgreSQL production, SQLite development, Gemini, Resend và avatar storage. Offline, ngân hàng, thanh toán, đầu tư tự động, AI sửa dữ liệu và quản trị nằm ngoài phạm vi.
+Kiến trúc bao phủ React/PWA, FastAPI, SQLAlchemy/Alembic, PostgreSQL production, SQLite development, Gemini, Resend và avatar storage. Offline, ngân hàng, thanh toán, đầu tư tự động, AI sửa dữ liệu và quản trị nằm ngoài phạm vi.
 
-- Backend là nguồn sự thật duy nhất; cả hai client online-only và dùng chung API/dữ liệu máy chủ.
+- Backend là nguồn sự thật duy nhất; web/PWA online-only và dùng API/dữ liệu máy chủ.
 - Mọi dữ liệu nghiệp vụ được lọc theo `user_id` của principal đã xác thực, không tin `user_id` từ client.
 - Gemini chỉ nhận dữ liệu tổng hợp, tối thiểu hóa, loại định danh; không truy cập database hay mutation.
 - Tiền dùng decimal, VND, làm tròn nhất quán đến một chữ số thập phân tại lớp nghiệp vụ.
@@ -22,16 +24,17 @@ Kiến trúc bao phủ React/PWA, Windows Tauri, FastAPI, SQLAlchemy/Alembic, Po
 ## 2. System context và trust boundaries
 
 ```text
-[Browser/PWA] --TLS--\
-                       [Reverse proxy/TLS] --> [FastAPI]
-[Windows Tauri] -TLS--/                    /       |       \
-                                     SQLAlchemy   HTTPS    HTTPS
-                                         v         v        v
-                                   [PostgreSQL] [Gemini] [Resend]
-                                         |
-                                  [Avatar storage]
-                                         |
-                                   [Backup system]
+[Browser/PWA] --TLS--> [Reverse proxy/TLS] --> [FastAPI]
+                                                  |
+                                 +----------------+----------------+
+                                 |                |                |
+                             SQLAlchemy         HTTPS            HTTPS
+                                 v                v                v
+                           [PostgreSQL]        [Gemini]         [Resend]
+                                 |
+                          [Avatar storage]
+                                 |
+                           [Backup system]
 ```
 
 1. **Client → public edge:** thiết bị, input, bearer token và upload đều không đáng tin; validate schema/file và không trả stack trace.
@@ -47,7 +50,6 @@ Kiến trúc bao phủ React/PWA, Windows Tauri, FastAPI, SQLAlchemy/Alembic, Po
 |---|---|---|
 | React presentation | Route/form, dashboard/report/assistant, loading/error/focus, định dạng VND | Không chứa business DB; không báo mutation thành công trước server response |
 | PWA shell | Cài đặt và cache app shell/static assets | Không cache `/api/*`, `/uploads/*` hay dữ liệu nghiệp vụ; không phải offline mode |
-| Tauri shell | Đóng gói React cho Windows, gọi HTTPS API | Không local DB/sync; native capability tối thiểu |
 | Shared API/auth client | Bearer token, lỗi mạng, dọn phiên khi token hết hạn/account bị xóa | Không tự quyết authorization |
 | FastAPI delivery | Router/schema/auth dependency/error mapping, SPA build, health/readiness | Không bỏ qua application service/user scope |
 | Identity service | Register/login/profile/reset/re-auth/delete; case-insensitive identity; bcrypt/JWT | Không tự thêm revoke/đa thiết bị chưa được yêu cầu |
@@ -105,13 +107,13 @@ API xác thực user và file, sinh storage key, lưu ownership/metadata rồi t
 - Password chỉ lưu bcrypt hash; bearer JWT có hạn và được kiểm signature/expiry server-side.
 - Authorization default-deny; principal lấy từ token và object lookup luôn kèm `user_id`.
 - JWT/DB/Gemini/Resend/storage secret chỉ từ environment/secret injection và được redact.
-- CORS, CSP, proxy trust và Tauri capability theo least privilege của môi trường.
+- CORS, CSP và proxy trust theo least privilege của môi trường.
 - Gemini xử lý plaintext đã tối thiểu hóa tại endpoint, nên chỉ cam kết encryption in transit, không tuyên bố end-to-end encryption.
 - Active account data hard-delete; immutable backup chứa dữ liệu đã xóa phải hết hạn trong tối đa 30 ngày và có evidence vận hành.
 
 ## 8. Deployment và observability
 
-Production gồm TLS reverse proxy, FastAPI stateless, PostgreSQL, persistent avatar storage và backup lifecycle. FastAPI phục vụ React build; API/probe/upload được match trước và không fallback HTML. Tauri dùng cùng public HTTPS API.
+Production gồm TLS reverse proxy, FastAPI stateless, PostgreSQL, persistent avatar storage và backup lifecycle. FastAPI phục vụ React build; API/probe/upload được match trước và không fallback HTML.
 
 - Liveness chứng minh process hoạt động; readiness phản ánh dependency bắt buộc (tối thiểu database).
 - Structured logs gồm timestamp, severity, route/status/latency, correlation ID; không có payload/secret nhạy cảm.
@@ -149,7 +151,7 @@ Chi tiết tại `docs/software/design/architecture-decisions.md`; mọi ADR là
 | FR-AI-001 | AI orchestration/API | Conversation repo, UI, Gemini gateway |
 | FR-AI-002 | AI orchestration + privacy gateway | Aggregate/evidence/confidence schema, read-only boundary |
 | FR-DATA-001 | Account deletion service | Cascades, avatar/client cleanup, backup lifecycle |
-| FR-REL-001 | FastAPI host/deployment edge | SPA exclusions, probes, PWA/Tauri packaging |
+| FR-REL-001 | FastAPI host/deployment edge | SPA exclusions, probes, PWA build |
 | FR-CONN-001 | Shared API client/connection UI | Online-only shells, no local business persistence |
 
 BR-001/002 thuộc service + DB constraint; BR-003 thuộc Alembic preflight; BR-004/NFR-PRIV-003 thuộc deletion/backup; NFR-SEC-001/003 thuộc auth + scoped repo; NFR-SEC-002 thuộc secret injection/redaction; NFR-PRIV-001/002 thuộc privacy gateway + TLS; NFR-DATA-001/002 thuộc persistence/finance policy; NFR-TIME-001 thuộc time policy; NFR-REL-001/002 và NFR-PERF-001 thuộc error mapping/operations; NFR-TEST-001 thuộc test boundaries backend/frontend/build; NFR-UX-001 thuộc React presentation.

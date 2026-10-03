@@ -11,7 +11,7 @@ Người quyết định: Đào Minh Tâm. Ngày: 06/09/2026.
 | RQ-005 | Giữ lịch sử hội thoại; người dùng được chủ động xóa toàn bộ tài khoản và dữ liệu cá nhân; backup hết retention trong tối đa 30 ngày. | Có xóa hội thoại; chưa có luồng xóa tài khoản, cascade và thực thi retention backup. |
 | RQ-006 | Mục tiêu gần 24/7, xử lý sự cố trong 24h, thao tác dưới 10 giây ở tải bình thường; chưa hướng tới lượng người dùng lớn. | Cần định nghĩa phép đo tối thiểu; backup, RPO/RTO và accessibility vẫn để mở. |
 | RQ-007 | Coverage mục tiêu dựa trên khả năng thực tế của hệ thống. | Giữ kết quả đo hiện tại làm baseline; chưa đặt ngưỡng release mới. |
-| RQ-008 | Web và ứng dụng cài đặt online toàn bộ. Offline chưa thuộc phạm vi; chỉ xem xét sau nếu có số lượng lớn phản hồi người dùng yêu cầu. | Phù hợp kiến trúc hiện tại; không cần local store hoặc sync engine trong release này. |
+| RQ-008 | Web/PWA online toàn bộ (phạm vi kênh phát hành được thu hẹp theo RQ-012). Offline chưa thuộc phạm vi; chỉ xem xét sau nếu có số lượng lớn phản hồi người dùng yêu cầu. | Phù hợp kiến trúc hiện tại; không cần local store hoặc sync engine trong release này. |
 
 ## RQ-009 — Gộp tác nhân và làm rõ trách nhiệm lớp USER
 
@@ -55,6 +55,19 @@ Ngày ghi nhận: 26/09/2026. Nguồn: người dùng chốt trực tiếp khi x
 - Backup có thể còn dữ liệu đã xóa trong thời gian retention nhưng phải hết hạn trong tối đa 30 ngày; tài liệu hóa yêu cầu này không phải bằng chứng automation retention đã vận hành.
 
 **Truy vết:** `UC005`, `UC005e`, `RQ-005`, `BR-004`, `AC-012`, `AC-021`; `DELETE /api/auth/me`; `docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.puml`; `docs/diagrams/uml/class-method-sequences/delete-account.puml`.
+
+## RQ-012 — Chỉ phát hành phiên bản web/PWA
+
+Ngày ghi nhận: 03/10/2026. Nguồn: yêu cầu trực tiếp của người dùng trong phiên làm việc hiện tại.
+
+> “dự án hiện tại chỉ xây dựng phiên bản web, bỏ giúp mình những thứ liên quan đến bản windows app nhé”
+
+- Phạm vi hiện tại chỉ gồm web responsive/PWA; gỡ mã đóng gói native, dependency CLI, cấu hình và workflow tạo bộ cài.
+- Web/PWA tiếp tục online-only, dùng backend FastAPI và dữ liệu máy chủ. Khả năng cài PWA từ trình duyệt thuộc phiên bản web.
+- Đồng bộ yêu cầu, thiết kế, hướng dẫn và tài liệu đầu ra đang dùng theo phạm vi này. Nhật ký, prompt nguyên văn và artifact lưu trữ là bằng chứng lịch sử, không phải hướng dẫn phát hành hiện tại.
+- Quyết định thu hẹp phạm vi không tự phê duyệt Release Gate và không xác nhận hệ thống đã được triển khai production.
+
+**Truy vết:** `FR-REL-001`, `FR-CONN-001`, `US-007`, `US-010`, `AC-013`; README, frontend và cấu hình triển khai web.
 
 ## Chi tiết còn phải chốt ở Database/Release Gate
 

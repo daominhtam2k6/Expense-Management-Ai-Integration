@@ -1,5 +1,18 @@
 # Test report
 
+## Thu hẹp phạm vi phát hành web/PWA — 03/10/2026
+
+Phạm vi: RQ-012; gỡ phần đóng gói native, dependency CLI, workflow bộ cài và cấu hình riêng; đồng bộ tài liệu đang dùng. Các kết quả cũ bên dưới được giữ làm bằng chứng lịch sử; phần kiểm thử bộ cài trong các báo cáo cũ không thuộc phạm vi hiện tại.
+
+- `npm ci --no-audit --no-fund`: PASS; cài dependency theo lockfile đã bỏ CLI native.
+- `npm test`: PASS — 5 tệp, 53 test, 36,72 giây.
+- `npm run build`: PASS — TypeScript/Vite và PWA service worker, 35 precache entries; giữ loại trừ `/api/*` và `/uploads/*` khỏi navigation fallback.
+- Docker Compose web/Azure `config --quiet`: PASS với `.env.example` và hostname kiểm thử; không khởi động container hoặc triển khai.
+- `git diff --check`: PASS.
+- 5 DOCX liên quan: kiểm tra cấu trúc và ảnh bảo toàn. 3 PDF tương ứng đã xuất lại bằng Microsoft Word; số trang không đổi (53, 54, 17). Kiểm tra trực quan các trang sửa và trang kế cận: PASS.
+
+Không chạy lại backend suite trong thay đổi này; API, schema và xử lý nghiệp vụ không thay đổi. Các kiểm tra trên không thay thế bằng chứng vận hành production hoặc phê duyệt Release Gate.
+
 ## Quy tắc danh mục và ngân sách — 26/09/2026
 
 Phạm vi: BR-001/AC-018, BR-002/AC-019, phần category/budget của BR-003/AC-020 và kiểm tra xóa category đang được budget sử dụng.

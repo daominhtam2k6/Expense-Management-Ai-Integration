@@ -1,4 +1,8 @@
-"""Update the previously delivered Word template with observed live results."""
+"""Reproduce the historical live-testing report from 19/09/2026.
+
+This is an archive helper; its installer checks are outside the current
+web/PWA release scope (RQ-012). It does not define current release checks.
+"""
 from copy import deepcopy
 from pathlib import Path
 import shutil

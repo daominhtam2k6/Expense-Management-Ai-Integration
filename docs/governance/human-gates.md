@@ -11,6 +11,10 @@ AI không được tự đánh dấu `APPROVED`. Người duyệt điền tên, 
 
 Quy tắc: chỉ đổi trạng thái thành `APPROVED` sau khi con người kiểm tra; nếu `CHANGES_REQUESTED`, ghi quyết định và artifact phải sửa bên dưới bảng.
 
+## Phạm vi hiện tại — quyết định ngày 03/10/2026
+
+Người dùng yêu cầu chỉ xây dựng phiên bản web/PWA theo RQ-012. Phần đóng gói native và workflow bộ cài được gỡ; các quyết định ngày 06/09/2026 bên dưới được giữ để truy vết lịch sử. Trạng thái Release vẫn PENDING.
+
 ## Requirements Gate — quyết định
 
 Baseline v1.1 được phê duyệt với các quyết định RQ-001 đến RQ-008 ghi tại `docs/software/requirements/requirements-issues.md`. RQ-008 đã được sửa: web và ứng dụng cài đặt online toàn bộ; offline là backlog có điều kiện dựa trên phản hồi người dùng. Phê duyệt yêu cầu không đồng nghĩa xác nhận implementation hiện tại đã đáp ứng; xóa tài khoản, timezone/rounding và tiêu chí vận hành vẫn phải được xử lý ở các gate tiếp theo.

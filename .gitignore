@@ -4,7 +4,6 @@ backups/
 .tmp/
 .env.*
 !.env.example
-!frontend/.env.desktop.example
 
 # Python
 __pycache__/
@@ -43,9 +42,6 @@ frontend/node_modules/
 frontend/dist/
 frontend/*.tsbuildinfo
 frontend/.vite/
-
-# Tauri / Rust build output (keep source and icons for the Windows app)
-frontend/src-tauri/target/
 
 # Generated project documents and previews (not used by the application)
 deliverables/

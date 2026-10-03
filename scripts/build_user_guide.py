@@ -272,7 +272,7 @@ def build() -> None:
     )
     add_body(
         document,
-        "Tài liệu này hướng dẫn thao tác trên giao diện web/PWA và ứng dụng cài đặt Windows. Hai kênh sử dụng cùng một Backend và đều cần kết nối Internet trong phạm vi phát hành hiện tại. Giao diện có thể thay đổi kích thước theo thiết bị nhưng tên chức năng và trình tự nghiệp vụ không thay đổi.",
+        "Tài liệu này hướng dẫn thao tác trên giao diện web/PWA. Phiên bản web sử dụng Backend FastAPI và cần kết nối Internet trong phạm vi phát hành hiện tại. Giao diện có thể thay đổi kích thước theo thiết bị nhưng tên chức năng và trình tự nghiệp vụ không thay đổi.",
     )
     add_info_table(
         document,
@@ -289,14 +289,14 @@ def build() -> None:
 
     add_heading(document, "CẤU HÌNH PHẦN CỨNG - PHẦN MỀM", 1)
     add_heading(document, "Phần cứng", 2)
-    add_body(document, "Đối với người dùng cuối, thiết bị chỉ cần đủ khả năng chạy trình duyệt hiện đại hoặc ứng dụng Windows. Cấu hình tham chiếu theo SRS:")
+    add_body(document, "Đối với người dùng cuối, thiết bị chỉ cần đủ khả năng chạy trình duyệt hiện đại. Cấu hình tham chiếu theo SRS:")
     add_bullet(document, "CPU Intel Core i5 thế hệ 10 hoặc tương đương.")
     add_bullet(document, "RAM tối thiểu 8 GB.")
     add_bullet(document, "Dung lượng trống tối thiểu 10 GB nếu cài ứng dụng và lưu bộ nhớ đệm.")
     add_bullet(document, "Kết nối Internet ổn định cho toàn bộ chức năng, đặc biệt là khôi phục mật khẩu và trợ lý AI.")
     add_heading(document, "Phần mềm", 2)
     add_bullet(document, "Trình duyệt Google Chrome hoặc Microsoft Edge phiên bản hiện đại; bật JavaScript và cho phép lưu trữ cục bộ.")
-    add_bullet(document, "Hoặc ứng dụng Windows được nhóm phát triển cung cấp. Người dùng không cần cài Python, Git, VS Code hay hệ quản trị cơ sở dữ liệu.")
+    add_bullet(document, "Người dùng không cần cài Python, Git, VS Code hay hệ quản trị cơ sở dữ liệu.")
     add_bullet(document, "Có tài khoản Sổ chi tiêu hợp lệ. Một số chức năng cần dịch vụ ngoài Google Gemini hoặc Resend đang hoạt động.")
     add_body(document, "Khuyến nghị: không dùng thiết bị công cộng để lưu phiên đăng nhập; đăng xuất sau khi sử dụng và không chia sẻ liên kết đặt lại mật khẩu.")
     document.add_paragraph().add_run().add_break(WD_BREAK.PAGE)

@@ -530,7 +530,7 @@ VAI TRÒ
 Bạn là Software Architect của dự án Sổ Chi Tiêu. Hãy sử dụng architecture-design skill.
 
 BỐI CẢNH
-Sản phẩm quản lý tài chính cá nhân bằng tiếng Việt, gồm web/PWA và ứng dụng Windows Tauri. Cả hai online-only, dùng chung backend FastAPI và database máy chủ. Gemini chỉ phân tích dữ liệu tổng hợp, không sửa dữ liệu.
+Sản phẩm quản lý tài chính cá nhân bằng tiếng Việt, chỉ gồm web/PWA online-only, sử dụng backend FastAPI và database máy chủ. Gemini chỉ phân tích dữ liệu tổng hợp, không sửa dữ liệu.
 
 ĐẦU VÀO BẮT BUỘC
 - docs/software/requirements/requirements.md
@@ -543,7 +543,7 @@ MỤC TIÊU
 Thiết kế kiến trúc tổng quan đáp ứng toàn bộ requirements đã được phê duyệt và giữ traceability.
 
 PHẠM VI
-- Client React/PWA và Tauri
+- Client React/PWA
 - FastAPI API/application layer
 - SQLAlchemy, Alembic, PostgreSQL/SQLite development
 - Gemini, Resend, avatar storage
@@ -583,7 +583,6 @@ Bạn là Technical Lead. Hãy đánh giá technology stack cho Sổ Chi Tiêu d
 - docs/software/design/architecture-decisions.md
 - requirements.txt
 - frontend/package.json
-- frontend/src-tauri/Cargo.toml
 
 MỤC TIÊU
 Xác nhận công cụ/framework hiện tại có phù hợp hay không và chỉ đề xuất thay đổi khi có lợi ích đo được.
@@ -592,7 +591,6 @@ CẦN ĐÁNH GIÁ
 - FastAPI, Pydantic, SQLAlchemy, Alembic
 - PostgreSQL production và SQLite development
 - React, TypeScript, Vite, Vitest, PWA
-- Tauri cho Windows
 - Gemini REST integration và Resend
 - Docker Compose, Caddy và Azure deployment
 
@@ -671,7 +669,7 @@ Bạn là Frontend Architect/UX Engineer cho React + TypeScript. Hãy thiết k�
 - frontend/src chỉ để phân tích hiện trạng
 
 MỤC TIÊU
-Thiết kế cấu trúc frontend, routing, state/data flow, accessibility và error handling thống nhất cho web/PWA/Tauri online-only.
+Thiết kế cấu trúc frontend, routing, state/data flow, accessibility và error handling thống nhất cho web/PWA online-only.
 
 PHẠM VI
 - Authentication và route guards

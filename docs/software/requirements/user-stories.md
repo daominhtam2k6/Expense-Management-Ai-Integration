@@ -7,6 +7,6 @@
 - **US-004** (`FR-GOAL-001`): Là người dùng, tôi muốn nạp/rút và hoàn thành mục tiêu để quản lý tiền tiết kiệm có lịch sử.
 - **US-005** (`FR-DASH-001`, `FR-REP-001`): Là người dùng, tôi muốn xem tổng quan và so sánh theo kỳ để hiểu tình hình tài chính.
 - **US-006** (`FR-AI-001..002`, `NFR-PRIV-001`): Là người dùng, tôi muốn hỏi trợ lý dựa trên số liệu tổng hợp và kiểm tra bằng chứng mà không tiết lộ dữ liệu thô.
-- **US-007** (`FR-REL-001`): Là người dùng, tôi muốn sử dụng cùng tài khoản trên web/PWA/ứng dụng cài đặt để dữ liệu được quản lý nhất quán.
+- **US-007** (`FR-REL-001`): Là người dùng, tôi muốn sử dụng cùng tài khoản trên web/PWA ở các thiết bị để dữ liệu được quản lý nhất quán.
 - **US-009** (`FR-DATA-001`): Là người dùng, tôi muốn giữ lịch sử hội thoại và có thể chủ động xóa toàn bộ tài khoản cùng dữ liệu cá nhân của mình.
-- **US-010** (`FR-CONN-001`): Là người dùng web hoặc ứng dụng cài đặt, tôi được thông báo rõ rằng kết nối Internet là bắt buộc để sử dụng các chức năng hiện tại.
+- **US-010** (`FR-CONN-001`): Là người dùng web/PWA, tôi được thông báo rõ rằng kết nối Internet là bắt buộc để sử dụng các chức năng hiện tại.

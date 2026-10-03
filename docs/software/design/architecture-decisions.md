@@ -5,18 +5,18 @@
 ## ADR-001 — Một hosted backend cho mọi client
 
 - **Status:** PROPOSED
-- **Context:** Web/PWA và Tauri online-only, dùng chung dữ liệu (`FR-REL-001`, `FR-CONN-001`).
+- **Context:** Web/PWA online-only, dùng dữ liệu máy chủ theo RQ-012 (`FR-REL-001`, `FR-CONN-001`).
 - **Decision:** Cùng FastAPI HTTPS API/source of truth; không local business DB, outbox, sync/conflict engine. PWA chỉ cache shell/static.
 - **Rationale:** Nhất quán dữ liệu và đúng phạm vi.
 - **Trade-off:** Phụ thuộc Internet/backend.
 
-## ADR-002 — React dùng chung, PWA và Tauri là hai shell
+## ADR-002 — React responsive và PWA cho phiên bản web
 
 - **Status:** PROPOSED
-- **Context:** Cần responsive web/PWA và Windows app.
-- **Decision:** Một React client; PWA phân phối web, Tauri đóng gói Windows với native capability tối thiểu và HTTPS API.
-- **Rationale:** Tránh phân kỳ UX/API.
-- **Trade-off:** Desktop không có offline/native data riêng.
+- **Context:** Phạm vi hiện tại chỉ cần responsive web/PWA theo RQ-012 ngày 03/10/2026.
+- **Decision:** Một React client cho trình duyệt; PWA cung cấp app shell và khả năng cài từ trình duyệt, sử dụng HTTPS API.
+- **Rationale:** Duy trì UX/API nhất quán giữa các thiết bị truy cập web.
+- **Trade-off:** Web/PWA yêu cầu Internet và không lưu database nghiệp vụ trên thiết bị.
 
 ## ADR-003 — FastAPI capability modules và application services
 

@@ -28,7 +28,7 @@ services:
       DATABASE_URL: postgresql+psycopg://expense:${POSTGRES_PASSWORD}@db:5432/expense
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8000}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://tauri.localhost,https://tauri.localhost}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
       TRUSTED_HOSTS: ${TRUSTED_HOSTS:-}
       ENABLE_API_DOCS: ${ENABLE_API_DOCS:-false}
       AI_API_KEY: ${AI_API_KEY:-}

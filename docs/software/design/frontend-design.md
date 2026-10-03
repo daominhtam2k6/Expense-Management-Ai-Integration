@@ -1,10 +1,12 @@
 # Thiết kế frontend Sổ Chi Tiêu
 
-> Baseline thiết kế cho React + TypeScript dùng chung trên web, PWA và Tauri (online-only). Tài liệu dựa trên Requirements Gate và Architecture Gate đã `APPROVED` ngày 06/09/2026, `DESIGN.md` và việc đọc hiện trạng `frontend/src`. Đây là thiết kế mục tiêu, không phải xác nhận implementation hiện tại đã đáp ứng. Tài liệu không thay đổi API contract.
+> Phạm vi hiện tại được thu hẹp thành web/PWA theo RQ-012 ngày 03/10/2026. Các phê duyệt ngày 06/09/2026 là lịch sử; thay đổi này không tự phê duyệt Release Gate.
+
+> Baseline thiết kế cho React + TypeScript trên web/PWA (online-only). Tài liệu dựa trên Requirements Gate và Architecture Gate đã `APPROVED` ngày 06/09/2026, `DESIGN.md` và việc đọc hiện trạng `frontend/src`. Đây là thiết kế mục tiêu, không phải xác nhận implementation hiện tại đã đáp ứng. Tài liệu không thay đổi API contract.
 
 ## 1. Mục tiêu, nguyên tắc và ranh giới
 
-Frontend là một “phòng điều khiển tài chính yên tĩnh”: giúp cá nhân nhìn thấy vị thế hiện tại, ngoại lệ cần chú ý và hành động tiếp theo trên cùng dữ liệu máy chủ ở web/PWA/Tauri. Chế độ UX là **Operate**; tính rõ ràng, khả năng kiểm chứng và tính liên tục của tác vụ quan trọng hơn trang trí.
+Frontend là một “phòng điều khiển tài chính yên tĩnh”: giúp cá nhân nhìn thấy vị thế hiện tại, ngoại lệ cần chú ý và hành động tiếp theo trên cùng dữ liệu máy chủ ở web/PWA. Chế độ UX là **Operate**; tính rõ ràng, khả năng kiểm chứng và tính liên tục của tác vụ quan trọng hơn trang trí.
 
 Các nguyên tắc bắt buộc:
 
@@ -133,7 +135,7 @@ AppProviders
 | `/assistant?period=YYYY-MM&conversation=` | protected | Trợ lý | conversation server-owned; starter chỉ điền composer, chưa gửi | drawers trả focus opener; composer sau chọn starter |
 | `*` | theo session | Không tìm thấy | public session → login; authenticated → NotFound có link dashboard, không silent redirect | focus heading |
 
-Desktop dùng sidebar 248px, thu thành icon rail ở 980px. Dưới 760px dùng top brand bar và bottom navigation cố định gồm Tổng quan, Giao dịch, Báo cáo, Trợ lý, Thêm. “Thêm” mở danh sách Categories, Budgets, Goals và Profile; trạng thái destination vẫn được công bố bằng `aria-current="page"`. Tauri dùng cùng route tree và API HTTPS; deep-link/reset link chỉ được bật khi shell protocol đã được duyệt, nếu chưa thì mở web.
+Desktop dùng sidebar 248px, thu thành icon rail ở 980px. Dưới 760px dùng top brand bar và bottom navigation cố định gồm Tổng quan, Giao dịch, Báo cáo, Trợ lý, Thêm. “Thêm” mở danh sách Categories, Budgets, Goals và Profile; trạng thái destination vẫn được công bố bằng `aria-current="page"`. Deep link và liên kết đặt lại mật khẩu mở trực tiếp trên web.
 
 ## 4. Authentication, session và route guards
 
@@ -316,7 +318,7 @@ Hiện endpoint delete account chưa có trong shared API client. RQ-011 đã ch
 - Fetch network failure có thể nâng trạng thái “Không thể kết nối máy chủ”. Health probe chỉ dùng nếu contract/operations cho phép, có backoff và không chặn render.
 - Khi offline, read CTA có thể disabled với lý do; form draft vẫn ở memory. Submit không được enqueue.
 - Khi online lại, không tự replay mutation. Có thể refetch read đang xem; user chủ động submit lại sau khi trạng thái nguồn được kiểm tra.
-- PWA cache chỉ app shell/static hashed assets. Service worker network rules exclude API, upload/avatar và navigation chứa token. Tauri không tạo local business persistence.
+- PWA cache chỉ app shell/static hashed assets. Service worker network rules exclude API, upload/avatar và navigation chứa token.
 
 ### 7.3 Mutation lifecycle checklist
 
@@ -359,7 +361,7 @@ Mục tiêu thiết kế tạm thời là WCAG 2.2 AA cho keyboard/screen reader
 - Theme hỗ trợ light/dark/system. Navigation teal ổn định; dùng đúng Two-Jade Rule và semantic foreground tokens. Theme choice có thể persist local vì không phải dữ liệu nghiệp vụ.
 - Contrast kiểm cả normal/hover/focus/disabled, chart marks và dark theme. Focus jade ring luôn visible.
 - Breakpoints theo `DESIGN.md`: 1280px đơn giản hóa grid, 1100px assistant rails thành drawers, 980px icon rail, 760px mobile shell/full-width panels, 430px tighten controls/charts.
-- Touch target ưu tiên tối thiểu 44×44px; safe-area padding cho Tauri/mobile PWA và bottom navigation.
+- Touch target ưu tiên tối thiểu 44×44px; safe-area padding cho mobile PWA và bottom navigation.
 
 ## 9. Error normalization contract phía client
 
@@ -394,7 +396,7 @@ API hiện có chủ yếu trả `detail` string/list. Stable machine-readable e
 | US-005 / AC-005 | `/dashboard?period=…`; `/reports?period=…` | PositionSummary, ReportComparison/Table | period query; loading/error/retry/empty; totals use response only; source links preserve period/filter |
 | US-006 / AC-006 | `/assistant?period=…` | GuidedStarters, Composer, EvidenceDisclosure, PrivacyRail | starter does not send; response shows aggregate evidence; UI/request spy contains no client-added raw transaction/identity/secret; AI cannot mutate |
 | US-006 / AC-007 | `/assistant` send | AssistantError, Composer | timeout/unconfigured/vendor error friendly; no key/stack/raw output; draft retained; no false saved thread |
-| US-007 / AC-008 | direct-load every SPA route on web/PWA/Tauri | AppRouter/AppShell | production deep link receives app shell; `/api/unknown` remains API error not HTML; route parity across shells |
+| US-007 / AC-008 | direct-load every SPA route on web/PWA | AppRouter/AppShell | production deep link receives app shell; `/api/unknown` remains API error not HTML; route parity across browser devices |
 | US-009 / AC-012 | ProfilePanel → DangerZone → DeleteAccountDialog | Reauth step, confirmation, AuthSession clear | wrong/expired proof stays signed in; confirmed server success clears token/cache and routes public; other-user data never enters UI; network ambiguity has no success |
 | US-009 / AC-021 | same deletion flow | DeleteAccountDialog | frontend verifies only public lifecycle/result; backend tests prove hard delete/backup. UI states backup ≤30 days without claiming immediate backup erasure |
 | US-010 / AC-013 | any route while disconnected | ConnectionBanner + all mutation forms | offline banner; submit not enqueued; draft retained when safe; reconnect refetches read only; no auto mutation replay/false success |
@@ -419,7 +421,7 @@ Mỗi story có ít nhất một UI path: US-001 auth/profile/recovery; US-002 c
 - Integration với mock server: 401 global clear; 404 ownership-safe; 409 conflicts; 422 field mapping; 429 retry-after; 5xx; offline/fetch failure; delayed/aborted/stale response; timeout mutation.
 - Routing/build: public/protected/deep link/not-found, back/forward filter restoration, SPA fallback exclusion for `/api/*`.
 - Accessibility automation + manual: axe baseline, full keyboard traversal, screen-reader announcement spot check, focus trap/restore, contrast ở hai theme, 200% zoom/reflow.
-- PWA/Tauri parity: same routes/API; service-worker exclusion; no business persistence; reconnect behavior; no frontend secret in bundles/config.
+- web/PWA parity: same routes/API; service-worker exclusion; no business persistence; reconnect behavior; no frontend secret in bundles/config.
 
 Modal/drawer test bắt buộc: opener → open → initial focus → Tab loop → Escape/scrim policy → restore opener; background không focusable; nested confirmation không làm mất focus stack; reduced-motion không trì hoãn focus.
 
@@ -462,7 +464,7 @@ Modal/drawer test bắt buộc: opener → open → initial focus → Tab loop �
 - [ ] Safe internal redirect; reset token không log/persist ngoài nhu cầu request.
 - [ ] Assistant evidence/privacy copy khớp aggregate-only contract và AI read-only.
 - [ ] Account deletion chỉ success sau server và dọn session/cache đầy đủ.
-- [ ] Production PWA/Tauri dùng HTTPS API và không persist business response offline.
+- [ ] Production web/PWA dùng HTTPS API và không persist business response offline.
 
 ## 13. API/design issues không được tự quyết
 
@@ -477,12 +479,11 @@ Các issue này không thay đổi contract đã duyệt và phải được gi�
 | FE-API-005 | durable idempotency cho money/assistant commands chưa có schema/contract hoàn tất | không automatic retry mutation sau timeout |
 | FE-API-006 / ARCH-HG-004 | WCAG level và browser/device/AT matrix chưa được Gate khóa | dùng WCAG 2.2 AA làm quality target, release evidence còn pending |
 | FE-API-007 / ARCH-HG-008..009 | conversation retention và AI confidence threshold/format còn mở | UI không tự hứa retention hoặc nâng confidence |
-| FE-API-008 | Tauri deep-link protocol/reset-link behavior chưa có approved contract | reset link mặc định mở web; không tự đăng ký custom protocol |
 
 ## 14. Đối chiếu nhanh với `frontend/src` hiện tại
 
 Hiện trạng đã có route tree, `AuthProvider`, protected/public-only guards, global `ConnectionStatus`, `AppShell`, `SidePanel`, profile/avatar, bảy capability pages, skeleton/error ở nhiều trang và API client phát unauthorized event. Đây là nền tảng nên bảo toàn.
 
-Khoảng cách chính cần test/implementation sau khi thiết kế được duyệt: route `*` hiện silent-redirect thay NotFound; filter/period phần lớn còn local thay URL canonical; delete thường dùng `window.confirm`; server state phân tán trong page; error shape còn dựa nhiều vào `detail`; account deletion chưa có; timeout/idempotency semantics chưa thể hiện thống nhất; PWA/Tauri cache/deep-link rules cần bằng chứng; accessibility modal/drawer và cross-page mutation matrix cần test tập trung.
+Khoảng cách chính cần test/implementation sau khi thiết kế được duyệt: route `*` hiện silent-redirect thay NotFound; filter/period phần lớn còn local thay URL canonical; delete thường dùng `window.confirm`; server state phân tán trong page; error shape còn dựa nhiều vào `detail`; account deletion chưa có; timeout/idempotency semantics chưa thể hiện thống nhất; web/PWA cache/deep-link rules cần bằng chứng; accessibility modal/drawer và cross-page mutation matrix cần test tập trung.
 
 Không nội dung nào trong mục này cho phép sửa source code trong phạm vi tác vụ hiện tại.

@@ -1,8 +1,7 @@
 # Triển khai web lên Azure for Students
 
 Giai đoạn đầu: web React và API FastAPI dùng chung địa chỉ HTTPS, PostgreSQL
-chạy cùng máy ảo Linux. Bản Windows Tauri sẽ kết nối API này sau khi web đã
-được kiểm tra với người dùng thử. Chưa cần đổi kiến trúc sang ứng dụng offline.
+chạy cùng máy ảo Linux. Sản phẩm chỉ phát hành web/PWA và yêu cầu kết nối Internet.
 
 ## 1. Chọn máy chủ và kiểm tra ngân sách
 
@@ -175,9 +174,3 @@ Không khôi phục đè lên production để thử nghiệm.
 Đưa phiên bản source đã kiểm tra lên VM, sau đó chạy lại `up -d --build` với cả
 hai Compose files. Migration tự chạy lúc khởi động. Nếu migration không tương
 thích ngược, quay lại image cũ có thể chưa đủ: cần kế hoạch khôi phục database.
-
-## 5. Sau khi web ổn định
-
-Điền URL thật vào `frontend/.env.desktop` theo mẫu có sẵn, build Tauri Windows
-và kiểm tra tài khoản/dữ liệu dùng chung với web. Chưa phát hành installer trước
-khi backend HTTPS và các luồng ở bước 3 được nghiệm thu.

@@ -9,9 +9,7 @@ import { registerSW } from "virtual:pwa-register";
 import App from "./App";
 import "./styles.css";
 
-if (!("__TAURI_INTERNALS__" in window)) {
-  registerSW({ immediate: true });
-}
+registerSW({ immediate: true });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

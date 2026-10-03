@@ -12,7 +12,7 @@
 - **AC-010** (`US-008`): Given tài khoản đã tồn tại, when người dùng nhập username/email với cách viết hoa khác, then định danh vẫn được nhận diện đúng; đăng ký biến thể chỉ khác hoa/thường bị từ chối.
 - **AC-011** (`NFR-SEC-003`): Given access token đã hết hạn, when gọi endpoint cần xác thực, then API trả 401 và client xóa trạng thái phiên, yêu cầu đăng nhập lại.
 - **AC-012** (`US-009`, `NFR-PRIV-003`): Given người dùng đã xác thực lại, when yêu cầu xóa tài khoản và xác nhận, then tài khoản cùng dữ liệu active bị xóa, dữ liệu người khác không bị ảnh hưởng, client xóa token/cache liên quan và backup còn chứa dữ liệu đó hết retention trong tối đa 30 ngày.
-- **AC-013** (`FR-CONN-001`, `US-010`): Given web hoặc ứng dụng cài đặt mất kết nối Internet, when người dùng thực hiện chức năng cần máy chủ, then ứng dụng không ghi nhận giả rằng thao tác đã thành công, giữ dữ liệu nhập khi phù hợp và hiển thị thông báo kết nối thân thiện để thử lại.
+- **AC-013** (`FR-CONN-001`, `US-010`): Given web/PWA mất kết nối Internet, when người dùng thực hiện chức năng cần máy chủ, then ứng dụng không ghi nhận giả rằng thao tác đã thành công, giữ dữ liệu nhập khi phù hợp và hiển thị thông báo kết nối thân thiện để thử lại.
 - **AC-014** (`NFR-TIME-001`): Given dữ liệu sát ranh giới cuối tháng, when tổng hợp kỳ, then phân kỳ theo ngày cuối tháng tại `Asia/Ho_Chi_Minh`.
 - **AC-015** (`NFR-PERF-001`): Given điều kiện vận hành và tải được Architecture Gate xác định, when thực hiện thao tác thông thường, then phản hồi hoàn tất trong dưới 10 giây.
 - **AC-016** (`NFR-DATA-002`): Given một giá trị tiền cần hiển thị hoặc kết quả phép tính nghiệp vụ, when hệ thống trả kết quả, then đơn vị là VND và giá trị được làm tròn nhất quán đến một chữ số thập phân.

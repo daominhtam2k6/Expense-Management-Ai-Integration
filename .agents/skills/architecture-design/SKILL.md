@@ -26,6 +26,6 @@ Khi cần xuất sơ đồ UML, dùng [uml-diagrams](../uml-diagrams/SKILL.md). 
 
 ## Ràng buộc và đầu ra
 
-- Giữ nguyên FastAPI, React, SQLAlchemy, PostgreSQL/SQLite, Gemini, Resend và Tauri, trừ khi có phê duyệt của con người.
+- Giữ nguyên FastAPI, React, SQLAlchemy, PostgreSQL/SQLite, Gemini và Resend, trừ khi có phê duyệt của con người.
 - Không triển khai mã trong skill này và không tự phê duyệt Architecture Gate.
 - Đầu ra: `docs/software/design/architecture.md`, `docs/software/design/architecture-decisions.md`, traceability và danh sách blocker/rủi ro.

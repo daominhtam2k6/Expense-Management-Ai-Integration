@@ -1,19 +1,11 @@
 import { defineConfig } from "vitest/config";
-import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-  if (mode === "desktop" && !/^https:\/\/.+\/api\/?$/.test(env.VITE_API_BASE_URL ?? "")) {
-    throw new Error("Desktop builds require an HTTPS VITE_API_BASE_URL ending in /api.");
-  }
-
-  return {
+export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      disable: mode === "desktop",
       registerType: "autoUpdate",
       includeAssets: ["app-icon.svg", "icons/app-icon-192.png", "icons/app-icon-512.png"],
       manifest: {
@@ -80,5 +72,4 @@ export default defineConfig(({ mode }) => {
       },
     },
   },
-  };
 });

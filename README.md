@@ -6,22 +6,18 @@
 > [prompt register](docs/ai-engineering/history/prompts.md), [thư viện prompt mẫu](docs/ai-engineering/prompts.md), [human gates](docs/governance/human-gates.md) và
 > [nhật ký AI](docs/ai-engineering/history/ai-process-log.md).
 
-Ứng dụng quản lý tài chính cá nhân gồm một backend FastAPI dùng chung cho hai kênh phát hành:
-
-- Web responsive/PWA cho Windows, Android và iOS.
-- Ứng dụng Windows đóng gói bằng Tauri, kết nối tới cùng API production.
+Ứng dụng quản lý tài chính cá nhân trên web responsive/PWA, sử dụng backend FastAPI. Người dùng truy cập bằng trình duyệt trên máy tính, Android và iOS.
 
 ## Kiến trúc
 
 ```text
-Web/PWA ───────────┐
-                   ├── FastAPI ── PostgreSQL
-Windows/Tauri ─────┘          ├── persistent uploads
-                              ├── Gemini
-                              └── Resend
+Web/PWA ── FastAPI ── PostgreSQL
+                ├── persistent uploads
+                ├── Gemini
+                └── Resend
 ```
 
-Bản Windows hiện yêu cầu kết nối Internet cho toàn bộ chức năng. Dữ liệu không được lưu thành một database nghiệp vụ riêng trên từng máy, nhờ đó tài khoản và số liệu dùng chung nguồn dữ liệu với web. Offline chỉ được xem xét trong tương lai nếu phản hồi người dùng cho thấy nhu cầu đủ lớn.
+Phiên bản web/PWA yêu cầu kết nối Internet cho toàn bộ chức năng. Dữ liệu nghiệp vụ được lưu trên máy chủ. Offline chỉ được xem xét trong tương lai nếu phản hồi người dùng cho thấy nhu cầu đủ lớn.
 
 ## Clone và chạy thử trên local
 
@@ -128,8 +124,7 @@ Khi đó mở `http://127.0.0.1:8001`. Nếu frontend chưa được build, API 
 
 ## Deploy web lên Azure for Students
 
-Lộ trình hiện tại: triển khai web, kiểm tra với người dùng thử, rồi phát hành
-Windows Tauri kết nối cùng backend. Xem [hướng dẫn Azure](docs/software/deployment/azure-deploy.md)
+Lộ trình hiện tại: triển khai web và kiểm tra với người dùng thử. Xem [hướng dẫn Azure](docs/software/deployment/azure-deploy.md)
 để chọn VM, cấu hình HTTPS, lưu dữ liệu, sao lưu và kiểm tra sau triển khai.
 
 ## Deploy web bằng Docker
@@ -143,7 +138,6 @@ Production mặc định dùng PostgreSQL và hai volume bền vững cho databa
    SECRET_KEY=chuoi-ngau-nhien-dai
    FRONTEND_URL=https://finance.example.com
    TRUSTED_HOSTS=finance.example.com
-   CORS_ORIGINS=http://tauri.localhost,https://tauri.localhost
    ```
 
 2. Build và khởi động:
@@ -176,43 +170,6 @@ Build web đã có manifest, service worker và icon PWA. Người dùng có th�
 
 Service worker chỉ cache app shell và static assets. Các đường dẫn `/api/*` và `/uploads/*` không được cache.
 
-## Build ứng dụng Windows
-
-Yêu cầu bổ sung:
-
-- Rust stable qua `rustup`.
-- Visual Studio Build Tools với workload Desktop development with C++ và Windows SDK.
-- WebView2 Runtime; Windows 10/11 thường đã có sẵn.
-
-Tạo cấu hình desktop:
-
-```powershell
-Set-Location frontend
-Copy-Item .env.desktop.example .env.desktop
-```
-
-Sửa `.env.desktop` để trỏ tới API production:
-
-```dotenv
-VITE_API_BASE_URL=https://finance.example.com/api
-```
-
-Chạy development shell:
-
-```powershell
-npm.cmd run desktop:dev
-```
-
-Tạo installer:
-
-```powershell
-npm.cmd run desktop:build
-```
-
-Installer `.msi` và `-setup.exe` được tạo trong `frontend/src-tauri/target/release/bundle/`. Cấu hình production bắt buộc có `VITE_API_BASE_URL`; build sẽ dừng nếu biến này bị thiếu.
-
-Trước khi phát hành công khai, cần cấu hình chứng thư code-signing để giảm cảnh báo Microsoft SmartScreen. Auto-update nên được bật sau khi quy trình ký số và nơi lưu release artifacts đã ổn định.
-
 ## Kiểm thử
 
 ```powershell
@@ -236,11 +193,11 @@ Kiểm tra migration độc lập:
 | `DATABASE_URL` | Có | Chuỗi kết nối PostgreSQL dùng driver `psycopg` |
 | `SECRET_KEY` | Có | Ký access token |
 | `FRONTEND_URL` | Có | Tạo link đặt lại mật khẩu |
-| `CORS_ORIGINS` | Có cho desktop | Origin được phép gọi API |
+| `CORS_ORIGINS` | Khi frontend khác origin với API | Origin web được phép gọi API; để trống khi cùng origin |
 | `TRUSTED_HOSTS` | Khuyến nghị | Danh sách hostname public |
 | `AI_API_KEY` | Cho AI | Gemini API key |
 | `GEMINI_MODEL` | Không | Model Gemini |
 | `RESEND_API_KEY` | Cho email | Gửi email đặt lại mật khẩu |
 | `RESEND_FROM_EMAIL` | Cho email | Địa chỉ người gửi đã xác minh |
 
-Không commit `.env`, `.env.desktop`, database, uploads hoặc chứng thư ký số.
+Không commit `.env`, database hoặc uploads.

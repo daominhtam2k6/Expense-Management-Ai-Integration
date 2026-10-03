@@ -22,7 +22,7 @@ Khi nguồn bất đồng, ghi rõ từng nguồn và phiên bản/ngày nếu c
 
 ## Bối cảnh dự án
 
-Đọc thêm theo nhu cầu: [customer requirement](../software/requirements/customer-requirement.md), [API](../software/design/api.md), [deployment](../software/deployment/deployment.md). Dự án dùng FastAPI, React, SQLAlchemy/Alembic, PostgreSQL/SQLite, Tauri; web/app online-only; Gemini nhận dữ liệu tổng hợp theo hợp đồng privacy. Kiểm tra nguồn gốc trước khi nêu một chức năng là đã triển khai.
+Đọc thêm theo nhu cầu: [customer requirement](../software/requirements/customer-requirement.md), [API](../software/design/api.md), [deployment](../software/deployment/deployment.md). Dự án dùng FastAPI, React, SQLAlchemy/Alembic, PostgreSQL/SQLite; chỉ phát hành web/PWA online-only theo RQ-012; Gemini nhận dữ liệu tổng hợp theo hợp đồng privacy. Kiểm tra nguồn gốc trước khi nêu một chức năng là đã triển khai.
 
 RQ-009 trong [requirements-issues](../software/requirements/requirements-issues.md) là quyết định đã chốt: gộp actor thành Người sử dụng; USER lưu tài khoản đã đăng ký và tồn tại sau đăng xuất; thao tác xác thực thuộc thành phần xử lý thực tế. Quyết định này chưa đồng nghĩa SRS/sơ đồ đã được cập nhật, không tự yêu cầu service mới hoặc migration. Khi làm tác vụ liên quan, đọc trực tiếp RQ-009 để tránh bản tóm tắt lỗi thời.
 

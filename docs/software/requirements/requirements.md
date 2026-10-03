@@ -1,5 +1,7 @@
 # Đặc tả yêu cầu
 
+> Phạm vi hiện tại được thu hẹp thành web/PWA theo RQ-012 ngày 03/10/2026. Các phê duyệt ngày 06/09/2026 là lịch sử; thay đổi này không tự phê duyệt Release Gate.
+
 > Baseline v1.1 được Đào Minh Tâm điều chỉnh và phê duyệt tại Requirements Gate ngày 06/09/2026. Một số yêu cầu chưa được implementation hiện tại đáp ứng; xem `docs/software/requirements/requirements-issues.md`.
 
 ## Yêu cầu chức năng
@@ -16,8 +18,8 @@
 - **FR-AI-001:** Người dùng hỏi trợ lý về tài chính cá nhân và quản lý lịch sử hội thoại của chính mình.
 - **FR-AI-002:** Trợ lý chỉ nhận dữ liệu tổng hợp/ẩn danh, kèm kỳ, bằng chứng và mức tin cậy; không sửa dữ liệu.
 - **FR-DATA-001:** Lịch sử hội thoại được giữ lại; người dùng có thể chủ động xóa toàn bộ tài khoản và dữ liệu cá nhân của chính mình.
-- **FR-REL-001:** Backend cung cấp health/readiness và phục vụ web build; sản phẩm hỗ trợ kênh web/PWA và ứng dụng cài đặt.
-- **FR-CONN-001:** Phiên bản web và ứng dụng cài đặt yêu cầu kết nối Internet cho toàn bộ chức năng trong phạm vi phát hành hiện tại.
+- **FR-REL-001:** Backend cung cấp health/readiness và phục vụ web build; sản phẩm chỉ phát hành trên web/PWA.
+- **FR-CONN-001:** Phiên bản web/PWA yêu cầu kết nối Internet cho toàn bộ chức năng trong phạm vi phát hành hiện tại.
 
 ## Quy tắc nghiệp vụ
 

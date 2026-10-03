@@ -245,7 +245,7 @@ Mọi public error chỉ gồm code/message ổn định và correlation ID ng�
 - Rate limit theo authenticated principal và IP bucket đã hash/pseudonymize, cộng global concurrency/budget guard; không dùng raw identity trong log metric.
 - Request size, question length, history count, output tokens và category count có hard limit. History gửi upstream chỉ là safe intent/evidence refs.
 - Egress allowlist, DNS/TLS verification mặc định, không cho redirect sang host ngoài allowlist; endpoint phải là `https://`.
-- Key lấy từ environment/secret manager tại backend, không bake vào frontend/Tauri, không query string, không persist/log.
+- Key lấy từ environment/secret manager tại backend, không bake vào frontend, không query string, không persist/log.
 - `store=false` bắt buộc khi API/model hỗ trợ; nếu endpoint không hỗ trợ hoặc không xác nhận được chính sách retention, dừng tích hợp và đưa ra Privacy Gate, không quảng bá “zero retention”.
 - Timeout tách connect/read và có overall deadline dưới ngân sách latency; retry chỉ transient, số lần hữu hạn, backoff có jitter. Không retry sau khi client đã hủy nếu server có thể dừng an toàn.
 - Prompt injection: system contract cố định, question thành enum, context delimiting + strict JSON, no tools, no URLs/files, output schema validation.

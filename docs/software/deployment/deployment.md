@@ -19,7 +19,7 @@ Các giá trị sau **chưa được quyết định** và không được suy d
 
 ```mermaid
 flowchart LR
-    U[Browser/PWA hoặc Tauri] -->|HTTPS 443| C[Caddy / TLS edge]
+    U[Browser/PWA] -->|HTTPS 443| C[Caddy / TLS edge]
     C -->|HTTP private network| W[FastAPI + React build]
     W -->|read/write| P[(PostgreSQL)]
     W -->|persistent volume| A[(Avatar uploads)]

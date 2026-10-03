@@ -8,4 +8,4 @@
 6. Trong Trợ lý, chọn kỳ và đặt câu hỏi. Câu trả lời chỉ mang tính tham khảo; mở phần bằng chứng để kiểm tra số liệu và quay lại Reports/Transactions khi cần.
 7. Có thể chỉnh hồ sơ/avatar. Không chia sẻ access token hoặc liên kết reset mật khẩu.
 
-Lưu ý: web và bản Windows đều yêu cầu kết nối Internet cho toàn bộ chức năng và dùng cùng backend. Chế độ offline chưa được hỗ trợ trong phạm vi hiện tại.
+Lưu ý: web/PWA yêu cầu kết nối Internet cho toàn bộ chức năng và dùng dữ liệu máy chủ. Chế độ offline chưa được hỗ trợ trong phạm vi hiện tại.

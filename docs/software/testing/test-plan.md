@@ -43,7 +43,7 @@ Frontend và hợp đồng API không đổi trong phạm vi này; không cần 
 | FR-CONN-001, AC-013 | Test lỗi/retry component hiện có; chưa E2E mất Internet khi đang nhập/lưu dữ liệu |
 | NFR-PERF-001, AC-015 | Chưa chạy tải theo điều kiện vận hành được phê duyệt |
 | NFR-PRIV-002, AC-017 | Chưa kiểm chứng TLS production/live provider |
-| FR-REL-001, NFR-UX-001 | Web/PWA build PASS; chưa browser E2E/responsive thực tế và bộ cài Tauri |
+| FR-REL-001, NFR-UX-001 | Web/PWA build PASS; chưa browser E2E/responsive thực tế |
 
 Không đánh đồng suite PASS với nghiệm thu toàn bộ baseline. Đợt này giữ nguyên lỗi ứng dụng và bổ sung ca tái hiện để phục vụ bước sửa lỗi.
 
