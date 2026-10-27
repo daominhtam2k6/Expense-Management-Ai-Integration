@@ -192,7 +192,7 @@ def ask_assistant(
     )
     evidence = build_assistant_context(db, current_user.id, selected_month, selected_year)
     try:
-        answer = generate_financial_advice(
+        advice = generate_financial_advice(
             question,
             evidence,
             ((message.role, message.content) for message in prior_messages),
@@ -220,7 +220,7 @@ def ask_assistant(
             AIMessage(
                 conversation_id=conversation.id,
                 role="assistant",
-                content=answer,
+                content=advice.text,
                 context_month=selected_month,
                 context_year=selected_year,
                 evidence_json=json.dumps(evidence, ensure_ascii=False, default=str),
@@ -233,5 +233,5 @@ def ask_assistant(
     db.refresh(conversation)
     return AssistantReplyOut(
         conversation=_conversation_out(db, conversation),
-        model=configured_model(),
+        model=advice.model,
     )

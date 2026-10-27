@@ -1,12 +1,13 @@
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.gemini import (
+    GeminiAdvice,
     GeminiNotConfiguredError,
     GeminiRateLimitError,
     GeminiServiceError,
@@ -79,7 +80,7 @@ class AssistantBranchTests(unittest.TestCase):
         self.assertEqual(caught.exception.status_code, 422)
 
         question = "q" * 80
-        with patch("app.routers.assistant.generate_financial_advice", return_value="answer"):
+        with patch("app.routers.assistant.generate_financial_advice", return_value=GeminiAdvice("answer", "primary")):
             result = ask_assistant(AssistantAskRequest(question=question), self.db, self.user)
         self.assertEqual(result.conversation.title, "q" * 72 + "…")
         self.assertEqual(result.conversation.preview, "answer")
@@ -90,7 +91,7 @@ class AssistantBranchTests(unittest.TestCase):
         self.db.add(AIMessage(id="old", conversation_id="thread", role="user", content="old question"))
         self.db.commit()
 
-        with patch("app.routers.assistant.generate_financial_advice", return_value="new answer") as generate:
+        with patch("app.routers.assistant.generate_financial_advice", return_value=GeminiAdvice("new answer", "fallback")) as generate:
             result = ask_assistant(
                 AssistantAskRequest(question="new question", conversation_id="thread", month=2, year=2026),
                 self.db,
@@ -100,6 +101,24 @@ class AssistantBranchTests(unittest.TestCase):
         self.assertEqual(history, [("user", "old question")])
         self.assertEqual(result.conversation.message_count, 3)
         self.assertEqual(result.conversation.messages[-1].context_month, 2)
+
+    @patch.dict("os.environ", {"GEMINI_MODEL": "gemini-3.8-flash", "GEMINI_FALLBACK_MODEL": "gemini-3.1-pro-preview"})
+    @patch("app.core.gemini._api_key", return_value="test-key")
+    @patch("app.core.gemini.time.sleep")
+    def test_real_gateway_fallback_persists_once_and_all_busy_rolls_back(self, sleep, key):
+        success = Mock(status_code=200)
+        success.json.return_value = {"output_text": "Phân tích."}
+        with patch("app.core.gemini.requests.post", side_effect=[Mock(status_code=503), Mock(status_code=503), success]):
+            result = ask_assistant(AssistantAskRequest(question="Tóm tắt"), self.db, self.user)
+        self.assertEqual(result.model, "gemini-3.1-pro-preview")
+        self.assertEqual(self.db.query(AIConversation).count(), 1)
+        self.assertEqual(self.db.query(AIMessage).count(), 2)
+        with patch("app.core.gemini.requests.post", return_value=Mock(status_code=503)):
+            with self.assertRaises(HTTPException) as caught:
+                ask_assistant(AssistantAskRequest(question="Câu hỏi mới"), self.db, self.user)
+        self.assertEqual(caught.exception.status_code, 503)
+        self.assertEqual(self.db.query(AIConversation).count(), 1)
+        self.assertEqual(self.db.query(AIMessage).count(), 2)
 
     def test_gemini_exceptions_are_mapped_and_rolled_back(self):
         cases = [

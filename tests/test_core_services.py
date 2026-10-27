@@ -197,8 +197,9 @@ class GeminiBranchTests(unittest.TestCase):
     def test_connection_retries_then_unavailable(self, _key, post, sleep):
         with self.assertRaises(GeminiUnavailableError):
             gemini.generate_financial_advice("q", {}, [])
-        self.assertEqual(post.call_count, 2)
-        sleep.assert_called_once_with(1)
+        self.assertEqual(post.call_count, 3)
+        self.assertEqual(sleep.call_count, 1)
+        self.assertGreaterEqual(sleep.call_args.args[0], 1)
 
     @patch("app.core.gemini.requests.post", side_effect=requests.RequestException("bad"))
     @patch("app.core.gemini._api_key", return_value="key")
