@@ -1,0 +1,45 @@
+@startuml UC001_Sequence_DangKy
+title UC001 — BIỂU ĐỒ TUẦN TỰ ĐĂNG KÝ TÀI KHOẢN
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Khách" as Guest
+boundary "RegisterPage\n(UI Layer)" as UI
+control "AuthRouter\n(API Layer)" as Auth
+control "Security\n(Business Layer)" as Security
+entity "User\n(Entity)" as UserEntity
+database "Database\n(Data Layer)" as DB
+
+Guest -> UI : Nhập username, email,\nmật khẩu và xác nhận
+UI -> UI : Kiểm tra username >= 3,\nmật khẩu >= 6, xác nhận khớp
+alt Dữ liệu frontend không hợp lệ
+    UI --> Guest : Hiển thị lỗi biểu mẫu
+else Dữ liệu frontend hợp lệ
+    UI -> Auth : POST /api/auth/register
+    activate Auth
+    Auth -> DB : SELECT User WHERE username = ?
+    DB --> Auth : Kết quả
+    Auth -> DB : SELECT User WHERE lower(email) = ?
+    DB --> Auth : Kết quả
+    alt Username hoặc email đã tồn tại
+        Auth --> UI : 400 + thông báo trùng
+        UI --> Guest : Hiển thị lỗi
+    else Thông tin chưa tồn tại
+        Auth -> Security : hash_password(password)
+        Security --> Auth : password_hash
+        Auth -> UserEntity : Tạo User(username, email, hash)
+        UserEntity --> Auth : User mới
+        Auth -> DB : INSERT User + COMMIT
+        DB --> Auth : User đã lưu
+        Auth --> UI : 200 UserOut
+        UI --> Guest : Thông báo thành công\nChuyển đến Đăng nhập
+    end
+    deactivate Auth
+end
+@enduml

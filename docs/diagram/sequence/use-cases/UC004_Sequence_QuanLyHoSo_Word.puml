@@ -1,0 +1,49 @@
+@startuml UC004_Sequence_QuanLyHoSo_Word
+title UC004 — TUẦN TỰ QUẢN LÝ HỒ SƠ VÀ AVATAR
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "ProfilePanel/AuthContext\n«UI/Client»" as UI
+control "AuthRouter\n«API»" as API
+database "User DB\n«Data»" as DB
+database "Avatar Storage\n«File»" as Files
+User -> UI : Mở hồ sơ
+UI --> User : Hiển thị User hiện tại
+alt Cập nhật thông tin
+  User -> UI : Sửa display name, username, email
+  UI -> API : PUT /api/auth/me
+  API -> DB : Kiểm tra duy nhất; cập nhật User
+  opt Email thay đổi
+    API -> DB : Xóa reset token
+  end
+  API --> UI : UserOut hoặc 400/422
+else Tải lên/thay avatar
+  User -> UI : Chọn PNG/JPEG/WebP ≤ 2 MB
+  UI -> API : POST /api/auth/me/avatar
+  API -> API : Kiểm tra MIME, chữ ký, size, nội dung
+  alt Tệp hợp lệ
+    API -> Files : Lưu tệp mới; xóa tệp cũ
+    API -> DB : Cập nhật avatar_url
+    API --> UI : UserOut
+  else Không hợp lệ
+    API --> UI : 400/413/415
+  end
+else Xóa avatar
+  User -> UI : Chọn Xóa ảnh
+  UI -> API : DELETE /api/auth/me/avatar
+  API -> DB : avatar_url = null
+  API -> Files : Xóa tệp cũ
+  API --> UI : UserOut
+end
+UI --> User : Hiển thị hồ sơ/kết quả mới
+@enduml

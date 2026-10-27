@@ -1,0 +1,56 @@
+@startuml UC011_Sequence_TroLyAI_Word
+title UC011 — TUẦN TỰ SỬ DỤNG TRỢ LÝ AI
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 8
+skinparam sequence {
+  ArrowColor #4F3FB0
+  LifeLineBorderColor #8A7BC7
+  ParticipantBorderColor #7757E8
+  ParticipantBackgroundColor #F1ECFF
+}
+actor "Người dùng" as User
+boundary "AssistantPage\n«UI»" as UI
+control "AssistantRouter/Context/\nGeminiService «API/Business»" as API
+database "Finance + AI Conversation DB\n«Data»" as DB
+participant "Google Gemini\n«External AI»" as Gemini
+group Tải phạm vi và lịch sử
+  User -> UI : Mở Trợ lý; chọn kỳ
+  UI -> API : GET context + conversations
+  API -> DB : Tổng hợp kỳ hiện tại/tháng trước;\nđọc hội thoại
+  API -> API : Loại định danh, ghi chú, dữ liệu thô,\ntên tùy biến; tạo evidence
+  API --> UI : Evidence + privacy + lịch sử
+end
+group Gửi câu hỏi
+  User -> UI : Nhập/chọn câu hỏi
+  UI -> API : POST /assistant/messages
+  API -> DB : Kiểm tra/tạo hội thoại; lấy prior messages
+  API -> DB : Tạo evidence snapshot tổng hợp
+  API -> Gemini : Instruction + context + lịch sử + câu hỏi
+  alt Thành công
+    Gemini --> API : Câu trả lời
+    API -> DB : Lưu question, answer, period, evidence
+    API --> UI : 201 AssistantReplyOut
+    UI --> User : Tư vấn + bằng chứng + độ tin cậy + nguồn
+  else Lỗi cấu hình/rate limit/timeout/dịch vụ
+    Gemini --> API : Error
+    API -> DB : ROLLBACK
+    API --> UI : 503/429/504/502
+    UI --> User : Hiển thị lỗi; cho thử lại
+  end
+end
+opt Xem hoặc xóa hội thoại
+  User -> UI : Chọn hội thoại
+  UI -> API : GET hoặc DELETE /conversations/{id}
+  API -> DB : Kiểm tra user; đọc hoặc xóa
+  API --> UI : Chi tiết hoặc 204
+  UI --> User : Cập nhật lịch sử
+end
+note over API,Gemini
+  Không gửi username, email, tên mục tiêu, ghi chú,
+  giao dịch thô, ID nội bộ hoặc tên danh mục tùy biến.
+end note
+@enduml

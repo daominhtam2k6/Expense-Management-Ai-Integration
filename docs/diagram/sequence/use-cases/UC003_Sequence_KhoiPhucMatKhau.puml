@@ -1,0 +1,73 @@
+@startuml UC003_Sequence_KhoiPhucMatKhau
+title UC003 — BIỂU ĐỒ TUẦN TỰ KHÔI PHỤC MẬT KHẨU
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Khách" as Guest
+boundary "ForgotPasswordPage\n(UI Layer)" as ForgotUI
+boundary "ResetPasswordPage\n(UI Layer)" as ResetUI
+control "AuthRouter\n(API Layer)" as Auth
+control "Security\n(Business Layer)" as Security
+entity "User\n(Entity)" as UserEntity
+database "Database\n(Data Layer)" as DB
+participant "Resend\n(External Service)" as Resend
+
+group Yêu cầu liên kết đặt lại
+    Guest -> ForgotUI : Nhập email
+    ForgotUI -> Auth : POST /api/auth/forgot-password
+    activate Auth
+    Auth -> Auth : Kiểm tra rate limit\n3 yêu cầu/email/giờ
+    Auth -> DB : SELECT User WHERE lower(email) = ?
+    DB --> Auth : User hoặc null
+    alt User tồn tại và chưa vượt rate limit
+        Auth -> Security : Sinh token ngẫu nhiên
+        Security --> Auth : raw_token
+        Auth -> Security : SHA-256(raw_token)
+        Security --> Auth : token_hash
+        Auth -> UserEntity : Gán hash + expiry 15 phút
+        Auth -> DB : UPDATE User + COMMIT
+        DB --> Auth : Thành công
+        Auth -> Resend : Gửi email chứa reset link
+        Resend --> Auth : Thành công hoặc thất bại
+        note right of Auth
+          Kết quả gửi email hiện không
+          thay đổi phản hồi chung.
+        end note
+    else Không tồn tại hoặc bị giới hạn
+        Auth -> Auth : Không tạo token
+    end
+    Auth --> ForgotUI : 200 thông báo chung
+    deactivate Auth
+    ForgotUI --> Guest : Yêu cầu kiểm tra email
+end
+
+group Đặt mật khẩu mới
+    Guest -> ResetUI : Mở link và nhập mật khẩu mới
+    ResetUI -> ResetUI : Kiểm tra >= 6 ký tự\nvà xác nhận khớp
+    ResetUI -> Auth : POST /api/auth/reset-password\n(token, new_password)
+    activate Auth
+    Auth -> Security : SHA-256(token)
+    Security --> Auth : token_hash
+    Auth -> DB : SELECT User WHERE reset_token_hash = ?
+    DB --> Auth : User hoặc null
+    alt Token tồn tại và chưa hết hạn
+        Auth -> Security : hash_password(new_password)
+        Security --> Auth : password_hash
+        Auth -> UserEntity : Cập nhật password_hash\nXóa reset token
+        Auth -> DB : UPDATE User + COMMIT
+        DB --> Auth : Thành công
+        Auth --> ResetUI : 200 đặt lại thành công
+        ResetUI --> Guest : Chuyển đến Đăng nhập
+    else Token sai hoặc hết hạn
+        Auth --> ResetUI : 400 liên kết không hợp lệ/hết hạn
+        ResetUI --> Guest : Hiển thị lỗi
+    end
+    deactivate Auth
+end
+@enduml

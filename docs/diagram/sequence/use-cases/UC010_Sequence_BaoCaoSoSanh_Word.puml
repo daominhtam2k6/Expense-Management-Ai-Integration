@@ -1,0 +1,39 @@
+@startuml UC010_Sequence_BaoCaoSoSanh_Word
+title UC010 — TUẦN TỰ XEM BÁO CÁO SO SÁNH
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "ReportsPage\n«UI»" as UI
+control "ReportsRouter\n«API/Business»" as API
+database "Transaction + Category DB\n«Data»" as DB
+User -> UI : Mở Báo cáo; chọn tháng/năm
+UI -> API : GET /api/reports?month&year
+API -> API : Xác định kỳ hiện tại và tháng trước
+API -> DB : Tổng thu/chi của hai kỳ
+API -> DB : Chi + số giao dịch theo danh mục của hai kỳ
+DB --> API : Kết quả tổng hợp
+API -> API : Tính net, difference, share, change %
+note right of API : Tính xác định;\nkhông gọi Gemini.
+API --> UI : ReportOut
+alt Có dữ liệu
+  UI --> User : Tổng quan, biểu đồ, cơ cấu,\nbiến động và bảng chi tiết
+  opt Chọn Xem giao dịch
+    User -> UI : Chọn danh mục
+    UI -> UI : Mở /transactions với bộ lọc kỳ/type/category
+  end
+else Không có dữ liệu
+  UI --> User : Hướng dẫn thêm giao dịch
+else API lỗi
+  UI --> User : Lỗi + Thử lại
+end
+@enduml

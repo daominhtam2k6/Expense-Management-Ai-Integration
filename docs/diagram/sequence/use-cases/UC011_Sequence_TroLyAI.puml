@@ -1,0 +1,105 @@
+@startuml UC011_Sequence_TroLyAI
+title UC011 — BIỂU ĐỒ TUẦN TỰ SỬ DỤNG TRỢ LÝ AI
+autonumber
+skinparam shadowing false
+skinparam maxMessageSize 95
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #7757E8
+  ParticipantBackgroundColor #F1ECFF
+}
+
+actor "Người dùng" as User
+boundary "AssistantPage\n(UI Layer)" as UI
+control "AssistantRouter\n(API Layer)" as Router
+control "AssistantContext\n(Business Layer)" as Context
+control "GeminiService\n(Integration Layer)" as GeminiService
+entity "Finance Entities\n(Transaction/Budget/Goal)" as FinanceEntities
+entity "AIConversation / AIMessage\n(Entities)" as AIEntities
+database "Database\n(Data Layer)" as DB
+participant "Google Gemini\n(External AI)" as Gemini
+
+group Tải phạm vi và lịch sử
+    User -> UI : Mở Trợ lý / chọn kỳ
+    UI -> Router : GET /api/assistant/context?month&year
+    Router -> Context : build_assistant_context(user, period)
+    Context -> FinanceEntities : Yêu cầu dữ liệu tổng hợp
+    FinanceEntities -> DB : Aggregate current/previous,\nbudget, goal, available balance
+    DB --> FinanceEntities : Aggregate rows
+    FinanceEntities --> Context : Số liệu tổng hợp
+    Context -> Context : Tạo nhãn an toàn, top 7 nhóm,\ndự báo và confidence
+    Context --> Router : AssistantEvidence
+    Router --> UI : Evidence + privacy notes + model
+
+    UI -> Router : GET /api/assistant/conversations
+    Router -> AIEntities : Truy vấn hội thoại của user
+    AIEntities -> DB : SELECT conversations/messages
+    DB --> AIEntities : Lịch sử
+    Router --> UI : ConversationSummary[]
+    UI --> User : Hiển thị phạm vi và lịch sử
+end
+
+group Gửi câu hỏi
+    User -> UI : Nhập/chọn câu hỏi
+    UI -> UI : Kiểm tra không rỗng
+    UI -> Router : POST /api/assistant/messages\n(question, conversation_id, period)
+    activate Router
+    alt Hội thoại đã tồn tại
+        Router -> AIEntities : Kiểm tra conversation_id + user_id
+        AIEntities -> DB : SELECT conversation + messages
+        DB --> AIEntities : Conversation và prior messages
+    else Hội thoại mới
+        Router -> AIEntities : Tạo title từ 72 ký tự đầu
+        AIEntities -> DB : INSERT/FLUSH conversation
+    end
+
+    Router -> Context : build_assistant_context(user, period)
+    Context -> FinanceEntities : Tổng hợp dữ liệu
+    FinanceEntities -> DB : Các truy vấn aggregate
+    DB --> FinanceEntities : Kết quả
+    Context --> Router : Evidence an toàn
+
+    Router -> GeminiService : generate_financial_advice(\nquestion, evidence, prior messages)
+    GeminiService -> GeminiService : Tạo system instruction + JSON context
+    GeminiService -> Gemini : POST Interactions API
+    alt Gemini trả lời thành công
+        Gemini --> GeminiService : Nội dung trả lời
+        GeminiService --> Router : answer
+        Router -> AIEntities : Tạo user message + assistant message\nkèm period và evidence_json
+        AIEntities -> DB : INSERT messages + UPDATE conversation\nCOMMIT
+        DB --> AIEntities : Thành công
+        Router --> UI : 201 AssistantReplyOut
+        UI --> User : Hiển thị tư vấn, bằng chứng,\nđộ tin cậy và liên kết nguồn
+    else Thiếu cấu hình / rate limit / timeout / lỗi dịch vụ
+        Gemini --> GeminiService : Error
+        GeminiService --> Router : Typed service error
+        Router -> DB : ROLLBACK
+        Router --> UI : 503 / 429 / 504 / 502
+        UI --> User : Hiển thị lỗi và cho phép thử lại
+    end
+    deactivate Router
+end
+
+opt Xem hoặc xóa hội thoại
+    User -> UI : Chọn hội thoại
+    alt Xem chi tiết
+        UI -> Router : GET /conversations/{id}
+        Router -> DB : SELECT theo id + user_id
+        DB --> Router : Conversation + messages
+        Router --> UI : AssistantConversationOut
+        UI --> User : Hiển thị nội dung
+    else Xóa
+        UI -> Router : DELETE /conversations/{id}
+        Router -> DB : DELETE messages + conversation\nCOMMIT
+        Router --> UI : 204 No Content
+        UI --> User : Loại khỏi lịch sử
+    end
+end
+
+note over Context,Gemini
+  Không gửi username, email, tên mục tiêu, ghi chú,
+  giao dịch thô, ID nội bộ hoặc tên danh mục tùy biến.
+  Câu hỏi và lịch sử hội thoại dạng văn bản vẫn được gửi.
+end note
+@enduml

@@ -1,0 +1,58 @@
+@startuml UC008_Sequence_QuanLyMucTieu_Word
+title UC008 — TUẦN TỰ QUẢN LÝ MỤC TIÊU TIẾT KIỆM
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 8
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "GoalsPage\n«UI»" as UI
+control "GoalsRouter + FinanceService\n«API/Business»" as API
+database "Goal/GoalItem/GoalTx\nCategory/Transaction DB" as DB
+group Tải danh sách
+  User -> UI : Mở Mục tiêu
+  UI -> API : GET /api/goals
+  API -> DB : Đọc goal/item; SUM deposit - withdraw
+  API --> UI : GoalOut[]
+end
+User -> UI : Chọn thao tác
+alt Tạo/sửa mục tiêu hoặc hạng mục
+  UI -> API : POST/PATCH Goal hoặc GoalItem
+  API -> DB : Kiểm tra quyền, tên, amount/cost > 0; lưu
+else Nạp tiền
+  UI -> API : POST /goals/{id}/deposit
+  API -> DB : Goal active; amount ≤ số dư khả dụng; lưu deposit
+else Rút tiền
+  UI -> API : POST /goals/{id}/withdraw
+  API -> DB : amount ≤ deposit - withdraw; lưu withdraw
+else Hoàn thành
+  UI -> API : POST /goals/{id}/complete
+  API -> DB : Kiểm tra current ≥ target
+  note over API,DB
+    keep: giữ tiền
+    release: withdraw toàn bộ
+    spend: tạo expense + withdraw toàn bộ
+    Sau đó lưu completion_amount/mode và status=completed.
+  end note
+else Xem lịch sử
+  UI -> API : GET /goals/{id}/transactions
+  API -> DB : SELECT lịch sử ORDER BY date DESC
+else Xóa
+  UI -> API : DELETE /goals/{id}
+  API -> DB : Chỉ DELETE khi chưa có lịch sử tiền
+end
+alt Thành công
+  API --> UI : GoalOut/lịch sử/kết quả
+  UI --> User : Cập nhật tiến độ, số dư, tab và lịch sử
+else Vi phạm quy tắc
+  API --> UI : 400/404/409/422
+  UI --> User : Hiển thị lỗi
+end
+@enduml

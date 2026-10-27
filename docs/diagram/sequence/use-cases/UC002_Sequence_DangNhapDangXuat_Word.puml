@@ -1,0 +1,43 @@
+@startuml UC002_Sequence_DangNhapDangXuat_Word
+title UC002 — TUẦN TỰ ĐĂNG NHẬP VÀ ĐĂNG XUẤT
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Khách/Người dùng" as User
+boundary "LoginPage + AuthContext\n«UI/Client»" as UI
+control "AuthRouter + Security\n«API/Business»" as API
+database "User DB + localStorage\n«Data/Client Storage»" as DB
+alt Đăng nhập
+  User -> UI : Nhập username/email và mật khẩu
+  UI -> API : POST /api/auth/login
+  API -> DB : Tìm username; nếu không có, tìm lower(email)
+  DB --> API : User hoặc null
+  API -> API : Xác minh bcrypt
+  alt Hợp lệ
+    API -> API : Tạo JWT hạn 24 giờ
+    API --> UI : access_token
+    UI -> DB : Lưu token
+    UI -> API : GET /api/auth/me + JWT
+    API -> DB : Giải mã JWT; đọc User
+    API --> UI : UserOut
+    UI --> User : Chuyển đến Dashboard
+  else Không hợp lệ
+    API --> UI : 401 thông báo chung
+    UI --> User : Hiển thị lỗi
+  end
+else Đăng xuất
+  User -> UI : Chọn Đăng xuất
+  UI -> DB : Xóa access_token
+  UI -> UI : Xóa trạng thái User
+  UI --> User : Chuyển đến Đăng nhập
+end
+@enduml

@@ -1,0 +1,77 @@
+@startuml UC006_Sequence_QuanLyGiaoDich
+title UC006 — BIỂU ĐỒ TUẦN TỰ QUẢN LÝ GIAO DỊCH
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Người dùng" as User
+boundary "TransactionsPage\n(UI Layer)" as UI
+control "TransactionsRouter\n(API/Business Layer)" as Router
+entity "Category\n(Entity)" as Category
+entity "Transaction\n(Entity)" as Transaction
+database "Database\n(Data Layer)" as DB
+
+group Xem và lọc danh sách
+    User -> UI : Mở Giao dịch / chọn bộ lọc
+    UI -> Router : GET /api/transactions/\n(category, type, dates, keyword)
+    Router -> DB : SELECT Transaction WHERE user_id\n+ các điều kiện lọc\nORDER BY txn_date DESC
+    DB --> Router : Transaction[]
+    Router --> UI : TransactionOut[]
+    UI --> User : Hiển thị kết quả
+end
+
+alt Thêm giao dịch
+    User -> UI : Nhập danh mục, số tiền,\nngày và ghi chú
+    UI -> Router : POST /api/transactions/
+    Router -> Router : Kiểm tra amount > 0\nvà ngày không tương lai
+    Router -> Category : Kiểm tra danh mục
+    Category -> DB : SELECT Category WHERE id + user_id
+    DB --> Category : Category hoặc null
+    alt Dữ liệu/danh mục không hợp lệ
+        Router --> UI : 404 hoặc 422
+        UI --> User : Hiển thị lỗi
+    else Hợp lệ
+        Router -> Transaction : Tạo Transaction\ntype = Category.type
+        Router -> DB : INSERT + COMMIT
+        DB --> Router : Transaction đã lưu
+        Router --> UI : TransactionOut
+        UI --> User : Cập nhật danh sách\nThông báo thành công
+    end
+
+else Sửa giao dịch
+    User -> UI : Sửa dữ liệu giao dịch
+    UI -> Router : PUT /api/transactions/{id}
+    Router -> DB : Tìm Transaction theo id + user_id
+    DB --> Router : Transaction hoặc null
+    opt category_id thay đổi
+        Router -> DB : Tìm Category theo id + user_id
+        DB --> Router : Category hoặc null
+        Router -> Transaction : Cập nhật type = Category.type
+    end
+    alt Không hợp lệ/không sở hữu
+        Router --> UI : 404 hoặc 422
+    else Hợp lệ
+        Router -> DB : UPDATE + COMMIT
+        Router --> UI : TransactionOut
+        UI --> User : Hiển thị dữ liệu mới
+    end
+
+else Xóa giao dịch
+    User -> UI : Chọn và xác nhận xóa
+    UI -> Router : DELETE /api/transactions/{id}
+    Router -> DB : Tìm theo id + user_id
+    DB --> Router : Transaction hoặc null
+    alt Không tìm thấy
+        Router --> UI : 404
+    else Tìm thấy
+        Router -> DB : DELETE + COMMIT
+        Router --> UI : 200 đã xóa
+        UI --> User : Cập nhật danh sách
+    end
+end
+@enduml

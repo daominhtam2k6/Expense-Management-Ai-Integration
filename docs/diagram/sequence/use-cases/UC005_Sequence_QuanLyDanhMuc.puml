@@ -1,0 +1,73 @@
+@startuml UC005_Sequence_QuanLyDanhMuc
+title UC005 — BIỂU ĐỒ TUẦN TỰ QUẢN LÝ DANH MỤC
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Người dùng" as User
+boundary "CategoriesPage\n(UI Layer)" as UI
+control "CategoriesRouter\n(API/Business Layer)" as Router
+entity "Category\n(Entity)" as Category
+entity "Transaction\n(Entity)" as Transaction
+database "Database\n(Data Layer)" as DB
+
+User -> UI : Mở màn hình Danh mục
+UI -> Router : GET /api/categories/
+Router -> DB : SELECT Category\nWHERE user_id = current_user.id
+DB --> Router : Danh sách Category
+Router --> UI : CategoryOut[]
+UI --> User : Hiển thị danh mục
+
+alt Thêm danh mục
+    User -> UI : Nhập tên, loại, màu, icon
+    UI -> Router : POST /api/categories/
+    Router -> DB : Kiểm tra trùng name + type + user_id
+    DB --> Router : Kết quả
+    alt Đã tồn tại
+        Router --> UI : 400 danh mục đã tồn tại
+    else Chưa tồn tại
+        Router -> Category : Tạo Category
+        Router -> DB : INSERT + COMMIT
+        DB --> Router : Category đã lưu
+        Router --> UI : CategoryOut
+        UI --> User : Cập nhật danh sách
+    end
+
+else Sửa danh mục
+    User -> UI : Thay đổi tên/màu/icon/loại
+    UI -> Router : PUT /api/categories/{id}
+    Router -> DB : Tìm Category theo id + user_id
+    DB --> Router : Category hoặc null
+    Router -> DB : Kiểm tra bản ghi trùng mới
+    DB --> Router : Kết quả
+    alt Không thuộc user hoặc bị trùng
+        Router --> UI : 404 hoặc 400
+    else Hợp lệ
+        Router -> Category : Cập nhật thuộc tính
+        Router -> DB : UPDATE + COMMIT
+        Router --> UI : CategoryOut
+        UI --> User : Hiển thị dữ liệu mới
+    end
+
+else Xóa danh mục
+    User -> UI : Chọn và xác nhận xóa
+    UI -> Router : DELETE /api/categories/{id}
+    Router -> DB : Tìm Category theo id + user_id
+    DB --> Router : Category hoặc null
+    Router -> Transaction : Kiểm tra giao dịch tham chiếu
+    Transaction -> DB : SELECT Transaction WHERE category_id = ?
+    DB --> Transaction : Có/không
+    alt Có giao dịch sử dụng
+        Router --> UI : 400 không thể xóa
+    else Không có giao dịch
+        Router -> DB : DELETE Category + COMMIT
+        Router --> UI : 200 đã xóa
+        UI --> User : Loại khỏi danh sách
+    end
+end
+@enduml

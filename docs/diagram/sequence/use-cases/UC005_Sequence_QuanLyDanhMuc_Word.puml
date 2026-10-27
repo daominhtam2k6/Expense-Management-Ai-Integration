@@ -1,0 +1,45 @@
+@startuml UC005_Sequence_QuanLyDanhMuc_Word
+title UC005 — TUẦN TỰ QUẢN LÝ DANH MỤC
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "CategoriesPage\n«UI»" as UI
+control "CategoriesRouter\n«API/Business»" as API
+database "Category + Transaction DB\n«Data»" as DB
+User -> UI : Mở Danh mục
+UI -> API : GET /api/categories
+API -> DB : SELECT theo current_user.id
+API --> UI : CategoryOut[]
+alt Thêm hoặc sửa
+  User -> UI : Nhập tên, loại, màu, icon
+  UI -> API : POST hoặc PUT /categories
+  API -> DB : Kiểm tra quyền và name + type không trùng
+  alt Hợp lệ
+    API -> DB : INSERT/UPDATE + COMMIT
+    API --> UI : CategoryOut
+  else Trùng/không hợp lệ
+    API --> UI : 400/404/422
+  end
+else Xóa
+  User -> UI : Chọn và xác nhận xóa
+  UI -> API : DELETE /categories/{id}
+  API -> DB : Kiểm tra quyền + giao dịch tham chiếu
+  alt Đang được sử dụng
+    API --> UI : 400 không thể xóa
+  else Không được sử dụng
+    API -> DB : DELETE + COMMIT
+    API --> UI : 200
+  end
+end
+UI --> User : Cập nhật danh sách hoặc hiển thị lỗi
+@enduml

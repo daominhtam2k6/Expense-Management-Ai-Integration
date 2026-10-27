@@ -1,0 +1,59 @@
+@startuml UC002_Sequence_DangNhapDangXuat
+title UC002 — BIỂU ĐỒ TUẦN TỰ ĐĂNG NHẬP VÀ ĐĂNG XUẤT
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Khách / Người dùng" as Actor
+boundary "LoginPage\n(UI Layer)" as LoginUI
+control "AuthContext\n(Client Controller)" as AuthContext
+control "AuthRouter\n(API Layer)" as Auth
+control "Security\n(Business Layer)" as Security
+entity "User\n(Entity)" as UserEntity
+database "Database\n(Data Layer)" as DB
+database "localStorage\n(Client Storage)" as Storage
+
+alt Đăng nhập
+    Actor -> LoginUI : Nhập username/email và mật khẩu
+    LoginUI -> AuthContext : login(identifier, password)
+    AuthContext -> Auth : POST /api/auth/login
+    activate Auth
+    Auth -> DB : SELECT User WHERE username = identifier
+    DB --> Auth : User hoặc null
+    opt Không tìm thấy username
+        Auth -> DB : SELECT User WHERE lower(email) = lower(identifier)
+        DB --> Auth : User hoặc null
+    end
+    Auth -> Security : verify_password(password, password_hash)
+    Security --> Auth : true/false
+    alt Tài khoản và mật khẩu hợp lệ
+        Auth -> Security : create_access_token(user.id, 24 giờ)
+        Security --> Auth : JWT
+        Auth --> AuthContext : 200 access_token
+        AuthContext -> Storage : Lưu access_token
+        AuthContext -> Auth : GET /api/auth/me\nBearer JWT
+        Auth -> Security : decode_access_token(JWT)
+        Security --> Auth : user_id
+        Auth -> DB : SELECT User WHERE id = user_id
+        DB --> Auth : UserEntity
+        Auth --> AuthContext : UserOut
+        AuthContext --> LoginUI : Đăng nhập thành công
+        LoginUI --> Actor : Chuyển đến Dashboard
+    else Không hợp lệ
+        Auth --> AuthContext : 401 thông báo chung
+        AuthContext --> LoginUI : Lỗi đăng nhập
+        LoginUI --> Actor : Hiển thị lỗi
+    end
+    deactivate Auth
+else Đăng xuất
+    Actor -> AuthContext : Chọn Đăng xuất
+    AuthContext -> Storage : Xóa access_token
+    AuthContext -> AuthContext : Xóa trạng thái User
+    AuthContext --> Actor : Chuyển đến Đăng nhập
+end
+@enduml

@@ -1,0 +1,45 @@
+@startuml UC007_Sequence_QuanLyNganSach_Word
+title UC007 — TUẦN TỰ QUẢN LÝ NGÂN SÁCH
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "BudgetsPage\n«UI»" as UI
+control "BudgetsRouter\n«API/Business»" as API
+database "Budget/Category/Transaction DB\n«Data»" as DB
+group Xem theo kỳ
+  User -> UI : Chọn tháng/năm
+  UI -> API : GET /budgets?month&year
+  API -> DB : Đọc Budget; SUM expense theo danh mục
+  API -> API : Tính spent và is_over
+  API --> UI : BudgetOut[]
+  UI --> User : Hạn mức, đã chi, tỷ lệ, trạng thái
+end
+alt Tạo
+  User -> UI : Chọn danh mục chi; nhập limit
+  UI -> API : POST /budgets
+  API -> DB : Kiểm tra category thuộc user/type=expense và trùng kỳ
+  API -> DB : INSERT + COMMIT
+  API --> UI : BudgetOut hoặc lỗi
+else Sửa
+  User -> UI : Nhập limit mới
+  UI -> API : PUT /budgets/{id}
+  API -> DB : Kiểm tra quyền; UPDATE limit
+  API --> UI : BudgetOut mới hoặc lỗi
+else Xóa
+  User -> UI : Xác nhận xóa
+  UI -> API : DELETE /budgets/{id}
+  API -> DB : Kiểm tra quyền; DELETE
+  API --> UI : 200 hoặc 404
+end
+UI --> User : Cập nhật kết quả
+@enduml

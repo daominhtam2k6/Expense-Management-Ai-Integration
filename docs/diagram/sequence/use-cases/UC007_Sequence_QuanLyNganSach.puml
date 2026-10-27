@@ -1,0 +1,84 @@
+@startuml UC007_Sequence_QuanLyNganSach
+title UC007 — BIỂU ĐỒ TUẦN TỰ QUẢN LÝ NGÂN SÁCH
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Người dùng" as User
+boundary "BudgetsPage\n(UI Layer)" as UI
+control "BudgetsRouter\n(API/Business Layer)" as Router
+entity "Budget\n(Entity)" as Budget
+entity "Category\n(Entity)" as Category
+entity "Transaction\n(Entity)" as Transaction
+database "Database\n(Data Layer)" as DB
+
+group Xem ngân sách theo kỳ
+    User -> UI : Mở Ngân sách, chọn tháng/năm
+    UI -> Router : GET /api/budgets/?month&year
+    Router -> DB : SELECT Budget WHERE user_id + period
+    DB --> Router : Budget[]
+    loop Mỗi ngân sách
+        Router -> Transaction : compute_spent(user, category, period)
+        Transaction -> DB : SUM expense Transaction
+        DB --> Transaction : spent
+        Router -> Budget : Tạo BudgetOut(spent, is_over)
+    end
+    Router --> UI : BudgetOut[]
+    UI --> User : Hiển thị hạn mức, đã chi, trạng thái
+end
+
+alt Tạo ngân sách
+    User -> UI : Chọn danh mục chi và hạn mức
+    UI -> Router : POST /api/budgets/
+    Router -> Category : Kiểm tra category thuộc user\nvà type=expense
+    Category -> DB : SELECT Category
+    DB --> Category : Category hoặc null
+    Router -> DB : Kiểm tra Budget cùng category/month/year
+    DB --> Router : Có/không
+    alt Không hợp lệ hoặc đã tồn tại
+        Router --> UI : 404/400/422
+    else Hợp lệ
+        Router -> Budget : Tạo Budget
+        Router -> DB : INSERT + COMMIT
+        Router -> Transaction : compute_spent(...)
+        Transaction -> DB : SUM expense
+        DB --> Transaction : spent
+        Router --> UI : BudgetOut
+        UI --> User : Hiển thị ngân sách mới
+    end
+
+else Sửa hạn mức
+    User -> UI : Nhập hạn mức mới
+    UI -> Router : PUT /api/budgets/{id}
+    Router -> DB : Tìm Budget theo id + user_id
+    DB --> Router : Budget hoặc null
+    alt Không tìm thấy hoặc limit <= 0
+        Router --> UI : 404/422
+    else Hợp lệ
+        Router -> Budget : Cập nhật limit_amount
+        Router -> DB : UPDATE + COMMIT
+        Router -> Transaction : Tính lại spent
+        Router --> UI : BudgetOut mới
+        UI --> User : Cập nhật trạng thái
+    end
+
+else Xóa ngân sách
+    User -> UI : Xác nhận xóa
+    UI -> Router : DELETE /api/budgets/{id}
+    Router -> DB : Tìm theo id + user_id
+    alt Không tìm thấy
+        DB --> Router : null
+        Router --> UI : 404
+    else Tìm thấy
+        DB --> Router : Budget
+        Router -> DB : DELETE + COMMIT
+        Router --> UI : 200 đã xóa
+        UI --> User : Cập nhật danh sách
+    end
+end
+@enduml

@@ -1,0 +1,65 @@
+@startuml UC009_Sequence_Dashboard
+title UC009 — BIỂU ĐỒ TUẦN TỰ XEM DASHBOARD
+autonumber
+skinparam shadowing false
+skinparam maxMessageSize 90
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Người dùng" as User
+boundary "DashboardPage\n(UI Layer)" as UI
+control "DashboardRouter\n(API/Business Layer)" as Router
+control "FinanceService\n(Business Layer)" as Finance
+entity "Transaction / Category\nBudget / Goal\n(Entities)" as Entities
+database "Database\n(Data Layer)" as DB
+
+User -> UI : Mở Dashboard / chọn tháng-năm
+UI -> Router : GET /api/dashboard/?month&year
+activate Router
+Router -> Router : Tính period_start và period_end
+
+Router -> Entities : Lấy tổng thu/chi của kỳ
+Entities -> DB : SUM Transaction GROUP BY type
+DB --> Entities : income, expense
+
+Router -> Entities : Lấy chi theo danh mục
+Entities -> DB : SUM expense GROUP BY Category
+DB --> Entities : category spending
+
+Router -> Entities : Lấy xu hướng 3 tháng
+Entities -> DB : SUM income/expense GROUP BY month
+DB --> Entities : trend points
+
+Router -> Entities : Lấy ngân sách trong kỳ
+Entities -> DB : SELECT Budget + Category
+DB --> Entities : budgets
+
+Router -> Entities : Lấy tối đa 3 mục tiêu ưu tiên
+Entities -> DB : SELECT SavingGoal + SUM GoalTransaction
+DB --> Entities : goals + current amounts
+
+Router -> Entities : Lấy 5 giao dịch gần nhất
+Entities -> DB : SELECT Transaction + Category\nORDER BY date DESC LIMIT 5
+DB --> Entities : recent transactions
+
+Router -> Finance : compute_available_balance(user, end_of_period)
+Finance -> DB : Tổng thu - chi - nạp + rút
+DB --> Finance : available_balance
+Finance --> Router : available_balance
+
+Router -> Router : Tính net, tỷ trọng,\nprogress và budget status
+Router --> UI : DashboardOut
+deactivate Router
+
+alt Có dữ liệu
+    UI --> User : Hiển thị số liệu và biểu đồ
+else Không có dữ liệu
+    UI --> User : Hiển thị empty state
+else API lỗi
+    UI --> User : Hiển thị lỗi và nút Thử lại
+end
+@enduml

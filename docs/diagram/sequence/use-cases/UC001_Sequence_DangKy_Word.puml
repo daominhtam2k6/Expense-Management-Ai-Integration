@@ -1,0 +1,37 @@
+@startuml UC001_Sequence_DangKy_Word
+title UC001 — TUẦN TỰ ĐĂNG KÝ TÀI KHOẢN
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Khách" as User
+boundary "RegisterPage\n«UI»" as UI
+control "AuthRouter + Security\n«API/Business»" as API
+database "User DB\n«Data»" as DB
+User -> UI : Nhập username, email, mật khẩu, xác nhận
+UI -> UI : Kiểm tra username ≥ 3, mật khẩu ≥ 6, xác nhận khớp
+alt Frontend không hợp lệ
+  UI --> User : Hiển thị lỗi biểu mẫu
+else Frontend hợp lệ
+  UI -> API : POST /api/auth/register
+  API -> DB : Kiểm tra username và email duy nhất
+  DB --> API : Kết quả
+  alt Đã tồn tại / sai định dạng
+    API --> UI : 400/422 + lỗi
+  else Hợp lệ
+    API -> API : Băm bcrypt
+    API -> DB : INSERT User + COMMIT
+    DB --> API : User mới
+    API --> UI : 200 UserOut
+    UI --> User : Thành công; chuyển đến Đăng nhập
+  end
+end
+@enduml

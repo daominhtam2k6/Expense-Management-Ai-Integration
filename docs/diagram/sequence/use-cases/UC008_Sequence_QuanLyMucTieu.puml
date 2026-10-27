@@ -1,0 +1,127 @@
+@startuml UC008_Sequence_QuanLyMucTieu
+title UC008 — BIỂU ĐỒ TUẦN TỰ QUẢN LÝ MỤC TIÊU TIẾT KIỆM
+autonumber
+skinparam shadowing false
+skinparam maxMessageSize 90
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Người dùng" as User
+boundary "GoalsPage\n(UI Layer)" as UI
+control "GoalsRouter\n(API/Business Layer)" as Router
+control "FinanceService\n(Business Layer)" as Finance
+entity "SavingGoal / GoalItem\n(Entity)" as Goal
+entity "GoalTransaction\n(Entity)" as GoalTx
+entity "Category / Transaction\n(Entity)" as FinanceEntity
+database "Database\n(Data Layer)" as DB
+
+group Tải danh sách
+    User -> UI : Mở Mục tiêu
+    UI -> Router : GET /api/goals/
+    Router -> DB : SELECT SavingGoal WHERE user_id
+    DB --> Router : SavingGoal[]
+    loop Mỗi mục tiêu
+        Router -> DB : SELECT GoalItem
+        Router -> GoalTx : compute_current(goal_id)
+        GoalTx -> DB : SUM deposit - SUM withdraw
+        DB --> GoalTx : current_amount
+    end
+    Router --> UI : GoalOut[]
+    UI --> User : Hiển thị mục tiêu
+end
+
+alt Tạo/sửa mục tiêu hoặc hạng mục
+    User -> UI : Nhập thông tin
+    UI -> Router : POST/PATCH Goal hoặc GoalItem
+    Router -> Router : Kiểm tra tên và amount/cost > 0
+    Router -> Goal : Tạo/cập nhật entity
+    Router -> DB : INSERT/UPDATE + COMMIT
+    Router --> UI : GoalOut
+    UI --> User : Cập nhật mục tiêu
+
+else Nạp tiền
+    User -> UI : Nhập số tiền và ghi chú
+    UI -> Router : POST /api/goals/{id}/deposit
+    Router -> DB : Tìm goal theo id + user_id
+    DB --> Router : SavingGoal
+    Router -> Finance : compute_available_balance(user_id)
+    Finance -> DB : SUM income/expense/deposit/withdraw
+    DB --> Finance : available_balance
+    alt Goal không active hoặc amount > số dư
+        Router --> UI : 400
+        UI --> User : Hiển thị lỗi
+    else Hợp lệ
+        Router -> GoalTx : Tạo deposit ngày hiện tại
+        Router -> DB : INSERT + COMMIT
+        Router --> UI : GoalOut mới
+        UI --> User : Cập nhật tiến độ
+    end
+
+else Rút tiền
+    User -> UI : Nhập số tiền và ghi chú
+    UI -> Router : POST /api/goals/{id}/withdraw
+    Router -> GoalTx : compute_current(goal_id)
+    GoalTx -> DB : SUM deposit - SUM withdraw
+    DB --> GoalTx : current_amount
+    alt amount > current_amount
+        Router --> UI : 400 không thể rút
+    else Hợp lệ
+        Router -> GoalTx : Tạo withdraw ngày hiện tại
+        Router -> DB : INSERT + COMMIT
+        Router --> UI : GoalOut mới
+        UI --> User : Cập nhật tiến độ/số dư
+    end
+
+else Hoàn thành mục tiêu
+    User -> UI : Chọn Hoàn thành và chế độ
+    UI -> Router : POST /api/goals/{id}/complete
+    Router -> GoalTx : compute_current(goal_id)
+    GoalTx -> DB : SUM deposit - SUM withdraw
+    DB --> GoalTx : current_amount
+    alt Goal đã completed hoặc current < target
+        Router --> UI : 400
+    else Đủ điều kiện
+        alt mode = keep
+            Router -> Goal : Lưu completion_amount/mode
+        else mode = release
+            Router -> GoalTx : Tạo withdraw toàn bộ
+            Router -> Goal : Lưu completion_amount/mode
+        else mode = spend
+            Router -> FinanceEntity : Kiểm tra danh mục chi
+            FinanceEntity -> DB : SELECT Category type=expense
+            DB --> FinanceEntity : Category hoặc null
+            Router -> FinanceEntity : Tạo Transaction expense\ntoàn bộ số tiền
+            Router -> GoalTx : Tạo withdraw toàn bộ
+            Router -> Goal : Lưu completion_amount/mode
+        end
+        Router -> Goal : Đặt status = completed
+        Router -> DB : INSERT/UPDATE + COMMIT
+        Router --> UI : GoalOut completed
+        UI --> User : Chuyển sang tab Đã hoàn thành
+    end
+
+else Xem lịch sử hoặc xóa
+    User -> UI : Chọn xem lịch sử/xóa
+    alt Xem lịch sử
+        UI -> Router : GET /api/goals/{id}/transactions
+        Router -> DB : SELECT GoalTransaction\nORDER BY date DESC
+        DB --> Router : GoalTransaction[]
+        Router --> UI : Lịch sử
+    else Xóa mục tiêu
+        UI -> Router : DELETE /api/goals/{id}
+        Router -> DB : COUNT GoalTransaction
+        DB --> Router : transaction_count
+        alt Đã có lịch sử tiền
+            Router --> UI : 409 không thể xóa
+        else Chưa có lịch sử
+            Router -> DB : DELETE GoalItem + SavingGoal
+            Router --> UI : 200 đã xóa
+        end
+    end
+    UI --> User : Hiển thị kết quả
+end
+@enduml

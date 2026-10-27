@@ -1,0 +1,48 @@
+@startuml UC003_Sequence_KhoiPhucMatKhau_Word
+title UC003 — TUẦN TỰ KHÔI PHỤC MẬT KHẨU
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Khách" as User
+boundary "Forgot/ResetPasswordPage\n«UI»" as UI
+control "AuthRouter + Security\n«API/Business»" as API
+database "User DB\n«Data»" as DB
+participant "Resend\n«External»" as Mail
+group Yêu cầu liên kết
+  User -> UI : Nhập email
+  UI -> API : POST /forgot-password
+  API -> API : Kiểm tra 3 yêu cầu/email/giờ
+  API -> DB : Tìm User theo lower(email)
+  alt Tồn tại và chưa vượt giới hạn
+    API -> API : Sinh token; SHA-256
+    API -> DB : Lưu hash + hạn 15 phút
+    API -> Mail : Gửi reset link
+    Mail --> API : Thành công hoặc thất bại
+  end
+  API --> UI : 200 phản hồi chung
+  UI --> User : Hướng dẫn kiểm tra email
+end
+group Đặt mật khẩu mới
+  User -> UI : Mở link; nhập và xác nhận mật khẩu mới
+  UI -> API : POST /reset-password
+  API -> DB : Tìm User theo token hash
+  alt Token hợp lệ, chưa hết hạn
+    API -> API : Băm bcrypt
+    API -> DB : Cập nhật mật khẩu; xóa token
+    API --> UI : 200 thành công
+    UI --> User : Chuyển đến Đăng nhập
+  else Token sai/hết hạn
+    API --> UI : 400
+    UI --> User : Hiển thị lỗi
+  end
+end
+@enduml

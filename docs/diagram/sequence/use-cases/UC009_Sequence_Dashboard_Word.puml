@@ -1,0 +1,36 @@
+@startuml UC009_Sequence_Dashboard_Word
+title UC009 — TUẦN TỰ XEM DASHBOARD
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "DashboardPage\n«UI»" as UI
+control "DashboardRouter + FinanceService\n«API/Business»" as API
+database "Finance DB\n«Data»" as DB
+User -> UI : Mở Dashboard; chọn tháng/năm
+UI -> API : GET /api/dashboard?month&year
+API -> API : Xác định đầu/cuối kỳ
+API -> DB : Tổng hợp thu/chi và chi theo danh mục
+API -> DB : Xu hướng 3 tháng; ngân sách kỳ
+API -> DB : Tối đa 3 mục tiêu + 5 giao dịch gần nhất
+API -> DB : Tính số dư đến cuối kỳ
+DB --> API : Các số liệu tổng hợp
+API -> API : Tính net, tỷ trọng, progress, budget status
+API --> UI : DashboardOut
+alt Có dữ liệu
+  UI --> User : Hiển thị tổng quan và biểu đồ
+else Không có dữ liệu
+  UI --> User : Empty state + liên kết tạo dữ liệu
+else API lỗi
+  UI --> User : Lỗi + nút Thử lại
+end
+@enduml

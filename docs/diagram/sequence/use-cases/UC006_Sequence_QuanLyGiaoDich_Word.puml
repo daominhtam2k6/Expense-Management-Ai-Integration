@@ -1,0 +1,44 @@
+@startuml UC006_Sequence_QuanLyGiaoDich_Word
+title UC006 — TUẦN TỰ QUẢN LÝ GIAO DỊCH
+scale max 1050*680
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 9
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+actor "Người dùng" as User
+boundary "TransactionsPage\n«UI»" as UI
+control "TransactionsRouter\n«API/Business»" as API
+database "Transaction + Category DB\n«Data»" as DB
+group Xem/lọc
+  User -> UI : Mở Giao dịch; chọn bộ lọc
+  UI -> API : GET /transactions?category&type&dates&keyword
+  API -> DB : Lọc theo user; ORDER BY txn_date DESC
+  API --> UI : TransactionOut[]
+  UI --> User : Hiển thị kết quả
+end
+alt Thêm hoặc sửa
+  User -> UI : Nhập/sửa category, amount, date, note
+  UI -> API : POST hoặc PUT /transactions
+  API -> API : amount > 0; ngày không tương lai
+  API -> DB : Kiểm tra quyền và Category thuộc user
+  alt Hợp lệ
+    API -> DB : Suy ra type; INSERT/UPDATE + COMMIT
+    API --> UI : TransactionOut
+  else Không hợp lệ
+    API --> UI : 404/422
+  end
+else Xóa
+  User -> UI : Xác nhận xóa
+  UI -> API : DELETE /transactions/{id}
+  API -> DB : Kiểm tra quyền; DELETE + COMMIT
+  API --> UI : 200 hoặc 404
+end
+UI --> User : Cập nhật danh sách hoặc hiển thị lỗi
+@enduml

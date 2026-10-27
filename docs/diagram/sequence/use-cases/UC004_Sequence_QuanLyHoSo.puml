@@ -1,0 +1,92 @@
+@startuml UC004_Sequence_QuanLyHoSo
+title UC004 — BIỂU ĐỒ TUẦN TỰ QUẢN LÝ HỒ SƠ VÀ ẢNH ĐẠI DIỆN
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #355C57
+  LifeLineBorderColor #8AA8A3
+  ParticipantBorderColor #087F5B
+  ParticipantBackgroundColor #EAF5F1
+}
+
+actor "Người dùng" as User
+boundary "ProfilePanel\n(UI Layer)" as UI
+control "AuthContext\n(Client Controller)" as Context
+control "AuthRouter\n(API Layer)" as Auth
+entity "User\n(Entity)" as UserEntity
+database "Database\n(Data Layer)" as DB
+database "Avatar Storage\n(File Layer)" as Files
+
+User -> UI : Mở panel hồ sơ
+UI -> Context : Lấy User hiện tại
+Context --> UI : display_name, username,\nemail, avatar_url
+UI --> User : Hiển thị hồ sơ
+
+alt Cập nhật thông tin
+    User -> UI : Sửa tên hiển thị, username, email
+    UI -> Context : updateProfile(payload)
+    Context -> Auth : PUT /api/auth/me
+    activate Auth
+    Auth -> DB : Kiểm tra username/email của user khác
+    DB --> Auth : Kết quả
+    alt Trùng hoặc không hợp lệ
+        Auth --> Context : 400/422
+        Context --> UI : Lỗi
+        UI --> User : Hiển thị lỗi
+    else Hợp lệ
+        Auth -> UserEntity : Gán thông tin mới
+        opt Email thay đổi
+            Auth -> UserEntity : Xóa reset_token_hash/expiry
+        end
+        Auth -> DB : UPDATE User + COMMIT
+        DB --> Auth : User đã cập nhật
+        Auth --> Context : UserOut
+        Context -> Context : Cập nhật User dùng chung
+        Context --> UI : Thành công
+        UI --> User : Hiển thị hồ sơ mới
+    end
+    deactivate Auth
+
+else Tải lên hoặc thay avatar
+    User -> UI : Chọn PNG/JPEG/WebP
+    UI -> UI : Kiểm tra loại và <= 2 MB
+    alt Frontend từ chối loại/dung lượng
+        UI --> User : Hiển thị lỗi tệp
+    else Frontend chấp nhận
+        UI -> Context : uploadAvatar(file)
+        Context -> Auth : POST /api/auth/me/avatar
+        activate Auth
+        Auth -> Auth : Kiểm tra MIME, chữ ký,\ndung lượng và tệp rỗng
+        alt Backend từ chối tệp
+            Auth --> Context : 400/413/415
+            Context --> UI : Lỗi tệp
+        else Tệp hợp lệ
+            Auth -> Files : Ghi tệp avatar mới
+            Files --> Auth : Đường dẫn mới
+            Auth -> UserEntity : Gán avatar_url
+            Auth -> DB : UPDATE User + COMMIT
+            DB --> Auth : Thành công
+            opt Có avatar cũ
+                Auth -> Files : Xóa tệp cũ
+            end
+            Auth --> Context : UserOut
+            Context --> UI : Avatar mới
+        end
+        deactivate Auth
+    end
+
+else Xóa avatar
+    User -> UI : Chọn Xóa ảnh
+    UI -> Context : deleteAvatar()
+    Context -> Auth : DELETE /api/auth/me/avatar
+    activate Auth
+    Auth -> UserEntity : Đặt avatar_url = null
+    Auth -> DB : UPDATE User + COMMIT
+    DB --> Auth : Thành công
+    Auth -> Files : Xóa tệp cũ nếu có
+    Auth --> Context : UserOut
+    Context --> UI : Hồ sơ không có avatar
+    UI --> User : Hiển thị ký tự đại diện
+    deactivate Auth
+end
+@enduml
