@@ -1,0 +1,281 @@
+{
+  "date_received": "2026-10-28",
+  "new_execution": false,
+  "counts": {
+    "PASS": 36,
+    "BLOCKED": 2,
+    "FAIL": 0
+  },
+  "result_basis": "Existing evidence plus user confirmation that all failed tests were rerun and passed; blocked tests not included in that confirmation",
+  "id_mapping": {
+    "old_TC-039": "TC-038"
+  },
+  "cases": [
+    {
+      "id": "TC-001",
+      "title": "Đăng ký hợp lệ",
+      "data": "Chưa đăng nhập; username/email mới, username `newtester`, mật khẩu `Test@123`",
+      "expected": "Tạo tài khoản thành công; đăng nhập được bằng thông tin đã đăng ký.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-002",
+      "title": "Kiểm tra dữ liệu đăng ký",
+      "data": "Các bộ: bỏ trống từng trường bắt buộc; email `abc@`; username 2/3/50/51 ký tự; mật khẩu 5/6 ký tự; xác nhận không khớp nếu có. Mỗi lần hợp lệ dùng email/username mới.",
+      "expected": "Trường bắt buộc/email sai bị từ chối; username 3 và 50 ký tự, mật khẩu 6 ký tự được nhận khi các trường khác đúng; username 2/51, mật khẩu 5 ký tự và xác nhận lệch bị chặn. Không tạo tài khoản cho bộ sai.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-003",
+      "title": "Đăng ký trùng định danh",
+      "data": "A đã tồn tại; dùng username hoặc email của A; thử lại với chữ hoa/thường và khoảng trắng đầu/cuối",
+      "expected": "Từ chối định danh trùng sau chuẩn hóa; không tạo thêm tài khoản.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-004",
+      "title": "Đăng nhập bằng username/email",
+      "data": "A tồn tại; mật khẩu đúng",
+      "expected": "Các cách nhập đều nhận diện đúng A và mở được màn hình sau đăng nhập.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-005",
+      "title": "Đăng nhập với dữ liệu sai",
+      "data": "Các bộ: trống định danh; trống mật khẩu; định danh không tồn tại; mật khẩu sai",
+      "expected": "Yêu cầu bổ sung trường thiếu hoặc báo thông tin đăng nhập không hợp lệ; không vào được màn hình nghiệp vụ.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-006",
+      "title": "Kết thúc phiên trên thiết bị",
+      "data": "A đã đăng nhập và có dữ liệu",
+      "expected": "Chuyển về màn hình đăng nhập; tải lại không tự vào phiên cũ; đăng nhập lại được và dữ liệu tài khoản vẫn còn.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-007",
+      "title": "Khôi phục thành công",
+      "data": "Tài khoản thử có email nhận được thư; mật khẩu mới `New@123`",
+      "expected": "Nhận được thư; đặt lại thành công; mật khẩu cũ không đăng nhập được, mật khẩu mới đăng nhập được.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "TC-008",
+      "title": "Kiểm tra dữ liệu khôi phục",
+      "data": "Email trống/sai định dạng/chưa đăng ký; liên kết sai/hết hạn/đã dùng; mật khẩu mới trống/5/6 ký tự và xác nhận lệch nếu có",
+      "expected": "Email trống/sai bị chặn; email chưa đăng ký nhận thông báo tiếp nhận chung, không đổi tài khoản nào; mật khẩu trống/5 ký tự/xác nhận lệch bị chặn; 6 ký tự được nhận với liên kết hợp lệ; liên kết sai/hết hạn/đã dùng không đổi được mật khẩu.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "TC-009",
+      "title": "Xem, cập nhật hồ sơ và kiểm tra trường nhập",
+      "data": "A; thông tin mới hợp lệ; bộ sai: username trống/2/51 ký tự, email sai/trùng B, tên hiển thị 81 ký tự; bộ biên: username 3/50, tên hiển thị 80 ký tự",
+      "expected": "Xem đúng hồ sơ; thay đổi hợp lệ được giữ sau tải lại; bộ sai có thông báo, không ghi đè dữ liệu; các giá trị biên hợp lệ được nhận khi định danh chưa trùng.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-010",
+      "title": "Thay và xóa ảnh đại diện; kiểm tra tệp",
+      "data": "Ảnh PNG/JPEG hợp lệ nhỏ hơn 2 MiB; ảnh hợp lệ đúng 2 MiB; tệp lớn hơn 2 MiB; tệp văn bản/ảnh rỗng",
+      "expected": "Ảnh hợp lệ tối đa 2 MiB được hiển thị; tệp sai bị từ chối và giữ ảnh hiện tại; xóa ảnh thành công, trở về ảnh mặc định sau tải lại.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-011",
+      "title": "Đổi mật khẩu và kiểm tra nhập liệu",
+      "data": "A; mật khẩu cũ đúng/sai/trống; mật khẩu mới trống/5/6 ký tự; xác nhận lệch nếu có",
+      "expected": "Bộ sai bị từ chối và mật khẩu không đổi; bộ hợp lệ đổi thành công; chỉ mật khẩu mới đăng nhập được sau đổi.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-012",
+      "title": "Hủy hoặc nhập sai xác nhận xóa tài khoản",
+      "data": "D có dữ liệu; mật khẩu sai/trống; xác nhận trống, `xóa tài khoản`, `XÓA TÀI KHOẢN`",
+      "expected": "Hủy không thay đổi dữ liệu; mật khẩu sai/trống hoặc xác nhận khác chính xác `XÓA TÀI KHOẢN` bị từ chối; D vẫn đăng nhập và xem dữ liệu được.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-013",
+      "title": "Xóa tài khoản và dữ liệu cá nhân",
+      "data": "D riêng có danh mục, giao dịch, ngân sách, mục tiêu, hội thoại và avatar; ghi nhận dữ liệu B trước thử",
+      "expected": "Xóa thành công và về màn hình đăng nhập; D không đăng nhập lại được, dữ liệu active của D không còn qua chức năng ứng dụng; dữ liệu B giữ nguyên. Không dùng ca này để kết luận về retention backup.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-014",
+      "title": "Xem, thêm và sửa danh mục",
+      "data": "A; danh mục chi mới `Sách`, biểu tượng/màu chọn từ biểu mẫu",
+      "expected": "Danh sách hiển thị đúng loại; thêm/sửa thành công; tên và thuộc tính mới được giữ sau tải lại.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-015",
+      "title": "Kiểm tra tên và trùng danh mục",
+      "data": "Đã có danh mục chi Ăn uống; các tên: trống, chỉ khoảng trắng, ` ăn UỐNG `; thử khi thêm và sửa",
+      "expected": "Tên rỗng và trùng trong cùng tài khoản/cùng loại bị từ chối ở cả thêm/sửa; khác loại hoặc khác tài khoản được phép.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-016",
+      "title": "Xóa danh mục",
+      "data": "Tạm chưa dùng; Ăn uống có giao dịch/ngân sách",
+      "expected": "Hủy giữ danh mục; danh mục chưa dùng được xóa; danh mục đang được sử dụng bị từ chối, dữ liệu liên quan vẫn còn.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-017",
+      "title": "Thêm và sửa giao dịch thu/chi",
+      "data": "A có Lương và Ăn uống; thu 1.000.000, chi 50.000 VND ngày 15/10/2026",
+      "expected": "Tạo đủ hai giao dịch đúng loại/danh mục; giao dịch sửa lưu đúng giá trị mới và không tạo thêm bản ghi.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-018",
+      "title": "Kiểm tra dữ liệu giao dịch",
+      "data": "Số tiền trống/0/-1/`abc`/0,1; thiếu danh mục/ngày; ngày không hợp lệ nếu trường cho nhập",
+      "expected": "Chặn số tiền thiếu/không phải số/không dương và trường bắt buộc thiếu/sai; không lưu dữ liệu sai; nhận số tiền dương 0,1 VND.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-019",
+      "title": "Xem và lọc giao dịch",
+      "data": "Bộ F",
+      "expected": "Tháng 10 đúng 3 giao dịch của F; lọc chi Ăn uống còn 1 giao dịch 3.000.000; tháng 09 trả đúng dữ liệu tương ứng; tháng rỗng không có bản ghi.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-020",
+      "title": "Xóa giao dịch",
+      "data": "Một giao dịch thử 50.000 VND",
+      "expected": "Hủy giữ nguyên; xác nhận xóa làm bản ghi biến mất và không xuất hiện lại sau tải lại.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-021",
+      "title": "Tạo, xem, sửa, xóa ngân sách và tính vượt mức",
+      "data": "Bộ F; ngân sách Ăn uống tháng 10/2026 chưa có",
+      "expected": "Tháng 10 có đã chi 3.000.000 và vượt 500.000; tháng 09 không hiện ngân sách tháng 10; sau sửa không vượt; Hủy giữ ngân sách, xác nhận xóa loại bỏ ngân sách.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-022",
+      "title": "Kiểm tra kỳ và hạn mức ngân sách",
+      "data": "Tháng 0/1/12/13; năm 1999/2000/2100/2101; hạn mức trống/0/-1/`abc`/0,1; thiếu danh mục",
+      "expected": "Tháng 1/12 và năm 2000/2100 hợp lệ; tháng 0/13, năm 1999/2101, thiếu danh mục và hạn mức không dương/không phải số bị chặn; nhận 0,1 VND khi các trường còn lại hợp lệ.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-023",
+      "title": "Kiểm tra danh mục và ngân sách trùng",
+      "data": "Có ngân sách Ăn uống tháng 10/2026",
+      "expected": "Không tạo ngân sách trùng; chỉ cho chọn danh mục chi; khác kỳ được tạo thành công.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-024",
+      "title": "Tạo, xem, sửa và xóa mục tiêu",
+      "data": "Mục tiêu mới Du lịch, đích 1.000.000 VND",
+      "expected": "Tạo và sửa đúng thông tin; dữ liệu giữ sau tải lại; Hủy không xóa; xác nhận xóa loại bỏ mục tiêu.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-025",
+      "title": "Kiểm tra dữ liệu mục tiêu",
+      "data": "Tên trống/khoảng trắng/100/101 ký tự; đích trống/0/-1/`abc`/0,1; hạn bỏ trống/ngày hợp lệ/ngày sai",
+      "expected": "Tên sau trim phải có nội dung, tối đa 100 ký tự; đích phải là số dương; hạn được bỏ trống hoặc là ngày hợp lệ. Các bộ sai bị chặn, bộ biên hợp lệ được lưu.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-026",
+      "title": "Quản lý hạng mục và kiểm tra nhập liệu",
+      "data": "Mục tiêu active; hạng mục Vé xe 200.000 VND",
+      "expected": "Thêm/sửa/trạng thái mua được lưu đúng; từ chối tên rỗng và giá không dương/không phải số; xóa loại bỏ hạng mục.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-027",
+      "title": "Nạp, rút và xem lịch sử",
+      "data": "Mục tiêu active có 0 VND; số dư khả dụng 1.000.000 VND",
+      "expected": "Tiền trong mục tiêu lần lượt 200.000 rồi 150.000; lịch sử có đúng một lần nạp và một lần rút với số tiền/ngày/loại đúng.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-028",
+      "title": "Kiểm tra số tiền nạp/rút và giới hạn số dư",
+      "data": "Mục tiêu có 150.000 VND; số dư khả dụng 850.000 VND",
+      "expected": "Bộ sai và số vượt số dư bị từ chối, không thêm lịch sử; nạp đúng toàn bộ số khả dụng được nhận; sau đó rút đúng toàn bộ 1.000.000 được nhận, mục tiêu về 0.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-029",
+      "title": "Hoàn thành mục tiêu theo lựa chọn người dùng",
+      "data": "Chuẩn bị 3 mục tiêu active tương đương, mỗi mục tiêu đủ đích 100.000 VND; có danh mục chi",
+      "expected": "Thiếu danh mục chi không hoàn thành theo chế độ ghi chi; khi hợp lệ, mục tiêu chuyển hoàn thành: Giữ giữ tiền dành riêng; Giải phóng trả tiền về số khả dụng; Ghi chi tạo đúng một giao dịch chi tương ứng.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-030",
+      "title": "Xem tổng quan và đổi kỳ",
+      "data": "Bộ F, không có tiền dành cho mục tiêu",
+      "expected": "Tháng 10: thu 12.000.000, chi 4.000.000, chênh lệch 8.000.000; tháng 09: thu 10.000.000, chi 2.000.000, chênh lệch 8.000.000. Phân bổ tháng 10 đúng Ăn uống 3.000.000 và Đi lại 1.000.000.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-031",
+      "title": "Dashboard kỳ rỗng và trường chọn kỳ",
+      "data": "Bộ F; tháng 08/2026 rỗng",
+      "expected": "Kỳ rỗng hiển thị giá trị 0/trạng thái chưa có dữ liệu, không giữ số kỳ cũ; không chấp nhận kỳ không hợp lệ; chọn lại kỳ đúng hiển thị lại dữ liệu tương ứng.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-032",
+      "title": "So sánh hai kỳ và theo danh mục",
+      "data": "Bộ F",
+      "expected": "Thu tăng 2.000.000 (20%); chi tăng 2.000.000 (100%); chênh lệch thu-chi mỗi kỳ 8.000.000. Ăn uống tăng 1.000.000; Đi lại kỳ hiện tại 1.000.000, kỳ trước 0.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-033",
+      "title": "Báo cáo kỳ rỗng và kiểm tra kỳ nhập",
+      "data": "Bộ F",
+      "expected": "Báo cáo thể hiện đúng kỳ không có dữ liệu; không hiển thị tỷ lệ vô hạn/NaN khi kỳ trước bằng 0; hai kỳ rỗng có tổng bằng 0; kỳ thiếu/sai bị chặn hoặc được yêu cầu chọn lại.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-034",
+      "title": "Hỏi trợ lý và xem lại hội thoại",
+      "data": "Bộ F; Gemini hoạt động; câu hỏi `Tổng chi tháng 10/2026 là bao nhiêu?`",
+      "expected": "Có phản hồi liên quan câu hỏi/kỳ và số liệu tổng chi 4.000.000 VND phù hợp dữ liệu thử; câu hỏi/câu trả lời được lưu và xem lại đúng thứ tự. Không yêu cầu câu chữ AI giống hoàn toàn giữa các lần chạy.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-035",
+      "title": "Kiểm tra nhập câu hỏi và kỳ AI",
+      "data": "Câu hỏi trống/chỉ khoảng trắng/1/2.000/2.001 ký tự; tháng 0/1/12/13, năm 1999/2000/2100/2101 nếu biểu mẫu cho nhập",
+      "expected": "Câu hỏi trống/chỉ khoảng trắng và trên 2.000 ký tự bị chặn, không thêm tin nhắn rỗng; câu hỏi có nội dung 1–2.000 ký tự được nhận. Nếu chọn kỳ: tháng 1–12, năm 2000–2100 hợp lệ; giá trị ngoài miền bị chặn.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-036",
+      "title": "Xóa hội thoại",
+      "data": "A có ít nhất 2 hội thoại với nội dung khác nhau",
+      "expected": "Hủy giữ hội thoại; xác nhận xóa loại bỏ đúng hội thoại đã chọn; hội thoại còn lại giữ nguyên và mở được.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-037",
+      "title": "So sánh 3 prompt về độ đúng số liệu trên N1",
+      "data": "P1/P2/P3; chỉ bộ N1 ở mục 4.1; cùng model/cấu hình; mỗi prompt chạy đúng 1 lần, tổng 3 phản hồi",
+      "expected": "Có bảng so sánh 3 phản hồi kèm trích dẫn và nhận xét cụ thể. Phiên bản được chọn trả đúng chi tháng 10 là 4.000.000 VND, tăng 2.000.000 VND, tương đương 100%; không thêm số liệu thực tế không có căn cứ hoặc nhầm số giao dịch thu/chi. Lỗi của P1/P2 vẫn phải ghi lại; không bắt buộc các phiên bản đối chứng đều đạt. Không kết luận về kỳ rỗng, thiếu dữ liệu hoặc độ ổn định qua nhiều lượt từ phép thử này.",
+      "status": "PASS"
+    },
+    {
+      "id": "TC-038",
+      "title": "Hiển thị thông báo khi trợ lý AI timeout",
+      "data": "Tài khoản thử; tháng 10, năm 2026; câu hỏi `Tổng chi tháng 10/2026 là bao nhiêu?`; có tình huống AI phản hồi quá thời gian chờ",
+      "expected": "Người dùng nhìn thấy thông báo AI phản hồi quá thời gian chờ; trạng thái đang xử lý kết thúc. Không yêu cầu mô phỏng lỗi 429/5xx/thiếu cấu hình/phản hồi hỏng hoặc chứng minh thử lại thành công trong ca rút gọn này.",
+      "status": "PASS"
+    }
+  ]
+}

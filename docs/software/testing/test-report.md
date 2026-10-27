@@ -1,5 +1,39 @@
 # Test report
 
+## Danh mục và kết quả hiện hành — 28/10/2026
+
+Đã đánh lại mã liên tục **TC-001–TC-038**. Ca timeout rút gọn đổi từ TC-039 cũ sang **TC-038 hiện hành**, giữ PASS theo quyết định của người dùng trên bằng chứng UI ngày27/10. Các ca TC-001–TC-037 giữ nguyên mã và nội dung; ca khả năng tài chính và payload riêng tư vẫn ngoài phạm vi.
+
+Người dùng xác nhận các ca FAIL đã test lại và đều PASS. Tổng hợp hiện tại: **36 PASS, 2 BLOCKED (TC-007/TC-008)**; không tự chuyển hai ca BLOCKED thành PASS. Codex chỉ cập nhật tài liệu, không chạy lại hệ thống trong lần đổi mã. Tên build/ngày giờ và đầu vào chính xác của lượt người dùng retest chưa được cung cấp. Xem [3 bảng kết quả hiện tại](current-test-case-results.md), [bảng đối chiếu mã](test-case-id-map.md) và [TC-038 timeout](ai-timeout-test-result.md).
+
+## Lịch sử trước khi đánh lại mã
+
+Các mục dưới giữ nguyên mã và phạm vi tại thời điểm ghi nhận. Những câu “hiện tại” hoặc số tổng trong lịch sử chỉ có giá trị tại mốc đó; danh mục và trạng thái mới nhất nằm ở mục đầu trang.
+
+## Loại TC-040 và chấp nhận TC-039 timeout — 28/10/2026
+
+Theo quyết định của người dùng, bỏ TC-040 khỏi kế hoạch; TC-039 chỉ còn kiểm tra thông báo timeout và kết thúc trạng thái đang xử lý. Kết quả **TC-039: PASS theo phạm vi rút gọn**, dựa trên bằng chứng UI ngày 27/10/2026: “Gemini phản hồi quá thời gian chờ. Vui lòng thử lại sau ít phút.” UI kết thúc trạng thái xử lý, mở lại ô nhập và hiện nút Thử lại. Quyết định chấp nhận được đưa ra ngày 28/10/2026; không chạy mới hoặc chủ động tạo timeout trong lần sửa tài liệu này.
+
+Danh mục hiện tại có **38 ca**, **5 ca AI** (TC-034–TC-037 và TC-039); TC-038/TC-040 không tính trong mẫu số hiện tại. Xem [kết quả và bằng chứng TC-039](ai-timeout-test-result.md). Các trạng thái BLOCKED và số ca trong các mục lịch sử dưới đây thuộc phạm vi cũ, không bị viết lại. PASS hiện tại không bao gồm ma trận lỗi provider, phục hồi/retry hay kiểm chứng lọc dữ liệu outbound.
+
+## Loại TC-038 khỏi phạm vi — 28/10/2026
+
+Theo yêu cầu người dùng, bỏ ca so sánh gợi ý theo khả năng tài chính TC-038, bộ K1/K2/K3, ma trận 27 phản hồi và liên kết yêu cầu của ca này khỏi kế hoạch hiện tại. Danh mục còn **39 ca**, trong đó **6 ca AI**: TC-034–TC-037, TC-039 và TC-040. Giữ nguyên mã các ca còn lại; TC-037 vẫn chỉ N1, mỗi prompt một lượt, tổng 3 phản hồi.
+
+Đây là điều chỉnh phạm vi, không phải kết quả PASS cho TC-038 và không có lượt kiểm thử mới. Kết quả P3 trên N1 giữ nguyên. Các đoạn lịch sử bên dưới nhắc TC-038 là phạm vi trước khi loại; các báo cáo kiểm thử đã chạy và bằng chứng gốc không bị viết lại.
+
+## So sánh 3 prompt trên N1 — nhận kết quả 28/10/2026
+
+Người dùng cung cấp ba phản hồi P1/P2/P3, mỗi prompt một lượt, và xác nhận cùng cấu hình model/cùng dữ liệu, chỉ thay system prompt theo hướng dẫn. Codex đối chiếu nội dung, không gọi thêm AI. **TC-037 PASS trên N1; chọn P3**. Cả ba trả đúng 4.000.000 VND, tăng 2.000.000 VND/100%; P3 phân biệt rõ net với tiền khả dụng. P2 có lời khuyên chuyển ngay toàn bộ net 8 triệu chưa đủ căn cứ; P1 cần điều kiện rõ hơn trước đề xuất trích tiền ngay. Không coi số tiền đề xuất có nhãn ví dụ là dữ liệu thực tế bịa.
+
+Xem [bảng so sánh và giới hạn](ai-prompt-comparison.md), [phản hồi và xác nhận do người dùng cung cấp](evidence/tc037-n1-2026-10-28-user-responses.md). Tên model/version và giá trị tham số chưa được cung cấp; chưa có bản xuất request để đối chiếu độc lập. Kết luận không chứng minh tích hợp web, độ ổn định nhiều lượt hoặc TC-038. Mục thiết kế NOT RUN bên dưới là lịch sử tại thời điểm chỉ cập nhật tài liệu, không phải trạng thái mới nhất.
+
+## Điều chỉnh thiết kế TC-037 — 28/10/2026
+
+Theo phạm vi mới, TC-037 chỉ dùng N1, so sánh P1/P2/P3 mỗi prompt 1 lần: tổng 3 phản hồi. Đánh giá trực tiếp độ đúng số liệu, căn cứ, kỳ, số giao dịch, rõ ràng và hữu ích; không chạy N2/N3 hoặc lặp để chọn kết quả tốt hơn. TC-038 giữ phạm vi riêng.
+
+Đợt cập nhật này chỉ sửa tài liệu; **TC-037 theo thiết kế mới: NOT RUN**, chưa có 3 phản hồi so sánh hoặc phiên bản được chọn. Xem [kế hoạch](test-plan.md), [hướng dẫn](ai-prompt-n1-guide.md) và [mẫu kết quả](ai-prompt-comparison.md). Các kết quả lịch sử bên dưới và các báo cáo live trước đây giữ nguyên phạm vi/ngày chạy; thay đổi thiết kế không tự chuyển BLOCKED/FAIL cũ thành PASS.
+
 ## Thu hẹp phạm vi phát hành web/PWA — 03/10/2026
 
 Phạm vi: RQ-012; gỡ phần đóng gói native, dependency CLI, workflow bộ cài và cấu hình riêng; đồng bộ tài liệu đang dùng. Các kết quả cũ bên dưới được giữ làm bằng chứng lịch sử; phần kiểm thử bộ cài trong các báo cáo cũ không thuộc phạm vi hiện tại.
