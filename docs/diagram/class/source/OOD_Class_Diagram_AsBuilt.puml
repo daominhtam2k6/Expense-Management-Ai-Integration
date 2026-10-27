@@ -1,0 +1,126 @@
+@startuml OOD_Class_Diagram_AsBuilt
+title HỆ THỐNG QUẢN LÝ CHI TIÊU CÁ NHÂN CÓ TÍCH HỢP AI\n<size:18><color:#2F70C0>Class Diagram — As-built</color></size>
+scale max 1700*1050
+top to bottom direction
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #F3F6FA
+  HeaderBackgroundColor #D9E5F6
+  BorderColor #536273
+  ArrowColor #344454
+  FontColor #111111
+}
+skinparam package {
+  BackgroundColor transparent
+  BorderColor #9AA8B8
+  FontColor #2F5F91
+}
+
+class User {
+  id: String <<PK>>
+  username: String <<UQ>>
+  email: String <<UQ>>
+  display_name: String?
+  password_hash: String
+  avatar_url: String?
+  created_at: DateTime
+  reset_token_hash: String?
+  reset_token_expiry: DateTime?
+}
+
+package "Tài chính" {
+  class Category {
+    id: String <<PK>>
+    user_id: String <<FK>>
+    name: String
+    type: String
+    color: String
+    icon: String
+  }
+  class Transaction {
+    id: String <<PK>>
+    user_id: String <<FK>>
+    category_id: String <<FK>>
+    amount: Numeric(14,2)
+    type: String
+    txn_date: Date
+    note: String?
+  }
+  class Budget {
+    id: String <<PK>>
+    user_id: String <<FK>>
+    category_id: String <<FK>>
+    month: Integer
+    year: Integer
+    limit_amount: Numeric(14,2)
+  }
+}
+
+package "Mục tiêu tiết kiệm" {
+  class SavingGoal {
+    id: String <<PK>>
+    user_id: String <<FK>>
+    name: String
+    target_amount: Numeric(14,2)
+    deadline: Date?
+    status: String
+    completion_amount: Numeric(14,2)?
+    completion_mode: String?
+  }
+  class GoalItem {
+    id: String <<PK>>
+    goal_id: String <<FK>>
+    name: String
+    cost: Numeric(14,2)
+    is_purchased: Boolean
+  }
+  class GoalTransaction {
+    id: String <<PK>>
+    goal_id: String <<FK>>
+    amount: Numeric(14,2)
+    type: String
+    txn_date: Date
+    note: String?
+  }
+}
+
+package "AI và hội thoại" {
+  class AIConversation {
+    id: String <<PK>>
+    user_id: String <<FK>>
+    title: String(160)
+    created_at: DateTime
+    updated_at: DateTime
+  }
+  class AIMessage {
+    id: String <<PK>>
+    conversation_id: String <<FK>>
+    role: String(16)
+    content: Text
+    context_month: Integer?
+    context_year: Integer?
+    evidence_json: Text?
+    created_at: DateTime
+  }
+}
+
+User "1" -- "0..*" Category : sở hữu
+User "1" -- "0..*" Transaction : sở hữu
+User "1" -- "0..*" Budget : sở hữu
+User "1" -- "0..*" SavingGoal : sở hữu
+User "1" -- "0..*" AIConversation : sở hữu
+Category "1" -- "0..*" Transaction : phân loại
+Category "1" -- "0..*" Budget : áp dụng
+SavingGoal "1" *-- "0..*" GoalItem : gồm
+SavingGoal "1" -- "0..*" GoalTransaction : lịch sử tiền
+AIConversation "1" *-- "0..*" AIMessage : gồm
+
+note bottom of GoalTransaction
+  Mục tiêu đã có lịch sử tiền không được xóa.
+  current_amount = Σdeposit − Σwithdraw.
+end note
+@enduml

@@ -1,0 +1,44 @@
+@startuml ScreenFlow_AsBuilt
+title SCREEN FLOW — HỆ THỐNG SỔ CHI TIÊU
+scale max 1700*1000
+top to bottom direction
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #536273
+  BackgroundColor #F6F8FA
+}
+skinparam package {
+  BorderColor #7B8A9A
+  FontColor #1F4D78
+}
+
+actor "Khách" as Guest
+actor "Người dùng đã đăng nhập" as User
+
+package "Khu vực công khai" #EEF4FC {
+  rectangle "Cổng xác thực" as PublicHub #D9E5F6
+  rectangle "Đăng nhập  /login\nĐăng ký  /register\nQuên mật khẩu  /forgot-password\nĐặt lại mật khẩu  /reset-password?token=..." as PublicScreens
+  PublicHub -right-> PublicScreens
+}
+
+package "Khu vực được bảo vệ — AppShell" #EDF8F1 {
+  rectangle "AppShell\nThanh điều hướng + hồ sơ" as Shell #CFEBDD
+  rectangle "Quản lý tài chính\n• Dashboard  /dashboard\n• Giao dịch  /transactions\n• Danh mục  /categories\n• Ngân sách  /budgets\n• Mục tiêu  /goals" as Finance #D9F2E2
+  rectangle "Phân tích & hỗ trợ\n• Báo cáo  /reports\n  Xem chi tiết → Giao dịch đã lọc\n• Trợ lý AI  /assistant\n  Nguồn → Reports/Transactions" as Analysis #F1ECFF
+  rectangle "Hồ sơ / Avatar\nSidePanel" as Profile #FFF0C9
+
+  Shell -down-> Finance
+  Shell -down-> Analysis
+  Shell -right-> Profile
+}
+
+Guest -down-> PublicHub
+PublicScreens -down-> Shell
+User -down-> Shell
+Shell -up-> PublicHub
+
+@enduml

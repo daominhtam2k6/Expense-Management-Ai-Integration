@@ -1,0 +1,38 @@
+@startuml OOD_Architecture_AsBuilt
+title KIẾN TRÚC HỆ THỐNG\n<size:18><color:#2F70C0>Hệ thống Quản lý Chi tiêu Cá nhân có Tích hợp AI — As-built</color></size>
+scale max 1700*1100
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam rectangle {
+  BorderColor #536273
+  FontColor #111111
+  RoundCorner 8
+}
+
+rectangle "<b>Presentation / Distribution</b>\nReact + TypeScript • Responsive PWA • Windows/Tauri\nDashboard, Reports, Assistant, Transactions, Categories, Budgets, Goals, Auth/Profile" as Presentation #DCE9FA
+
+rectangle "<b>FastAPI Application</b>" as App #D9F2E2 {
+  rectangle "<b>Routers</b>\nauth • categories • transactions • budgets\ngoals • dashboard • reports • assistant" as Routers #D9F2E2
+  rectangle "<b>Pydantic Schemas</b>\nuser • category • transaction • budget\ngoal • dashboard • report • assistant" as Schemas #FFF0C9
+  rectangle "<b>Core / Domain Services</b>\nsecurity • deps • finance • email\nassistant_context • gemini • config" as Core #FFF0C9
+}
+
+rectangle "<b>Persistence</b>\nSQLAlchemy Models (9 lớp) • Session/Engine • Alembic\nSQLite mặc định khi phát triển • PostgreSQL qua DATABASE_URL\nPersistent avatar storage: /uploads" as Persistence #EADFFD
+
+rectangle "<b>External Services</b>\nGoogle Gemini Interactions API — tư vấn read-only từ dữ liệu tổng hợp\nResend — email đặt lại mật khẩu" as External #FADDDD
+
+Presentation -down-> Routers : HTTPS / JSON
+Routers -right-> Schemas : validate I/O
+Routers -down-> Core : gọi hàm dùng chung
+Routers -down-> Persistence : ORM Session
+Core -down-> Persistence : tổng hợp dữ liệu
+Core -down-> External : Gemini / Resend
+
+note right of Core
+  AssistantContext chỉ tạo dữ liệu tổng hợp đã ẩn danh.
+  GeminiService ánh xạ lỗi cấu hình, rate limit,
+  timeout và lỗi dịch vụ sang phản hồi API phù hợp.
+end note
+@enduml

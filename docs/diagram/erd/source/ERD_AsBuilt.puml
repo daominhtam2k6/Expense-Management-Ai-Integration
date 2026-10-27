@@ -1,0 +1,135 @@
+@startuml ERD_AsBuilt
+title ERD — CƠ SỞ DỮ LIỆU SỔ CHI TIÊU\n<size:18><color:#2F70C0>Schema chốt triển khai — 9 bảng</color></size>
+scale max 1700*1100
+top to bottom direction
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam entity {
+  BackgroundColor #F3F6FA
+  BorderColor #536273
+  HeaderBackgroundColor #D9E5F6
+}
+
+entity "users" as users {
+  * id : String <<PK>>
+  --
+  username : String <<UQ, NN>>
+  email : String <<UQ, NN>>
+  display_name : String
+  password_hash : String <<NN>>
+  avatar_url : String
+  created_at : DateTime(TZ)
+  reset_token_hash : String
+  reset_token_expiry : DateTime(TZ)
+}
+
+entity "categories" as categories {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK, NN>>
+  name : String <<NN>>
+  type : String <<NN>>
+  color : String <<NN>>
+  icon : String <<NN>>
+}
+
+entity "transactions" as transactions {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK, NN>>
+  category_id : String <<FK, NN>>
+  amount : Numeric(14,2) <<NN>>
+  type : String <<NN>>
+  txn_date : Date <<NN>>
+  note : String
+}
+
+entity "budgets" as budgets {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK, NN>>
+  category_id : String <<FK, NN>>
+  month : Integer <<NN>>
+  year : Integer <<NN>>
+  limit_amount : Numeric(14,2) <<NN>>
+}
+
+entity "saving_goals" as saving_goals {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK, NN>>
+  name : String <<NN>>
+  target_amount : Numeric(14,2) <<NN>>
+  deadline : Date
+  status : String <<NN>>
+  completion_amount : Numeric(14,2)
+  completion_mode : String
+}
+
+entity "goal_items" as goal_items {
+  * id : String <<PK>>
+  --
+  goal_id : String <<FK, NN>>
+  name : String <<NN>>
+  cost : Numeric(14,2) <<NN>>
+  is_purchased : Boolean <<NN>>
+}
+
+entity "goal_transactions" as goal_transactions {
+  * id : String <<PK>>
+  --
+  goal_id : String <<FK, NN>>
+  amount : Numeric(14,2) <<NN>>
+  type : String <<NN>>
+  txn_date : Date <<NN>>
+  note : String
+}
+
+entity "ai_conversations" as ai_conversations {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK, NN, IDX>>
+  title : String(160) <<NN>>
+  created_at : DateTime(TZ) <<NN>>
+  updated_at : DateTime(TZ) <<NN>>
+}
+
+entity "ai_messages" as ai_messages {
+  * id : String <<PK>>
+  --
+  conversation_id : String <<FK, NN, IDX>>
+  role : String(16) <<NN>>
+  content : Text <<NN>>
+  context_month : Integer
+  context_year : Integer
+  evidence_json : Text
+  created_at : DateTime(TZ) <<NN>>
+}
+
+users ||--o{ categories : sở hữu
+users ||--o{ transactions : sở hữu
+users ||--o{ budgets : sở hữu
+users ||--o{ saving_goals : sở hữu
+users ||--o{ ai_conversations : sở hữu
+categories ||--o{ transactions : phân loại
+categories ||--o{ budgets : áp dụng
+saving_goals ||--o{ goal_items : gồm
+saving_goals ||--o{ goal_transactions : lịch sử tiền
+ai_conversations ||--o{ ai_messages : gồm
+
+note right of users
+  UQ ở database:
+  username, email.
+end note
+note bottom of budgets
+  Các ràng buộc tổ hợp Category/Budget
+  đang được kiểm tra ở Router,
+  chưa có UniqueConstraint trong migration.
+end note
+note bottom of goal_transactions
+  current_amount không phải cột;
+  được tính bằng Σdeposit − Σwithdraw.
+end note
+@enduml
