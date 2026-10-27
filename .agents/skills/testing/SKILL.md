@@ -1,31 +1,26 @@
 ---
 name: testing
-description: Lập kế hoạch, triển khai, thực thi và báo cáo các kiểm thử có khả năng truy vết về yêu cầu cho backend và frontend Sổ Chi Tiêu.
+description: Lập ca đúng, sai, biên; kiểm tra backend/frontend và so sánh prompt AI.
 ---
 
-# Kiểm thử
+# Kiểm thử hệ thống và AI
 
-## Phạm vi nhiệm vụ
+## Đầu vào
 
-Áp dụng [hợp đồng context](../../../docs/ai-engineering/context.md); prompt tương ứng: [AIP-TEST-001](../../../docs/ai-engineering/prompts.md#aip-test-001). Các bước ghi file bên dưới chỉ áp dụng khi nhiệm vụ cho phép cập nhật artifact đó. Với yêu cầu tư vấn, phân tích hoặc review không ghi file, trả kết quả trong câu trả lời; không tự chạy toàn quy trình hay chuyển sang triển khai. Quyết định đã được người dùng chốt là đầu vào, không hỏi lại cùng quyết định.
+Yêu cầu hiện tại, file liên quan, phạm vi được sửa và kết quả mong muốn. Xem [cấu trúc tài liệu](../../../docs/README.md). Prompt gợi ý: [09-kiem-thu-he-thong.md](../../../docs/prompt-library/09-kiem-thu-he-thong.md).
 
-## Quy trình
+## Cách thực hiện
 
-Khi chọn tầng test, ca biên, fixture hoặc E2E, đọc [Chọn tầng kiểm thử và dữ liệu](references/test-strategy.md). Chỉ nạp phần phù hợp nhiệm vụ.
+1. Đọc AC và thay đổi cần kiểm tra; lập ca đầu vào, bước thực hiện, expected.
+2. Dùng dữ liệu giả và account A/B; kiểm tra dữ liệu rỗng, validation, ownership và lỗi dịch vụ.
+3. Chọn unit/API/UI phù hợp; backend dùng venv dự án và pytest, frontend dùng npm.cmd test; build khi cần.
+4. Với Gemini, so sánh hai prompt trên cùng aggregate/câu hỏi, kiểm tra đúng số, grounding, thiếu dữ liệu, timeout và privacy.
+5. Phân biệt kết quả thực với phần chưa chạy; không sửa expected để che bug hoặc dùng database production làm fixture.
 
-1. Đọc requirements, user stories, acceptance criteria, kiến trúc và thay đổi cần kiểm thử.
-2. Lập ma trận requirement/AC → loại test → file test → trạng thái bằng chứng trong `docs/software/testing/test-plan.md`.
-3. Chọn ca kiểm thử cho positive, negative, boundary, authorization/ownership, error handling và integration path.
-4. Chuẩn bị fixture cô lập; không dùng hoặc phá hủy database/tài nguyên nghiệp vụ thật nếu chưa được yêu cầu rõ ràng.
-5. Viết hoặc cập nhật test theo hành vi đã phê duyệt. Không sửa kỳ vọng chỉ để khớp implementation sai.
-6. Chạy backend bằng interpreter của môi trường dự án với `python -m pytest -q`; nếu Python hệ thống thiếu dependency, ghi rõ và chạy lại bằng virtualenv phù hợp.
-7. Chạy frontend bằng `npm.cmd test -- --coverage`; chạy `npm.cmd run build` khi thay đổi hoặc phạm vi liên quan tới frontend/release.
-8. Khi có schema change, chạy Alembic upgrade/check trên database thử nghiệm phù hợp; phân biệt bằng chứng SQLite với PostgreSQL.
-9. Ghi chính xác ngày, môi trường, lệnh, số pass/fail/skip, warning, coverage và thời gian quan sát vào `docs/software/testing/test-report.md`.
-10. Với mỗi fail, ghi requirement/AC, bước tái hiện, expected, actual, mức ảnh hưởng và file liên quan. Cập nhật gap còn lại trong `docs/software/testing/test-plan.md`.
+## Đầu ra
 
-## Quy tắc báo cáo
+tests/ hoặc frontend test nếu được giao; báo cáo ở docs/software/testing/.
 
-- Phân biệt `PASS`, `FAIL`, `BLOCKED` và `NOT RUN`; không coi “không chạy” là “không có lỗi”.
-- Không sao chép số liệu cũ hoặc tuyên bố toàn hệ thống đạt từ một suite giới hạn.
-- Không sửa application code nếu tác vụ chỉ yêu cầu kiểm thử hoặc chẩn đoán.
+## Hoàn tất
+
+Kết quả đáp ứng yêu cầu, có đường dẫn và cách kiểm tra phù hợp. Nêu điều chưa rõ hoặc chưa kiểm tra; giữ nguyên file/môi trường ngoài phạm vi.
