@@ -6,8 +6,8 @@
 
 Artifact UML liên quan:
 
-- [Use Case tổng quan](../../diagrams/uml/use-case-overview/use-case-overview.png): giữ nguyên 11 use case ban đầu và chỉ tách “Đăng nhập và đăng xuất” thành hai use case, tạo thành đúng 12 use case; dùng một tác nhân **Người sử dụng** theo RQ-009.
-- [Class Diagram — As-built](../../diagrams/uml/class-as-built/class-as-built.png): 9 entity ORM và các module router đang thực thi thao tác. `User` chỉ biểu diễn dữ liệu tài khoản đã đăng ký; các hàm xác thực thuộc `AuthRouter`, không phải phương thức của entity.
+- [Use Case tổng quan](../../diagram/use-case/overview/use-case-overview.png): giữ nguyên 11 use case ban đầu và chỉ tách “Đăng nhập và đăng xuất” thành hai use case, tạo thành đúng 12 use case; dùng một tác nhân **Người sử dụng** theo RQ-009.
+- [Class Diagram — As-built](../../diagram/class/class-as-built/class-as-built.png): 9 entity ORM và các module router đang thực thi thao tác. `User` chỉ biểu diễn dữ liệu tài khoản đã đăng ký; các hàm xác thực thuộc `AuthRouter`, không phải phương thức của entity.
 
 Các sơ đồ này đồng bộ cách mô tả với mã hiện tại và RQ-009; chúng không thay đổi kiến trúc, schema hoặc trạng thái Human Gate.
 
@@ -171,4 +171,4 @@ BR-001/002 thuộc service + DB constraint; BR-003 thuộc Alembic preflight; BR
 | ARCH-HG-009 | AI confidence/evidence chưa có scale/format/threshold | Requirements/Architecture |
 | ARCH-HG-010 | Re-auth khi xóa account thiếu recent-auth window/phương thức | Requirements/Security |
 
-Các điểm này chặn thiết kế chi tiết/kiểm thử tương ứng và không được triển khai bằng rule tự đặt. Chỉ người có thẩm quyền được cập nhật Architecture Gate trong `docs/governance/human-gates.md`.
+Các điểm này chặn thiết kế chi tiết/kiểm thử tương ứng và không được triển khai bằng rule tự đặt. Chỉ người có thẩm quyền được cập nhật Architecture Gate trong `docs/requirements/quyet-dinh-du-an.md`.

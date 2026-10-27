@@ -2,7 +2,7 @@
 
 > Phạm vi hiện tại được thu hẹp thành web/PWA theo RQ-012 ngày 03/10/2026. Các phê duyệt ngày 06/09/2026 là lịch sử; thay đổi này không tự phê duyệt Release Gate.
 
-> Baseline v1.1 được Đào Minh Tâm điều chỉnh và phê duyệt tại Requirements Gate ngày 06/09/2026. Một số yêu cầu chưa được implementation hiện tại đáp ứng; xem `docs/software/requirements/requirements-issues.md`.
+> Baseline v1.1 được Đào Minh Tâm điều chỉnh và phê duyệt tại Requirements Gate ngày 06/09/2026. Một số yêu cầu chưa được implementation hiện tại đáp ứng; xem `docs/requirements/requirements-issues.md`.
 
 ## Yêu cầu chức năng
 

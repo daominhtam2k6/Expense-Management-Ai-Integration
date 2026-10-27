@@ -60,7 +60,7 @@ Kết luận: frontend đạt bộ kiểm tra hiện có; backend suite chạy �
 
 ## Dịch vụ thực tế và trình duyệt — 19/09/2026
 
-Đã cập nhật file Word trước đó tại Downloads, giữ 4 bảng của mẫu, sửa FT-06/FT-08 thành Fail và bổ sung LIVE-01..07. Bản sao phát hành: `deliverables/05_functional_testing_live_20260919.docx`. Bản trước cập nhật được giữ với hậu tố `_before_live_20260919` trong Downloads.
+Đã cập nhật file Word trước đó tại Downloads, giữ 4 bảng của mẫu, sửa FT-06/FT-08 thành Fail và bổ sung LIVE-01..07. Bản sao phát hành: `docs/archive/ban-khac/05_functional_testing_live_20260919.docx`. Bản trước cập nhật được giữ với hậu tố `_before_live_20260919` trong Downloads.
 
 | Kiểm tra thực tế | Kết quả |
 |---|---|
@@ -70,7 +70,7 @@ Kết luận: frontend đạt bộ kiểm tra hiện có; backend suite chạy �
 | Edge headless, backend Uvicorn thật, SQLite tạm, không mock API | PASS đăng ký và đăng nhập; 7 trang nghiệp vụ hiển thị, không API HTTP >=400 hoặc JS pageerror trong từng lần mở. Tổng 9 smoke checks. |
 | Docker/PostgreSQL | BLOCKED: Docker Desktop Linux Engine không khả dụng; không có PostgreSQL test được cấu hình. |
 
-Bằng chứng: `deliverables/live-service-results-20260919.json` (Resend ban đầu được ghi INCONCLUSIVE theo HTTP, nguyên nhân invalid key được xác nhận ở lần chẩn đoán sau); `deliverables/live-browser-results-20260919.json`; `deliverables/live-browser-20260919.png`. Scripts tái hiện: `tools/live_service_checks.py`, `tools/live_browser_checks.py`. Chạy lại script dịch vụ sẽ gọi Gemini thật và có thể tiêu thụ quota.
+Bằng chứng: `docs/software/testing/results/live-service-results-20260919.json` (Resend ban đầu được ghi INCONCLUSIVE theo HTTP, nguyên nhân invalid key được xác nhận ở lần chẩn đoán sau); `docs/software/testing/results/live-browser-results-20260919.json`; `.tools/test-results/live-browser-20260919.png`. Scripts tái hiện: `tools/live_service_checks.py`, `tools/live_browser_checks.py`. Chạy lại script dịch vụ sẽ gọi Gemini thật và có thể tiêu thụ quota.
 
 Browser smoke dùng tài khoản mới, database tạm và chặn service worker; chưa kiểm thử mọi CRUD bằng UI hoặc offline/cache PWA. Đã dừng server thử và dọn database tạm. Không gửi email do khóa không hợp lệ và chưa có địa chỉ nhận thử được cung cấp. Tauri, tải vận hành, backup retention và luồng production xuyên suốt vẫn chưa thực thi. Những kết quả live bổ sung không khắc phục 2 lỗi nghiệp vụ AC-018/019 đã phát hiện.
 
@@ -114,7 +114,7 @@ Ngày chạy: 06/09/2026. Môi trường: workspace local Windows.
 
 ## Defect phát hiện và xử lý
 
-Lần chạy đầu của `pytest -q` thu thập nhầm 15 module test trong `deliverables/browser_tools/greenlet` và lỗi thiếu `psutil`. Nguyên nhân là chưa giới hạn test discovery. Đã thêm `pytest.ini` với `testpaths = tests`; chạy lại thành công. Không xóa hay sửa test của thư viện.
+Lần chạy đầu của `pytest -q` thu thập nhầm 15 module test trong `.tools/browser_tools/greenlet` và lỗi thiếu `psutil`. Nguyên nhân là chưa giới hạn test discovery. Đã thêm `pytest.ini` với `testpaths = tests`; chạy lại thành công. Không xóa hay sửa test của thư viện.
 
 ## Cảnh báo và giới hạn
 

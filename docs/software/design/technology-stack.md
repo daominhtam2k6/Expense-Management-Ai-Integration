@@ -2,7 +2,7 @@
 
 > Phạm vi hiện tại được thu hẹp thành web/PWA theo RQ-012 ngày 03/10/2026. Các phê duyệt ngày 06/09/2026 là lịch sử; thay đổi này không tự phê duyệt Release Gate.
 
-> Trạng thái: **DRAFT FOR HUMAN REVIEW**. Đánh giá ngày 06/09/2026 dựa trên baseline requirements v1.1, Architecture Gate và Database Gate đã được phê duyệt trong `docs/governance/human-gates.md`. Tài liệu này không thay đổi trạng thái Human Gate hoặc ADR hiện có.
+> Trạng thái: **DRAFT FOR HUMAN REVIEW**. Đánh giá ngày 06/09/2026 dựa trên baseline requirements v1.1, Architecture Gate và Database Gate đã được phê duyệt trong `docs/requirements/quyet-dinh-du-an.md`. Tài liệu này không thay đổi trạng thái Human Gate hoặc ADR hiện có.
 
 ## 1. Kết luận
 

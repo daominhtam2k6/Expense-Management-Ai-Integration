@@ -4,7 +4,7 @@
 
 ## 1. Trạng thái và giới hạn quyết định
 
-Thiết kế dưới đây tuân theo `docs/software/requirements/requirements.md`, `docs/software/requirements/acceptance-criteria.md`, `docs/software/design/architecture.md` và `docs/software/design/database-design.md`. Các điểm `ARCH-HG-005`, `ARCH-HG-006`, `ARCH-HG-009` còn mở nên chỉ xác định boundary và hành vi an toàn tối thiểu, không tự đặt giá trị nghiệp vụ. `ARCH-HG-010` đã được RQ-011 chốt theo phương án mật khẩu hiện tại và chuỗi xác nhận trong cùng lệnh xóa:
+Thiết kế dưới đây tuân theo `docs/requirements/requirements.md`, `docs/requirements/acceptance-criteria.md`, `docs/software/design/architecture.md` và `docs/software/design/database-design.md`. Các điểm `ARCH-HG-005`, `ARCH-HG-006`, `ARCH-HG-009` còn mở nên chỉ xác định boundary và hành vi an toàn tối thiểu, không tự đặt giá trị nghiệp vụ. `ARCH-HG-010` đã được RQ-011 chốt theo phương án mật khẩu hiện tại và chuỗi xác nhận trong cùng lệnh xóa:
 
 | Điểm mở | Phần có thể thiết kế | Phần bị chặn đến Human Gate |
 |---|---|---|

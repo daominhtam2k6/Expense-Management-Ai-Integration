@@ -27,7 +27,7 @@ Ngày ghi nhận: 20/09/2026. Nguồn: người dùng chốt trực tiếp trong
 - Đặt thao tác xác thực về đúng thành phần chịu trách nhiệm. Các hàm đăng ký, đăng nhập, yêu cầu khôi phục và đặt lại mật khẩu hiện nằm trong `app/routers/auth.py`; không mô tả chúng là phương thức đã triển khai của entity `User`. Khi cập nhật sơ đồ, phản ánh đúng thành phần thực tế và phân biệt rõ thiết kế đề xuất với hiện trạng.
 - Quyết định này không yêu cầu tạo service/lớp mới, đổi tên lớp/bảng, thay đổi schema hoặc migration. Việc tái cấu trúc tầng xử lý, nếu có, là công việc riêng; không phát sinh tự động từ việc gộp tác nhân.
 
-**Truy vết:** `FR-AUTH-001`, `FR-AUTH-002`, `NFR-SEC-001`, `US-001`; `app/models/user.py`, `app/routers/auth.py`; `docs/diagrams/uml/use-case-overview`; `docs/diagrams/uml/class-as-built`. Việc đồng bộ tài liệu không xác nhận các yêu cầu chưa triển khai đã được hoàn thành.
+**Truy vết:** `FR-AUTH-001`, `FR-AUTH-002`, `NFR-SEC-001`, `US-001`; `app/models/user.py`, `app/routers/auth.py`; `docs/diagram/use-case/overview`; `docs/diagram/class/class-as-built`. Việc đồng bộ tài liệu không xác nhận các yêu cầu chưa triển khai đã được hoàn thành.
 
 ## RQ-010 — Phân biệt khôi phục và đổi mật khẩu
 
@@ -40,7 +40,7 @@ Ngày ghi nhận: 24/09/2026. Nguồn: người dùng chốt trực tiếp khi �
 - UC004 có thể `«extend»` UC002 tại điều kiện “quên mật khẩu”. Đổi mật khẩu không `«extend»` UC002 và không dùng tác nhân Resend nếu người sử dụng đổi trực tiếp bằng mật khẩu hiện tại.
 - Quyết định mô hình hóa này không tự xác nhận endpoint đổi mật khẩu đã được triển khai.
 
-**Truy vết:** `UC002`, `UC004`, `UC005`, `FR01`; `docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.puml`; SRS yêu cầu phần Quản lý tài khoản.
+**Truy vết:** `UC002`, `UC004`, `UC005`, `FR01`; `docs/diagram/use-case/use-case-decomposition-account.puml`; SRS yêu cầu phần Quản lý tài khoản.
 
 ## RQ-011 — Xóa tài khoản là chức năng con của UC005
 
@@ -54,7 +54,7 @@ Ngày ghi nhận: 26/09/2026. Nguồn: người dùng chốt trực tiếp khi x
 - Avatar được dọn idempotent sau khi transaction database commit. Client chỉ xóa token/cache/bản nháp và chuyển về màn hình công khai sau khi server trả thành công.
 - Backup có thể còn dữ liệu đã xóa trong thời gian retention nhưng phải hết hạn trong tối đa 30 ngày; tài liệu hóa yêu cầu này không phải bằng chứng automation retention đã vận hành.
 
-**Truy vết:** `UC005`, `UC005e`, `RQ-005`, `BR-004`, `AC-012`, `AC-021`; `DELETE /api/auth/me`; `docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.puml`; `docs/diagrams/uml/class-method-sequences/delete-account.puml`.
+**Truy vết:** `UC005`, `UC005e`, `RQ-005`, `BR-004`, `AC-012`, `AC-021`; `DELETE /api/auth/me`; `docs/diagram/use-case/use-case-decomposition-account.puml`; `docs/diagram/sequence/methods/delete-account.puml`.
 
 ## RQ-012 — Chỉ phát hành phiên bản web/PWA
 
@@ -64,7 +64,7 @@ Ngày ghi nhận: 03/10/2026. Nguồn: yêu cầu trực tiếp của người d
 
 - Phạm vi hiện tại chỉ gồm web responsive/PWA; gỡ mã đóng gói native, dependency CLI, cấu hình và workflow tạo bộ cài.
 - Web/PWA tiếp tục online-only, dùng backend FastAPI và dữ liệu máy chủ. Khả năng cài PWA từ trình duyệt thuộc phiên bản web.
-- Đồng bộ yêu cầu, thiết kế, hướng dẫn và tài liệu đầu ra đang dùng theo phạm vi này. Nhật ký, prompt nguyên văn và artifact lưu trữ là bằng chứng lịch sử, không phải hướng dẫn phát hành hiện tại.
+- Đồng bộ yêu cầu, thiết kế, hướng dẫn và tài liệu đầu ra đang dùng theo phạm vi này. Các bản tài liệu khác không thay đổi phạm vi phát hành hiện tại.
 - Quyết định thu hẹp phạm vi không tự phê duyệt Release Gate và không xác nhận hệ thống đã được triển khai production.
 
 **Truy vết:** `FR-REL-001`, `FR-CONN-001`, `US-007`, `US-010`, `AC-013`; README, frontend và cấu hình triển khai web.
