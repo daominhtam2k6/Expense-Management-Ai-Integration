@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.core.gemini import GeminiAdvice
 from app.core.assistant_context import build_assistant_context
 from app.database import Base
 from app.models.ai_conversation import AIConversation, AIMessage
@@ -101,7 +102,7 @@ class AssistantApiTest(unittest.TestCase):
 
     @patch("app.routers.assistant.generate_financial_advice")
     def test_ask_creates_owned_conversation_and_persists_evidence(self, generate):
-        generate.return_value = "Chi tiêu tăng chủ yếu ở nhóm Ăn uống. Đây là đề xuất tham khảo."
+        generate.return_value = GeminiAdvice("Chi tiêu tăng chủ yếu ở nhóm Ăn uống. Đây là đề xuất tham khảo.", "fallback-model")
 
         result = ask_assistant(
             AssistantAskRequest(question="Vì sao chi tiêu tăng?", month=8, year=2026),
@@ -109,6 +110,7 @@ class AssistantApiTest(unittest.TestCase):
             current_user=self.user,
         )
 
+        self.assertEqual(result.model, "fallback-model")
         self.assertEqual(result.conversation.title, "Vì sao chi tiêu tăng?")
         self.assertEqual(len(result.conversation.messages), 2)
         self.assertEqual(result.conversation.messages[0].role, "user")
