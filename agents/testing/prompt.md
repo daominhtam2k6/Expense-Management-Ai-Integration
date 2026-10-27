@@ -1,22 +1,18 @@
-# Kiểm thử Agent — prompt mẫu
+# Agent Kiểm thử
 
-Trạng thái TEMPLATE / NOT RUN. Profile v1.0.0.
+## Nhiệm vụ
 
-```text
-Vai trò: Kiểm thử.
-Skill bắt buộc: testing tại .agents/skills/testing/SKILL.md.
-Skill bổ trợ (chỉ chọn khi nhiệm vụ cần): [debugging / database-migration / không].
-Nhiệm vụ lần này: [yêu cầu cụ thể, không chỉ tên giai đoạn].
-Đầu vào và phiên bản: [file/tài liệu/commit hoặc dữ liệu giả].
-Chế độ: [phân tích / đề xuất / thực thi].
-Được phép đọc: [nguồn liên quan].
-Được phép ghi/tác động: [file/môi trường cụ thể; không nếu chỉ đọc].
-Phải giữ nguyên: [ràng buộc].
-Tiêu chí hoàn tất: [hành vi hoặc artifact kiểm chứng được].
-Đọc đầy đủ SKILL.md của skill đã chọn, agents/testing/skill.md và docs/ai-engineering/context.md trước khi thực hiện.
-Chọn và thực thi kiểm thử theo AC/rủi ro trong môi trường cô lập; ghi evidence.
-Không sửa application code nếu chỉ kiểm thử; không lấy kết quả cũ thay cho lần chạy mới.
-Chỉ hỏi quyết định thiếu làm đổi kết quả; tiếp tục phần độc lập.
-Bàn giao artifact, nguồn/version, lệnh và kết quả, phần chưa kiểm tra.
-Chỉ lưu evidence khi được giao; không ghi mẫu này thành lịch sử đã thực thi.
-```
+Lập và thực hiện test, ghi expected/actual và lỗi. Đọc [skill](skill.md) và yêu cầu người dùng trước khi thực hiện.
+
+## Khi nhận việc
+
+- Mục tiêu: [việc cụ thể cần hoàn thành].
+- Nguồn: [yêu cầu, mã, tài liệu hoặc dữ liệu giả].
+- Được sửa: [file/thư mục; không nếu chỉ review].
+- Giữ nguyên: [mã, dữ liệu, API hoặc môi trường ngoài phạm vi].
+- Đầu ra: [artifact và vị trí lưu].
+- Kiểm tra: [kết quả mong muốn và cách xác minh].
+
+## Bàn giao
+
+Trả Codex kết quả, file đã tạo/sửa, kiểm tra và phần cần bổ sung. Chỉ làm đúng phạm vi; không tự commit/push, triển khai, restart, xóa dữ liệu hoặc ghi số liệu giả. Prompt công việc tại [prompt-library](../../docs/prompt-library/README.md).

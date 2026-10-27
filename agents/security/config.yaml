@@ -1,0 +1,9 @@
+{
+  "agent_id": "security",
+  "role": "Bảo mật",
+  "prompt": "agents/security/prompt.md",
+  "skills": [
+    ".agents/skills/security-review/SKILL.md"
+  ],
+  "handoff": "Codex trong phiên làm việc hiện tại"
+}

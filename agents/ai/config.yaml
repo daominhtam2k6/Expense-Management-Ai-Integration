@@ -1,0 +1,10 @@
+{
+  "agent_id": "ai",
+  "role": "AI sản phẩm",
+  "prompt": "agents/ai/prompt.md",
+  "skills": [
+    ".agents/skills/architecture-design/SKILL.md",
+    ".agents/skills/testing/SKILL.md"
+  ],
+  "handoff": "Codex trong phiên làm việc hiện tại"
+}

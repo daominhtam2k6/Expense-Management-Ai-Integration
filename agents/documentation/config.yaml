@@ -1,0 +1,10 @@
+{
+  "agent_id": "documentation",
+  "role": "Tài liệu",
+  "prompt": "agents/documentation/prompt.md",
+  "skills": [
+    ".agents/skills/documentation/SKILL.md",
+    ".agents/skills/uml-diagrams/SKILL.md"
+  ],
+  "handoff": "Codex trong phiên làm việc hiện tại"
+}

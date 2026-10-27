@@ -1,0 +1,11 @@
+{
+  "agent_id": "maintenance",
+  "role": "Bảo trì",
+  "prompt": "agents/maintenance/prompt.md",
+  "skills": [
+    ".agents/skills/deployment/SKILL.md",
+    ".agents/skills/implementation/SKILL.md",
+    ".agents/skills/testing/SKILL.md"
+  ],
+  "handoff": "Codex trong phiên làm việc hiện tại"
+}

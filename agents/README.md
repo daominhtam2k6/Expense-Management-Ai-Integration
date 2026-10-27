@@ -1,39 +1,20 @@
-# Agent profiles — AI-Augmented SDLC
+# Các agent hỗ trợ dự án
 
-Tổ chức theo tài liệu SDLC HIỆN ĐẠI.docx người dùng cung cấp ngày 21/09/2026. Đây là hồ sơ vai trò và giao việc; chưa có bộ điều phối thực thi tự động.
+Có **10 agent chuyên môn**. Codex trong phiên làm việc hiện tại nhận yêu cầu và giao việc; không cần tạo thêm profile Codex chính.
 
-Mỗi thư mục requirement/design/coding/testing/critic/deployment gồm:
-- prompt.md: mẫu giao nhiệm vụ cụ thể, điền đầu vào/phạm vi trước khi chạy.
-- skill.md: mapping tới registry dùng chung, không sao chép SKILL.md.
-- config.yaml: cấu hình khai báo v1, đường dẫn tương đối từ root repository.
+| Agent | Công việc | Skill |
+|---|---|---|
+| [requirement](requirement/prompt.md) | Làm rõ nhu cầu, FR/NFR, use case và AC. | [requirements-analysis](../.agents/skills/requirements-analysis/SKILL.md) |
+| [design](design/prompt.md) | Thiết kế phần mềm, dữ liệu, API và giao diện. | [architecture-design](../.agents/skills/architecture-design/SKILL.md), [database-design](../.agents/skills/database-design/SKILL.md), [uml-diagrams](../.agents/skills/uml-diagrams/SKILL.md) |
+| [coding](coding/prompt.md) | Viết tính năng hoặc sửa lỗi theo yêu cầu. | [implementation](../.agents/skills/implementation/SKILL.md) |
+| [testing](testing/prompt.md) | Lập và thực hiện test, ghi expected/actual và lỗi. | [testing](../.agents/skills/testing/SKILL.md) |
+| [critic](critic/prompt.md) | Đọc mã và phản biện kết quả, nêu lỗi cần sửa. | [code-review](../.agents/skills/code-review/SKILL.md) |
+| [security](security/prompt.md) | Kiểm tra auth, quyền dữ liệu, key và privacy AI. | [security-review](../.agents/skills/security-review/SKILL.md) |
+| [ai](ai/prompt.md) | Thiết kế prompt Gemini và so sánh chất lượng trả lời. | [architecture-design](../.agents/skills/architecture-design/SKILL.md), [testing](../.agents/skills/testing/SKILL.md) |
+| [documentation](documentation/prompt.md) | Biên soạn báo cáo, tài liệu và sơ đồ. | [documentation](../.agents/skills/documentation/SKILL.md), [uml-diagrams](../.agents/skills/uml-diagrams/SKILL.md) |
+| [deployment](deployment/prompt.md) | Chuẩn bị hoặc thực hiện triển khai trong phạm vi được giao. | [deployment](../.agents/skills/deployment/SKILL.md) |
+| [maintenance](maintenance/prompt.md) | Chẩn đoán, đề xuất sửa và kiểm tra phục hồi hệ thống. | [deployment](../.agents/skills/deployment/SKILL.md), [implementation](../.agents/skills/implementation/SKILL.md), [testing](../.agents/skills/testing/SKILL.md) |
 
-Registry duy nhất là [.agents/skills](../.agents/skills). Reference chi tiết tiếp tục nằm cạnh skill. Context chung tại [context](../docs/ai-engineering/context.md), prompt chuyên biệt tại [thư viện](../docs/ai-engineering/prompts.md). Vai trò tài liệu/Word và UML dùng skill dùng chung khi nhiệm vụ cần, không bắt buộc tạo agent riêng.
+Mỗi thư mục có `prompt.md` (vai trò/cách nhận việc), `skill.md` (skill sử dụng), `config.yaml` (thông tin profile). Config mô tả công việc, không tự khởi chạy agent. Khi được giao dùng subagent, Codex chọn công cụ đang có và phân công file rõ ràng để tránh sửa chồng.
 
-## Cách thực hiện
-
-Chọn profile phù hợp và điền đủ các trường trong `prompt.md`: skill bắt buộc, skill bổ trợ nếu cần, nhiệm vụ, đầu vào/phiên bản, chế độ, phạm vi đọc, phạm vi ghi/tác động, phần giữ nguyên và tiêu chí hoàn tất. Agent phải đọc đầy đủ `SKILL.md` được chỉ định trước khi thực hiện; không nạp mọi skill. Khi yêu cầu chỉ chẩn đoán, review hoặc lập kế hoạch, chế độ đó ưu tiên hơn tên vai trò. Có thể bỏ qua các giai đoạn không cần thiết. Critic rà soát artifact theo loại; không bắt requirements phải qua code-review.
-
-Bàn giao input/version, quyết định, file đầu ra, checks và giới hạn. Critic REVISE trả về tác vụ cần sửa trong phạm vi đã giao; không có vòng retry tự động vô hạn. ACCEPT không thay human approval và không kích hoạt deploy. Việc chạy nhiều agent chỉ khi được giao rõ; các profile không tự cấp quyền spawn.
-
-## Version và cấu hình thực tế
-
-schema_version là phiên bản cấu trúc config; profile_version là phiên bản nội dung profile. Git quản lý prompt, skill, config và case evaluation cùng nhau. Chưa commit thì ghi dirty state và hash file thực tế khi chạy, không bịa commit/tag.
-
-model.id, model.version và sampling.temperature mặc định null vì chưa chọn runtime. Không tự lấy model Gemini của ứng dụng làm model cho agent phát triển. Config không đổi model của phiên chat. Trước mỗi lần chạy, ghi model/settings/tools thực tế nếu biết; nếu không, ghi unknown. requested_model khác actual_model phải được thể hiện.
-
-execution_mode=manual và tools.capabilities_required là mô tả nhu cầu, không phải tên API hay permission thực thi. Phiên bản tool thực tế lưu ở run record. Prompt/skill/input/output được nhận diện bằng path và Git revision hoặc SHA-256; config không giả định mọi skill có cùng version.
-
-## Liên hệ cấu trúc dự án
-
-| Cấu trúc tham khảo | Vị trí hiện có |
-|---|---|
-| requirements/ | docs/software/requirements/ |
-| design/ | docs/software/design/ và docs/diagrams/ |
-| src/ | app/ và frontend/src/ |
-| tests/ | tests/ và frontend/src với các file test |
-| deployment/ | deploy/, Dockerfile, compose*.yaml, docs/software/deployment/deployment.md |
-| agents/ | Thư mục này |
-| skills registry | .agents/skills/ |
-| evaluations/ | [Ca và hồ sơ đánh giá](../evaluations/README.md) |
-
-Giữ đường dẫn phần mềm để không phá import/build/deploy. Bản mapping này là cách áp dụng cấu trúc tài liệu cho repository hiện tại.
+Prompt đầy đủ tại [docs/prompt-library](../docs/prompt-library/README.md); tài liệu và sơ đồ tại [docs](../docs/README.md). Không cần thư mục đánh giá agent riêng.
