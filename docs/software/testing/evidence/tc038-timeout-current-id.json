@@ -1,0 +1,11 @@
+{
+  "current_case": "TC-038",
+  "legacy_case": "TC-039",
+  "description": "Thông báo khi AI timeout",
+  "status": "PASS",
+  "accepted_date": "2026-10-28",
+  "observed_date": "2026-10-27",
+  "basis": "User acceptance of narrowed timeout notification scope, using prior UI evidence",
+  "source": "tc039-timeout-2026-10-27-ui.json",
+  "new_execution": false
+}

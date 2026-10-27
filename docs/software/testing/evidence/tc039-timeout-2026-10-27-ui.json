@@ -1,0 +1,21 @@
+{
+  "case": "TC-039",
+  "scope": "Timeout notification only; accepted by user after scope reduction",
+  "observed_date": "2026-10-27",
+  "accepted_date": "2026-10-28",
+  "status": "PASS",
+  "source": "Original outputs/ui-evidence.json records labelled TC-034 because timeout occurred while asking that case",
+  "new_execution": false,
+  "observations": [
+    {
+      "tc": "TC-034",
+      "step": "ask",
+      "state": "Browser tab: 1, Title: \"Sổ Chi Tiêu\", URL: \"https://expense-management-ai.daominhtam2k6.id.vn/assistant\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t\t\t158 image\n+\t\t\t\t\t159 text Gemini đang đối chiếu dữ liệu tổng hợp…\n~\t\t\t\t\t114 text entry area (disabled) Hỏi trợ lý AI về tài chính của bạn, Value: Tổng chi tháng 10/2026 là bao nhiêu?, ID: assistant-question\nThe focused UI element is 1 AXWebArea Sổ Chi Tiêu, URL: expense-management-ai.daominhtam2k6.id.vn/assistant"
+    },
+    {
+      "tc": "TC-034",
+      "step": "observe",
+      "state": "Browser tab: 1, Title: \"Sổ Chi Tiêu\", URL: \"https://expense-management-ai.daominhtam2k6.id.vn/assistant\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 158-159\n+\t\t\t158 image\n+\t\t\t159 text Gemini phản hồi quá thời gian chờ. Vui lòng thử lại sau ít phút.\n+\t\t\t160 button Thử lại\n+\t\t\t\t161 image\n+\t\t\t\t162 text Thử lại\n~\t\t\t\t\t114 text entry area (settable) Hỏi trợ lý AI về tài chính của bạn, Value: Tổng chi tháng 10/2026 là bao nhiêu?, ID: assistant-question\n~\t\t\t\t\t115 button Gửi câu hỏi\nThe focused UI element is 1 AXWebArea Sổ Chi Tiêu, URL: expense-management-ai.daominhtam2k6.id.vn/assistant"
+    }
+  ]
+}
