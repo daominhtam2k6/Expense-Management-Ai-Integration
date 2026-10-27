@@ -2,9 +2,8 @@
 
 > Tra cứu tài liệu theo nhóm tại [docs/README.md](docs/README.md).
 >
-> Hồ sơ AI-Augmented SDLC: xem [đánh giá tuân thủ](docs/governance/sdlc-compliance-audit.md),
-> [prompt register](docs/ai-engineering/history/prompts.md), [thư viện prompt mẫu](docs/ai-engineering/prompts.md), [human gates](docs/governance/human-gates.md) và
-> [nhật ký AI](docs/ai-engineering/history/ai-process-log.md).
+> Hồ sơ dự án: [10 agent](agents/README.md), [10 skill](.agents/skills),
+> [15 prompt](docs/prompt-library/README.md), [tài liệu và sơ đồ](docs/README.md).
 
 Ứng dụng quản lý tài chính cá nhân trên web responsive/PWA, sử dụng backend FastAPI. Người dùng truy cập bằng trình duyệt trên máy tính, Android và iOS.
 
