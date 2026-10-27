@@ -196,8 +196,17 @@ Kiểm tra migration độc lập:
 | `CORS_ORIGINS` | Khi frontend khác origin với API | Origin web được phép gọi API; để trống khi cùng origin |
 | `TRUSTED_HOSTS` | Khuyến nghị | Danh sách hostname public |
 | `AI_API_KEY` | Cho AI | Gemini API key |
-| `GEMINI_MODEL` | Không | Model Gemini |
+| `GEMINI_MODEL` | Không | Model Gemini chính |
+| `GEMINI_FALLBACK_MODEL` | Không | Model dự phòng, mặc định `gemini-3.1-pro-preview`; để trống để tắt |
 | `RESEND_API_KEY` | Cho email | Gửi email đặt lại mật khẩu |
 | `RESEND_FROM_EMAIL` | Cho email | Địa chỉ người gửi đã xác minh |
 
 Không commit `.env`, database hoặc uploads.
+
+### Gemini fallback
+
+Backend gọi model chính tối đa hai lần cho lỗi tạm thời (408/429/500/502/503/504 hoặc lỗi kết nối), chờ 1–1,5 giây trước lần thử lại. Nếu vẫn lỗi, gọi model dự phòng một lần bằng cùng API key và cùng prompt. Timeout chuyển thẳng sang model dự phòng. Lỗi 400/401/403/404, phản hồi sai định dạng hoặc rỗng không tự đổi model.
+
+`GEMINI_FALLBACK_MODEL` mặc định là `gemini-3.1-pro-preview`; đặt giá trị rỗng để tắt. Model dự phòng cần quyền truy cập trong project và hỗ trợ Interactions API cùng `thinking_level=low`. Nếu trùng model chính thì không gọi lặp thêm. API trả trường `model` là model thực sự tạo câu trả lời.
+
+Mỗi lần gọi có connect timeout tối đa 5 giây và transport timeout 20 giây, giảm theo ngân sách còn lại 60 giây của toàn luồng. Ngân sách được kiểm tra trước/sau mỗi lần gọi và trước khi chờ; timeout của Requests là giới hạn chờ I/O, không phải cơ chế hủy cứng theo thời gian thực khi upstream liên tục gửi dữ liệu. Log chỉ ghi model, loại lỗi, HTTP status và lần thử; không ghi key hoặc nội dung hội thoại. Khi thất bại, backend rollback và frontend giữ câu hỏi để thử lại.

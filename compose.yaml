@@ -32,7 +32,8 @@ services:
       TRUSTED_HOSTS: ${TRUSTED_HOSTS:-}
       ENABLE_API_DOCS: ${ENABLE_API_DOCS:-false}
       AI_API_KEY: ${AI_API_KEY:-}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.7-flash}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      GEMINI_FALLBACK_MODEL: ${GEMINI_FALLBACK_MODEL-gemini-3.1-pro-preview}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-Expense Management AI <onboarding@resend.dev>}
     volumes:
