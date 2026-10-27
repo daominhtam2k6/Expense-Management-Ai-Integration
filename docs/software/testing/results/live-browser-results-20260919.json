@@ -1,0 +1,52 @@
+[
+  {
+    "service": "Browser registration",
+    "status": "PASS"
+  },
+  {
+    "service": "Browser login",
+    "status": "PASS"
+  },
+  {
+    "service": "Browser dashboard",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  },
+  {
+    "service": "Browser transactions",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  },
+  {
+    "service": "Browser categories",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  },
+  {
+    "service": "Browser budgets",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  },
+  {
+    "service": "Browser goals",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  },
+  {
+    "service": "Browser reports",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  },
+  {
+    "service": "Browser assistant",
+    "status": "PASS",
+    "api_errors": [],
+    "js_errors": []
+  }
+]

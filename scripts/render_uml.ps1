@@ -5,7 +5,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$diagramRoot = Join-Path $repoRoot 'docs\diagrams\uml'
+$diagramRoot = Join-Path $repoRoot 'docs\diagram'
 
 if (-not (Test-Path -LiteralPath $PlantUmlJar -PathType Leaf)) {
     throw "PlantUML JAR not found: $PlantUmlJar"

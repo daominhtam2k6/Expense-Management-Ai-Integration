@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(
     r"C:\Users\LENOVO\Downloads\Tai lieu du an\03_GenAI_SoftwareDevelopment_requirements-specification_updated (1).docx"
 )
-OUTPUT = ROOT / "docs" / "outputs" / "03_GenAI_SoftwareDevelopment_requirements-specification.docx"
-DIAGRAM_DIR = ROOT / "docs" / "diagrams" / "uml" / "srs-use-cases"
+OUTPUT = ROOT / "docs/archive/03_GenAI_SoftwareDevelopment_requirements-specification.docx"
+DIAGRAM_DIR = ROOT / "docs/diagram/use-case"
 
 
 def set_paragraph_text(paragraph, text):
@@ -286,8 +286,8 @@ login_drawings = [
     p for p in document.paragraphs[login_heading_index + 1:]
     if "<w:drawing" in p._p.xml or "<w:pict" in p._p.xml
 ][:2]
-replace_drawing(login_drawings[0], DIAGRAM_DIR / "uc002-login-activity.png", 13.0)
-replace_drawing(login_drawings[1], DIAGRAM_DIR / "uc002-login-sequence.png", 16.0)
+replace_drawing(login_drawings[0], ROOT / "docs/diagram/activity/account/uc002-login-activity.png", 13.0)
+replace_drawing(login_drawings[1], ROOT / "docs/diagram/sequence/account/uc002-login-sequence.png", 16.0)
 
 # Build UC003 from the same table/heading styles and insert it before renumbered UC004.
 marker = original_uc003_heading._p
@@ -324,10 +324,10 @@ diagram_heading = document.add_paragraph("Biểu đồ", style="Heading 3")
 diagram_note = document.add_paragraph("<Biểu đồ (diagram) chi tiết: Activity và Sequence Diagram>")
 activity_p = document.add_paragraph()
 activity_p.alignment = 1
-activity_p.add_run().add_picture(str(DIAGRAM_DIR / "uc003-logout-activity.png"), width=Cm(13.0))
+activity_p.add_run().add_picture(str(ROOT / "docs/diagram/activity/account/uc003-logout-activity.png"), width=Cm(13.0))
 sequence_p = document.add_paragraph()
 sequence_p.alignment = 1
-sequence_p.add_run().add_picture(str(DIAGRAM_DIR / "uc003-logout-sequence.png"), width=Cm(16.0))
+sequence_p.add_run().add_picture(str(ROOT / "docs/diagram/sequence/account/uc003-logout-sequence.png"), width=Cm(16.0))
 for paragraph in (diagram_heading, diagram_note, activity_p, sequence_p):
     marker.addprevious(paragraph._p)
 

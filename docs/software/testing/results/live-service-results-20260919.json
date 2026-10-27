@@ -1,0 +1,41 @@
+[
+  {
+    "service": "production/",
+    "status": "BLOCKED",
+    "error": "ConnectionError"
+  },
+  {
+    "service": "production/login",
+    "status": "BLOCKED",
+    "error": "ConnectionError"
+  },
+  {
+    "service": "production/api/health",
+    "status": "BLOCKED",
+    "error": "ConnectionError"
+  },
+  {
+    "service": "production/api/ready",
+    "status": "BLOCKED",
+    "error": "ConnectionError"
+  },
+  {
+    "service": "production/api/unknown-live-test",
+    "status": "BLOCKED",
+    "error": "ConnectionError"
+  },
+  {
+    "service": "Gemini live adapter",
+    "status": "PASS",
+    "model": "gemini-3.7-flash",
+    "answer_chars": 196,
+    "seconds": 12.22,
+    "scope": "Real provider request, synthetic aggregates, non-empty response; semantic accuracy not certified"
+  },
+  {
+    "service": "Resend domains read-only",
+    "status": "INCONCLUSIVE",
+    "http": 400,
+    "scope": "Connectivity/API access only; 403 may mean send-only key; no email sent"
+  }
+]

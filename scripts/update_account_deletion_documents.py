@@ -13,18 +13,18 @@ from docx.table import Table
 
 ROOT = Path(__file__).resolve().parents[1]
 INPUT_DIR = Path(r"C:\Users\LENOVO\Downloads\Tai lieu du an")
-OUTPUT_DIR = ROOT / "docs" / "outputs"
+OUTPUT_DIR = ROOT / "docs/archive"
 
 SRS_SOURCE = INPUT_DIR / "03_GenAI_SoftwareDevelopment_requirements-specification_actor-logout-updated.docx"
 OOD_SOURCE = INPUT_DIR / "04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification_final-reviewed.docx"
-SRS_OUTPUT = OUTPUT_DIR / "03_GenAI_SoftwareDevelopment_requirements-specification_account-deletion-updated.docx"
-OOD_OUTPUT = OUTPUT_DIR / "04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification_account-deletion-design-updated.docx"
+SRS_OUTPUT = ROOT / "docs/archive/ban-khac/03_GenAI_SoftwareDevelopment_requirements-specification_account-deletion-updated.docx"
+OOD_OUTPUT = ROOT / "docs/archive/ban-khac/04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification_account-deletion-design-updated.docx"
 
-ACCOUNT_USE_CASE = ROOT / "docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.png"
-UC005_ACTIVITY = ROOT / "docs/diagrams/uml/srs-use-cases/uc005-profile-activity.png"
-UC005_SEQUENCE = ROOT / "docs/diagrams/uml/srs-use-cases/uc005-profile-sequence.png"
-CLASS_DESIGN = ROOT / "docs/diagrams/uml/class-design/class-design.png"
-DELETE_ACCOUNT_SEQUENCE = ROOT / "docs/diagrams/uml/class-method-sequences/delete-account.png"
+ACCOUNT_USE_CASE = ROOT / "docs/diagram/use-case/use-case-decomposition-account.png"
+UC005_ACTIVITY = ROOT / "docs/diagram/activity/account/uc005-profile-activity.png"
+UC005_SEQUENCE = ROOT / "docs/diagram/sequence/account/uc005-profile-sequence.png"
+CLASS_DESIGN = ROOT / "docs/diagram/class/class-design/class-design.png"
+DELETE_ACCOUNT_SEQUENCE = ROOT / "docs/diagram/sequence/methods/delete-account.png"
 
 
 def set_update_fields(document: Document) -> None:

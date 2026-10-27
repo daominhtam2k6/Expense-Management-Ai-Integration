@@ -6,7 +6,7 @@ from docx import Document
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(r"C:\Users\LENOVO\Downloads\Tai lieu du an\04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification.docx")
-OUT_DIR = ROOT / "docs/diagrams/uml/class-method-sequences"
+OUT_DIR = ROOT / "docs/diagram/sequence/methods"
 
 GROUPS = {
     "auth": {"register", "login", "get_profile", "update_profile", "forgot_password", "reset_password", "upload_avatar", "delete_avatar"},

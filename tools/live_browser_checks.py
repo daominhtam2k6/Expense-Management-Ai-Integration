@@ -9,9 +9,12 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'deliverables/browser_tools'))
+sys.path.insert(0, str((ROOT / ".tools/browser_tools")))
 from playwright.sync_api import sync_playwright
 import requests
+
+(ROOT / 'docs/software/testing/results').mkdir(parents=True, exist_ok=True)
+(ROOT / '.tools/test-results').mkdir(parents=True, exist_ok=True)
 
 rows = []
 base = 'http://127.0.0.1:18019'
@@ -69,7 +72,7 @@ with tempfile.TemporaryDirectory(prefix='expense-live-test-') as folder:
                                  api_errors=failures, js_errors=errors))
                 page.remove_listener('response',on_response)
                 page.remove_listener('pageerror',on_error)
-            page.screenshot(path=str(ROOT/'deliverables/live-browser-20260919.png'), full_page=True)
+            page.screenshot(path=str((ROOT / ".tools/test-results/live-browser-20260919.png")), full_page=True)
             context.close()
             browser.close()
     except Exception as error:
@@ -77,5 +80,5 @@ with tempfile.TemporaryDirectory(prefix='expense-live-test-') as folder:
     finally:
         process.terminate()
         process.wait(timeout=15)
-    (ROOT/'deliverables/live-browser-results-20260919.json').write_text(json.dumps(rows,indent=2), encoding='utf-8')
+    ((ROOT / "docs/software/testing/results/live-browser-results-20260919.json")).write_text(json.dumps(rows,indent=2), encoding='utf-8')
     print(json.dumps(rows),flush=True)

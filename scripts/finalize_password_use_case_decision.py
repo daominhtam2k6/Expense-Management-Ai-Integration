@@ -7,8 +7,8 @@ from docx.shared import Pt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCX = ROOT / "docs/outputs/03_GenAI_SoftwareDevelopment_requirements-specification.docx"
-ACCOUNT_DIAGRAM = ROOT / "docs/diagrams/uml/srs-use-cases/use-case-decomposition-account.png"
+DOCX = ROOT / "docs/archive/03_GenAI_SoftwareDevelopment_requirements-specification.docx"
+ACCOUNT_DIAGRAM = ROOT / "docs/diagram/use-case/use-case-decomposition-account.png"
 
 
 def set_value(table, label, value):

@@ -5,9 +5,9 @@ from docx.shared import Cm
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = ROOT / "docs" / "outputs"
+OUTPUT_DIR = ROOT / "docs/archive/ban-khac"
 DOCX = next(OUTPUT_DIR.glob("04_*class-specification_with_methods.docx"))
-CLASS_DIAGRAM = ROOT / "docs" / "diagrams" / "uml" / "class-as-built" / "class-as-built-word.png"
+CLASS_DIAGRAM = ROOT / "docs/diagram/class/class-as-built/class-as-built-word.png"
 
 
 def replace_text(paragraph, text):

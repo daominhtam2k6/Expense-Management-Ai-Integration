@@ -10,9 +10,9 @@ from docx.shared import Cm, Pt
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(r"C:\Users\LENOVO\Downloads\Tai lieu du an\04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification.docx")
-OUTPUT = ROOT / "docs/outputs/04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification.docx"
-DIAGRAM_DIR = ROOT / "docs/diagrams/uml/class-method-sequences"
-CLASS_DIAGRAM = ROOT / "docs/diagrams/uml/class-design/class-design.png"
+OUTPUT = ROOT / "docs/archive/04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification.docx"
+DIAGRAM_DIR = ROOT / "docs/diagram/sequence/methods"
+CLASS_DIAGRAM = ROOT / "docs/diagram/class/class-design/class-design.png"
 
 
 def clean(text: str) -> str:

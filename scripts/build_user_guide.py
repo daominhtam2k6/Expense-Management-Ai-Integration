@@ -13,9 +13,9 @@ from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = Path(r"C:\Users\LENOVO\Downloads\07_GenAI_SoftwareDevelopment_user-guide.docx")
-SRS_BASE = ROOT / "docs/outputs/03_GenAI_SoftwareDevelopment_requirements-specification.docx"
-SCREENFLOW = ROOT / "docs/outputs/06_GenAI_SoftwareDevelopment_screenflow_db_srs_ord_aligned.docx"
-OUTPUT = ROOT / "docs/outputs/07_GenAI_SoftwareDevelopment_user-guide.docx"
+SRS_BASE = ROOT / "docs/archive/03_GenAI_SoftwareDevelopment_requirements-specification.docx"
+SCREENFLOW = ROOT / "docs/archive/ban-khac/06_GenAI_SoftwareDevelopment_screenflow_db_srs_ord_aligned.docx"
+OUTPUT = ROOT / "docs/archive/07_GenAI_SoftwareDevelopment_user-guide.docx"
 MEDIA_DIR = ROOT / ".tmp/user-guide-media"
 
 FONT = "Times New Roman"

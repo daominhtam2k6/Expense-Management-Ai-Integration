@@ -14,12 +14,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(
     r"C:\Users\LENOVO\Downloads\Tai lieu du an\06_GenAI_SoftwareDevelopment_screenflow_db_updated.docx"
 )
-OUTPUT_DIR = ROOT / "docs" / "outputs"
-OUTPUT = OUTPUT_DIR / "06_GenAI_SoftwareDevelopment_screenflow_db_srs_ord_aligned.docx"
-ERD_DIR = ROOT / "docs" / "diagrams" / "erd" / "screenflow-database"
-ERD_PNG = ERD_DIR / "screenflow-database-erd.png"
+OUTPUT_DIR = ROOT / "docs/archive"
+OUTPUT = ROOT / "docs/archive/ban-khac/06_GenAI_SoftwareDevelopment_screenflow_db_srs_ord_aligned.docx"
+ERD_DIR = ROOT / "docs/diagram/erd/screenflow-database"
+ERD_PNG = ROOT / "docs/diagram/erd/screenflow-database/screenflow-database-erd.png"
 PROFILE_ACTIVITY = (
-    ROOT / "docs" / "diagrams" / "uml" / "srs-use-cases" / "uc005-profile-activity.png"
+    ROOT / "docs/diagram/activity/account/uc005-profile-activity.png"
 )
 
 

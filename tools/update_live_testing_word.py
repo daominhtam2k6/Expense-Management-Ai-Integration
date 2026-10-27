@@ -64,12 +64,13 @@ entries=[
 ]
 for tid,feature,desc,pre,data,expected,status,observed,severity in entries:
     for table,values in [(doc.tables[2],[tid,feature,desc,pre,data,expected,'Live check 19/09/2026']),
-                         (report,[tid,'19/09/2026','Tự động; chưa duyệt thủ công',status,severity,observed,'Bằng chứng: deliverables/live-*-results-20260919.json; docs/software/testing/test-report.md'])]:
+                         (report,[tid,'19/09/2026','Tự động; chưa duyệt thủ công',status,severity,observed,'Bằng chứng: .tools/document-assets/live-*-results-20260919.json; docs/software/testing/test-report.md'])]:
         table._tbl.append(deepcopy(table.rows[1]._tr))
         for c,v in zip(table.rows[-1].cells,values):
             cell(c,v)
 doc.save(source)
-output=ROOT/'deliverables/05_functional_testing_live_20260919.docx'
+output=(ROOT / "docs/archive/ban-khac/05_functional_testing_live_20260919.docx")
+output.parent.mkdir(parents=True, exist_ok=True)
 doc.save(output)
 for path in [source,output]:
     with zipfile.ZipFile(path) as archive:

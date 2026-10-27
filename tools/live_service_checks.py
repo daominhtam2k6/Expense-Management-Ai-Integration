@@ -62,5 +62,6 @@ if __name__ == '__main__':
         for result in pool.map(lambda fn: fn(), [web, gemini, resend]):
             rows.extend(result)
             print(json.dumps(result, ensure_ascii=False), flush=True)
-    output = ROOT / 'deliverables/live-service-results-20260919.json'
+    output = (ROOT / "docs/software/testing/results/live-service-results-20260919.json")
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding='utf-8')

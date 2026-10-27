@@ -10,8 +10,8 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(r"C:\Users\LENOVO\Downloads\Tai lieu du an\04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification.docx")
-OUTPUT = ROOT / "docs/outputs/04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification_with_method_diagrams.docx"
-DIAGRAM_DIR = ROOT / "docs/diagrams/uml/class-method-activities"
+OUTPUT = ROOT / "docs/archive/04_GenAI_SoftwareDevelopment_object-oriented-design_class-specification_with_method_diagrams.docx"
+DIAGRAM_DIR = ROOT / "docs/diagram/activity/methods"
 
 
 def set_font(run):

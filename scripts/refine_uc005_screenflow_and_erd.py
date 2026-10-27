@@ -11,13 +11,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 CAPTURE_SOURCE = ROOT / ".tmp" / "live_uc005"
-FLOW_DIR = ROOT / "docs" / "diagrams" / "screenflow" / "uc005-account-management"
-CAPTURE_DIR = FLOW_DIR / "captures"
-FLOW_PNG = FLOW_DIR / "uc005-account-management-flow.png"
-ERD_DIR = ROOT / "docs" / "diagrams" / "erd" / "screenflow-database"
-ERD_PNG = ERD_DIR / "screenflow-database-erd.png"
-SOURCE_DOCX = ROOT / "docs" / "outputs" / "06_GenAI_SoftwareDevelopment_screenflow_db_srs_ord_aligned.docx"
-OUTPUT_DOCX = ROOT / "docs" / "outputs" / "06_GenAI_SoftwareDevelopment_screenflow_db_uc005_refined.docx"
+FLOW_DIR = ROOT / "docs/software/design/screenflow/uc005-account-management"
+CAPTURE_DIR = ROOT / "docs/software/design/screenflow/uc005-account-management/captures"
+FLOW_PNG = ROOT / "docs/software/design/screenflow/uc005-account-management/uc005-account-management-flow.png"
+ERD_DIR = ROOT / "docs/diagram/erd/screenflow-database"
+ERD_PNG = ROOT / "docs/diagram/erd/screenflow-database/screenflow-database-erd.png"
+SOURCE_DOCX = ROOT / "docs/archive/ban-khac/06_GenAI_SoftwareDevelopment_screenflow_db_srs_ord_aligned.docx"
+OUTPUT_DOCX = ROOT / "docs/archive/06_GenAI_SoftwareDevelopment_screenflow_db_uc005_refined.docx"
 
 
 def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
