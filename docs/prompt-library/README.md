@@ -16,7 +16,7 @@
 | 10 | Sửa lỗi | [Sửa lỗi phát hiện từ kiểm thử](10-sua-loi-sau-kiem-thu.md) |
 | 11 | Rà soát | [Review bản triển khai sau sửa lỗi](11-review-ma-nguon.md) |
 | 12 | Rà soát | [Kiểm tra bảo mật trước phát hành](12-kiem-tra-bao-mat.md) |
-| 13 | Kiểm thử AI | [So sánh chất lượng hai prompt trợ lý](13-so-sanh-prompt-ai.md) |
+| 13 | Kiểm thử AI | [So sánh chất lượng 3 prompt trên N1, mỗi prompt 1 lần](13-so-sanh-prompt-ai.md) |
 | 14 | Hoàn thiện tài liệu | [Hoàn thiện báo cáo và hướng dẫn sử dụng](14-viet-bao-cao-va-tai-lieu.md) |
 | 15 | Triển khai và bảo trì | [Chuẩn bị triển khai và bảo trì](15-trien-khai-va-bao-tri.md) |
 
