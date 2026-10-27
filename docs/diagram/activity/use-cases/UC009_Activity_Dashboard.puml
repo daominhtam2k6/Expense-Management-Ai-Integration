@@ -1,0 +1,46 @@
+@startuml UC009_Activity_Dashboard
+title UC009 — BIỂU ĐỒ HOẠT ĐỘNG XEM DASHBOARD
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở Dashboard;
+:Chọn tháng/năm;
+|UI - DashboardPage|
+:Gửi yêu cầu Dashboard theo kỳ;
+|API - DashboardRouter|
+:Xác định đầu và cuối tháng;
+|Entity/Data - Finance DB|
+:Tổng hợp thu/chi trong tháng;
+:Tổng hợp chi theo danh mục;
+:Tổng hợp xu hướng 3 tháng;
+:Lấy ngân sách của kỳ;
+:Lấy tối đa 3 mục tiêu ưu tiên;
+:Lấy tối đa 5 giao dịch gần nhất;
+|Business - FinanceService|
+:Tính số dư khả dụng đến cuối kỳ;
+|API - DashboardRouter|
+:Tính net, tỷ trọng, tiến độ\nvà trạng thái ngân sách;
+|UI - DashboardPage|
+if (Tải dữ liệu thành công?) then (Có)
+  if (Có dữ liệu?) then (Có)
+    :Hiển thị tổng quan, biểu đồ,\nngân sách, mục tiêu và giao dịch;
+  else (Không)
+    :Hiển thị empty state và liên kết tạo dữ liệu;
+  endif
+else (Không)
+  :Hiển thị lỗi và nút "Thử lại";
+endif
+stop
+@enduml

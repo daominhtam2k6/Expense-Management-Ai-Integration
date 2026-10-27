@@ -1,0 +1,77 @@
+@startuml UC004_Activity_QuanLyHoSo
+title UC004 — BIỂU ĐỒ HOẠT ĐỘNG QUẢN LÝ HỒ SƠ VÀ ẢNH ĐẠI DIỆN
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở panel hồ sơ;
+|UI - ProfilePanel|
+:Hiển thị tên hiển thị,\nusername, email và avatar;
+|Người dùng|
+:Chọn thao tác;
+if (Cập nhật thông tin?) then (Có)
+  :Nhập tên hiển thị, username, email;
+  |UI - ProfilePanel|
+  :Gửi thông tin đã thay đổi;
+  |API - AuthRouter|
+  :Kiểm tra username/email hợp lệ và duy nhất;
+  if (Hợp lệ?) then (Có)
+    |Entity/Data - User DB|
+    :Cập nhật hồ sơ;
+    if (Email thay đổi?) then (Có)
+      :Vô hiệu reset token đang tồn tại;
+    endif
+    |UI - ProfilePanel|
+    :Cập nhật danh tính trong ứng dụng;
+    :Thông báo thành công;
+  else (Không)
+    |UI - ProfilePanel|
+    :Hiển thị lỗi;
+  endif
+elseif (Tải lên/thay avatar?) then (Có)
+  |Người dùng|
+  :Chọn tệp PNG/JPEG/WebP;
+  |UI - ProfilePanel|
+  :Kiểm tra loại và dung lượng <= 2 MB;
+  if (Frontend chấp nhận tệp?) then (Có)
+    |API - AuthRouter|
+    :Kiểm tra MIME, chữ ký tệp,\ndung lượng và nội dung không rỗng;
+    if (Backend chấp nhận tệp?) then (Có)
+      |Entity/Data - Avatar Storage|
+      :Lưu tệp mới;
+      |Entity/Data - User DB|
+      :Cập nhật avatar_url;
+      |Entity/Data - Avatar Storage|
+      :Xóa tệp cũ nếu có;
+      |UI - ProfilePanel|
+      :Hiển thị avatar mới;
+    else (Không)
+      |UI - ProfilePanel|
+      :Hiển thị lỗi tệp;
+    endif
+  else (Không)
+    |UI - ProfilePanel|
+    :Hiển thị lỗi tệp;
+  endif
+else (Xóa avatar)
+  |API - AuthRouter|
+  |Entity/Data - User DB|
+  :Đặt avatar_url = null;
+  |Entity/Data - Avatar Storage|
+  :Xóa tệp avatar cũ;
+  |UI - ProfilePanel|
+  :Hiển thị ký tự đại diện;
+endif
+stop
+@enduml

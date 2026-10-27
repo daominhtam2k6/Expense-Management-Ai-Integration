@@ -1,0 +1,42 @@
+@startuml UC001_Activity_DangKy_Word
+title UC001 — HOẠT ĐỘNG ĐĂNG KÝ TÀI KHOẢN
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Khách|
+start
+:Nhập username, email,\nmật khẩu và xác nhận;
+|Giao diện: RegisterPage|
+:Kiểm tra username ≥ 3,\nmật khẩu ≥ 6 và xác nhận khớp;
+if (Hợp lệ phía giao diện?) then (Có)
+  :Gửi yêu cầu đăng ký;
+  |Xử lý: AuthRouter + Security|
+  :Kiểm tra email, username/email duy nhất;
+  if (Hợp lệ và chưa tồn tại?) then (Có)
+    :Băm mật khẩu bằng bcrypt;
+    |Dữ liệu: User DB|
+    :Lưu tài khoản mới;
+    |Giao diện: RegisterPage|
+    :Thông báo thành công;
+    :Chuyển đến Đăng nhập;
+  else (Không)
+    |Giao diện: RegisterPage|
+    :Hiển thị lỗi validation/trùng;
+  endif
+else (Không)
+  :Hiển thị lỗi tại biểu mẫu;
+endif
+stop
+@enduml

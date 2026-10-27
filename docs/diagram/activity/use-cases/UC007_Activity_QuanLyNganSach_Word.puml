@@ -1,0 +1,44 @@
+@startuml UC007_Activity_QuanLyNganSach_Word
+title UC007 — HOẠT ĐỘNG QUẢN LÝ NGÂN SÁCH
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Chọn tháng/năm và mở Ngân sách;
+|Xử lý + Dữ liệu|
+:Truy vấn ngân sách;\nTính spent từ giao dịch chi;\nTính is_over = spent > limit;
+|Giao diện: BudgetsPage|
+:Hiển thị hạn mức, đã chi, tỷ lệ;
+|Tác nhân: Người dùng|
+:Chọn tạo, sửa hoặc xóa;
+|Xử lý: BudgetsRouter|
+if (Tạo?) then (Có)
+  :Kiểm tra danh mục chi thuộc user,\nlimit > 0 và chưa trùng kỳ;
+  |Dữ liệu: Budget DB|
+  :Lưu ngân sách;
+else (Sửa hoặc xóa)
+  :Kiểm tra quyền sở hữu;
+  |Dữ liệu: Budget DB|
+  if (Sửa?) then (Có)
+    :Cập nhật limit_amount;
+  else (Xóa)
+    :Xóa ngân sách;
+  endif
+endif
+|Giao diện: BudgetsPage|
+:Tính/hiển thị lại trạng thái hoặc lỗi;
+stop
+@enduml

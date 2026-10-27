@@ -1,0 +1,52 @@
+@startuml UC010_Activity_BaoCaoSoSanh
+title UC010 — BIỂU ĐỒ HOẠT ĐỘNG XEM BÁO CÁO SO SÁNH
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở Báo cáo và chọn tháng/năm;
+|UI - ReportsPage|
+:Gửi yêu cầu báo cáo;
+|API - ReportsRouter|
+:Xác định kỳ được chọn\nvà tháng liền trước;
+|Entity/Data - Transaction/Category DB|
+:Tổng hợp thu, chi từng kỳ;
+:Tổng hợp chi theo danh mục\nvà số giao dịch;
+|API - ReportsRouter|
+:Tính net, chênh lệch tuyệt đối,\ntỷ trọng và phần trăm thay đổi;
+note right
+  Báo cáo được tính xác định
+  và không gọi Gemini.
+end note
+|UI - ReportsPage|
+if (Tải thành công?) then (Có)
+  if (Hai kỳ có dữ liệu?) then (Có)
+    :Hiển thị tổng quan;
+    :Hiển thị biểu đồ so sánh,\ncơ cấu và biến động nổi bật;
+    :Hiển thị bảng chi tiết;
+    |Người dùng|
+    if (Chọn "Xem giao dịch"?) then (Có)
+      |UI - ReportsPage|
+      :Mở màn hình Giao dịch\nvới kỳ, loại chi và danh mục đã lọc;
+    endif
+  else (Không)
+    |UI - ReportsPage|
+    :Hiển thị hướng dẫn thêm giao dịch;
+  endif
+else (Không)
+  |UI - ReportsPage|
+  :Hiển thị lỗi và nút "Thử lại";
+endif
+stop
+@enduml

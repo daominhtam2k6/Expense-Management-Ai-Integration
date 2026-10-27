@@ -1,0 +1,42 @@
+@startuml UC010_Activity_BaoCaoSoSanh_Word
+title UC010 — HOẠT ĐỘNG XEM BÁO CÁO SO SÁNH
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Chọn tháng/năm và mở Báo cáo;
+|Giao diện: ReportsPage|
+:Gửi yêu cầu báo cáo;
+|Xử lý: ReportsRouter|
+:Xác định kỳ chọn và tháng trước;
+|Dữ liệu: Transaction/Category DB|
+:Tổng hợp thu/chi, chi theo danh mục\nvà số giao dịch của hai kỳ;
+|Xử lý: ReportsRouter|
+:Tính net, chênh lệch, tỷ trọng\nvà phần trăm thay đổi;
+note right: Tính xác định; không gọi Gemini.
+|Giao diện: ReportsPage|
+if (API lỗi?) then (Có)
+  :Hiển thị lỗi và Thử lại;
+elseif (Có dữ liệu?) then (Có)
+  :Hiển thị tổng quan, biểu đồ,\ncơ cấu, biến động và bảng chi tiết;
+  if (Chọn Xem giao dịch?) then (Có)
+    :Mở Giao dịch với bộ lọc tương ứng;
+  endif
+else (Không)
+  :Hướng dẫn thêm giao dịch;
+endif
+stop
+@enduml

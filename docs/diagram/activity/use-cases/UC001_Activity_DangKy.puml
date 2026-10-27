@@ -1,0 +1,49 @@
+@startuml UC001_Activity_DangKy
+title UC001 — BIỂU ĐỒ HOẠT ĐỘNG ĐĂNG KÝ TÀI KHOẢN
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Khách|
+start
+:Mở màn hình đăng ký;
+|UI - RegisterPage|
+:Hiển thị biểu mẫu;
+|Khách|
+:Nhập username, email,\nmật khẩu và xác nhận mật khẩu;
+:Nhấn "Đăng ký";
+|UI - RegisterPage|
+:Chuẩn hóa username/email;
+if (Username >= 3,\nmật khẩu >= 6\nvà xác nhận khớp?) then (Có)
+  :Gửi yêu cầu đăng ký;
+  |API - AuthRouter|
+  :Kiểm tra định dạng email;
+  :Kiểm tra username và email duy nhất;
+  if (Dữ liệu hợp lệ\nvà chưa tồn tại?) then (Có)
+    |Business - Security|
+    :Băm mật khẩu bằng bcrypt;
+    |Entity/Data - User DB|
+    :Lưu tài khoản mới;
+    |API - AuthRouter|
+    :Trả thông tin người dùng;
+    |UI - RegisterPage|
+    :Thông báo đăng ký thành công;
+    :Chuyển đến màn hình đăng nhập;
+  else (Không)
+    |UI - RegisterPage|
+    :Hiển thị lỗi validation\nhoặc thông tin đã tồn tại;
+  endif
+else (Không)
+  :Hiển thị lỗi tại biểu mẫu;
+endif
+stop
+@enduml

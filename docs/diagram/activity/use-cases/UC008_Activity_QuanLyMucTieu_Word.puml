@@ -1,0 +1,52 @@
+@startuml UC008_Activity_QuanLyMucTieu_Word
+title UC008 — HOẠT ĐỘNG QUẢN LÝ MỤC TIÊU TIẾT KIỆM
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Mở Mục tiêu; chọn thao tác;
+|Giao diện: GoalsPage|
+:Gửi dữ liệu mục tiêu/hạng mục,\nnạp-rút, hoàn thành, lịch sử hoặc xóa;
+|Xử lý hệ thống|
+:<b>[GoalsRouter/FinanceService]</b>\nPhân loại thao tác;\nKiểm tra quyền sở hữu và dữ liệu;
+note right
+  |= Thao tác |= Quy tắc chính |
+  | Tạo/sửa | Tên và amount/cost > 0 |
+  | Nạp | Goal active; amount ≤ số dư khả dụng |
+  | Rút | amount ≤ deposit - withdraw |
+  | Hoàn thành | current ≥ target; mode keep/release/spend |
+  | Lịch sử | Sắp theo ngày giảm dần |
+  | Xóa | Chỉ khi chưa có lịch sử tiền |
+end note
+if (Vi phạm quy tắc?) then (Có)
+  |Giao diện: GoalsPage|
+  :Hiển thị lỗi 400/404/409/422;
+else (Không)
+  |Dữ liệu|
+  :<b>[Goal/GoalItem/GoalTransaction]</b>\nLưu thay đổi hoặc truy vấn lịch sử;
+  |Xử lý hệ thống|
+  if (Hoàn thành với\nrelease/spend?) then (Có)
+    |Dữ liệu|
+    :<b>[GoalTransaction]</b>\nTạo withdraw toàn bộ;
+    :<b>[Category/Transaction]</b>\nNếu spend, tạo giao dịch chi;
+  endif
+  |Dữ liệu|
+  :<b>[Goal]</b>\nNếu hoàn thành, lưu amount/mode\nvà status = completed;
+endif
+|Giao diện: GoalsPage|
+:Cập nhật tiến độ, số dư, lịch sử,\ntab hoàn thành hoặc hiển thị lỗi;
+stop
+@enduml

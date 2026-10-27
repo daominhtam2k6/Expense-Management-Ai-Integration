@@ -1,0 +1,53 @@
+@startuml UC011_Activity_TroLyAI_Word
+title UC011 — HOẠT ĐỘNG SỬ DỤNG TRỢ LÝ AI
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam activity {
+  BackgroundColor #F1ECFF
+  BorderColor #7757E8
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Mở Trợ lý; chọn kỳ;
+|Giao diện: AssistantPage|
+:Tải phạm vi dữ liệu và lịch sử;
+|Xử lý: AssistantRouter/Context|
+:Tổng hợp kỳ hiện tại và tháng trước;
+|Dữ liệu: Finance/AI Conversation DB|
+:Đọc số tổng hợp và hội thoại;
+|Xử lý: AssistantContext|
+:Loại định danh, ghi chú, dữ liệu thô\nvà tên tùy biến;
+|Tác nhân: Người dùng|
+:Nhập/chọn câu hỏi;
+|Xử lý: AssistantRouter/GeminiService|
+:Kiểm tra hội thoại; tạo evidence snapshot;\nTạo instruction + context + lịch sử;
+|Tích hợp: Google Gemini|
+:Sinh câu trả lời tư vấn;
+|Xử lý: GeminiService|
+if (Thành công?) then (Có)
+  |Dữ liệu: AI Conversation DB|
+  :Lưu câu hỏi, trả lời, kỳ và evidence;
+  |Giao diện: AssistantPage|
+  :Hiển thị tư vấn, bằng chứng,\nđộ tin cậy và liên kết nguồn;
+else (Không)
+  |Giao diện: AssistantPage|
+  :Hiển thị lỗi 429/502/503/504;\nCho phép thử lại;
+endif
+|Tác nhân: Người dùng|
+if (Xem/xóa hội thoại?) then (Có)
+  |Xử lý + Dữ liệu|
+  :Kiểm tra quyền; đọc hoặc xóa;
+  |Giao diện: AssistantPage|
+  :Cập nhật lịch sử;
+endif
+stop
+@enduml

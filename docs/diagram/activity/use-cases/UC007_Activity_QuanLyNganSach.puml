@@ -1,0 +1,67 @@
+@startuml UC007_Activity_QuanLyNganSach
+title UC007 — BIỂU ĐỒ HOẠT ĐỘNG QUẢN LÝ NGÂN SÁCH
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở Ngân sách và chọn tháng/năm;
+|UI - BudgetsPage|
+:Yêu cầu danh mục chi và ngân sách kỳ;
+|API - BudgetsRouter|
+|Entity/Data - Budget/Transaction DB|
+:Truy vấn ngân sách;
+:Tính spent từ giao dịch chi;
+|API - BudgetsRouter|
+:Tính is_over = spent > limit;
+|UI - BudgetsPage|
+:Hiển thị hạn mức, đã chi,\ntỷ lệ và trạng thái;
+|Người dùng|
+:Chọn thao tác;
+if (Tạo ngân sách?) then (Có)
+  :Chọn danh mục chi và nhập hạn mức;
+  |UI - BudgetsPage|
+  :Gửi category, month, year, limit;
+  |API - BudgetsRouter|
+  |Entity/Data - Category/Budget DB|
+  :Kiểm tra danh mục chi thuộc người dùng;
+  :Kiểm tra chưa có ngân sách cùng kỳ;
+  |API - BudgetsRouter|
+  if (Hợp lệ và limit > 0?) then (Có)
+    |Entity/Data - Budget DB|
+    :Lưu ngân sách;
+    |UI - BudgetsPage|
+    :Hiển thị ngân sách mới;
+  else (Không)
+    |UI - BudgetsPage|
+    :Hiển thị lỗi;
+  endif
+elseif (Sửa hạn mức?) then (Có)
+  |API - BudgetsRouter|
+  :Kiểm tra quyền sở hữu và limit > 0;
+  |Entity/Data - Budget DB|
+  :Cập nhật limit_amount;
+  |UI - BudgetsPage|
+  :Tính/hiển thị lại trạng thái;
+else (Xóa)
+  |UI - BudgetsPage|
+  :Xác nhận xóa;
+  |API - BudgetsRouter|
+  :Kiểm tra quyền sở hữu;
+  |Entity/Data - Budget DB|
+  :Xóa ngân sách;
+  |UI - BudgetsPage|
+  :Cập nhật danh sách;
+endif
+stop
+@enduml

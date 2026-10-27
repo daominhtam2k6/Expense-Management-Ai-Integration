@@ -1,0 +1,47 @@
+@startuml UC006_Activity_QuanLyGiaoDich_Word
+title UC006 — HOẠT ĐỘNG QUẢN LÝ GIAO DỊCH
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Mở Giao dịch và chọn thao tác;
+|Giao diện: TransactionsPage|
+if (Lọc/tìm kiếm?) then (Có)
+  :Gửi loại, danh mục, ngày, từ khóa;
+  |Dữ liệu: Transaction DB|
+  :Lọc theo user; sắp ngày giảm dần;
+else (Thêm/sửa/xóa)
+  |Giao diện: TransactionsPage|
+  :Gửi dữ liệu hoặc xác nhận xóa;
+  |Xử lý: TransactionsRouter|
+  :Kiểm tra quyền sở hữu;
+  if (Thêm hoặc sửa?) then (Có)
+    :Kiểm tra amount > 0,\nngày không tương lai;
+    |Dữ liệu: Category DB|
+    :Kiểm tra danh mục thuộc user;
+    |Xử lý: TransactionsRouter|
+    :Suy ra loại từ danh mục;
+    |Dữ liệu: Transaction DB|
+    :INSERT/UPDATE giao dịch;
+  else (Xóa)
+    |Dữ liệu: Transaction DB|
+    :DELETE giao dịch;
+  endif
+endif
+|Giao diện: TransactionsPage|
+:Hiển thị kết quả hoặc lỗi;
+stop
+@enduml

@@ -1,0 +1,50 @@
+@startuml UC003_Activity_KhoiPhucMatKhau_Word
+title UC003 — HOẠT ĐỘNG KHÔI PHỤC MẬT KHẨU
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Khách|
+start
+:Nhập email quên mật khẩu;
+|Giao diện: ForgotPasswordPage|
+:Chuẩn hóa và gửi email;
+|Xử lý: AuthRouter/Security|
+:Kiểm tra 3 yêu cầu/email/giờ;
+|Dữ liệu: User DB|
+:Tìm tài khoản;
+|Xử lý: AuthRouter/Security|
+if (Tồn tại và chưa vượt giới hạn?) then (Có)
+  :Sinh token; lưu SHA-256 hash,\nhạn 15 phút;
+  |Tích hợp: Resend|
+  :Gửi liên kết đặt lại;
+endif
+|Giao diện: ForgotPasswordPage|
+:Luôn hiển thị phản hồi chung;
+|Tác nhân: Khách|
+:Mở liên kết; nhập mật khẩu mới;
+|Giao diện: ResetPasswordPage|
+:Kiểm tra ≥ 6 ký tự và xác nhận khớp;
+|Xử lý + Dữ liệu|
+:Kiểm tra token hash và thời hạn;
+if (Token hợp lệ?) then (Có)
+  :Băm và cập nhật mật khẩu;\nXóa reset token;
+  |Giao diện: ResetPasswordPage|
+  :Thông báo thành công; đến Đăng nhập;
+else (Không)
+  |Giao diện: ResetPasswordPage|
+  :Báo liên kết sai/hết hạn;
+endif
+stop
+@enduml

@@ -1,0 +1,38 @@
+@startuml UC009_Activity_Dashboard_Word
+title UC009 — HOẠT ĐỘNG XEM DASHBOARD
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Mở Dashboard; chọn tháng/năm;
+|Giao diện: DashboardPage|
+:Gửi yêu cầu theo kỳ;
+|Xử lý: DashboardRouter/FinanceService|
+:Xác định kỳ; tính số dư khả dụng;
+|Dữ liệu: Finance DB|
+:Tổng hợp thu/chi, chi theo danh mục,\nxu hướng 3 tháng, ngân sách,\n3 mục tiêu và 5 giao dịch gần nhất;
+|Xử lý: DashboardRouter|
+:Tính net, tỷ trọng, tiến độ,\ntrạng thái ngân sách;
+|Giao diện: DashboardPage|
+if (API lỗi?) then (Có)
+  :Hiển thị lỗi và Thử lại;
+elseif (Có dữ liệu?) then (Có)
+  :Hiển thị tổng quan và biểu đồ;
+else (Không)
+  :Hiển thị empty state và liên kết tạo dữ liệu;
+endif
+stop
+@enduml

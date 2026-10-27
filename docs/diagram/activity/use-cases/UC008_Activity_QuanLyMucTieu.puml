@@ -1,0 +1,124 @@
+@startuml UC008_Activity_QuanLyMucTieu
+title UC008 — BIỂU ĐỒ HOẠT ĐỘNG QUẢN LÝ MỤC TIÊU TIẾT KIỆM
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở màn hình Mục tiêu;
+|UI - GoalsPage|
+:Tải mục tiêu và danh mục chi;
+|API - GoalsRouter|
+|Entity/Data - Goal DB|
+:Truy vấn mục tiêu, hạng mục\nvà tổng nạp - rút;
+|UI - GoalsPage|
+:Hiển thị mục tiêu đang hoạt động/đã hoàn thành;
+|Người dùng|
+:Chọn thao tác;
+
+if (Tạo/sửa mục tiêu\nhoặc hạng mục?) then (Có)
+  :Nhập thông tin;
+  |UI - GoalsPage|
+  :Kiểm tra tên và số tiền > 0;
+  |API - GoalsRouter|
+  :Kiểm tra quyền sở hữu và validation;
+  |Entity/Data - Goal/GoalItem DB|
+  :Tạo hoặc cập nhật dữ liệu;
+  |UI - GoalsPage|
+  :Cập nhật mục tiêu;
+
+elseif (Nạp tiền?) then (Có)
+  |Người dùng|
+  :Nhập số tiền và ghi chú;
+  |API - GoalsRouter|
+  :Kiểm tra mục tiêu đang active;
+  |Business - FinanceService|
+  :Tính số dư khả dụng;
+  if (Số tiền > 0\nvà không vượt số dư?) then (Có)
+    |Entity/Data - GoalTransaction DB|
+    :Lưu giao dịch deposit ngày hiện tại;
+    |UI - GoalsPage|
+    :Cập nhật tiến độ và lịch sử;
+  else (Không)
+    |UI - GoalsPage|
+    :Hiển thị lỗi số dư/trạng thái;
+  endif
+
+elseif (Rút tiền?) then (Có)
+  |API - GoalsRouter|
+  |Entity/Data - GoalTransaction DB|
+  :Tính tổng deposit - withdraw;
+  |API - GoalsRouter|
+  if (Số tiền > 0\nvà không vượt số đã tiết kiệm?) then (Có)
+    |Entity/Data - GoalTransaction DB|
+    :Lưu giao dịch withdraw ngày hiện tại;
+    |UI - GoalsPage|
+    :Cập nhật tiến độ và số dư;
+  else (Không)
+    |UI - GoalsPage|
+    :Hiển thị lỗi;
+  endif
+
+elseif (Hoàn thành?) then (Có)
+  |API - GoalsRouter|
+  |Entity/Data - GoalTransaction DB|
+  :Tính số tiền hiện tại;
+  |API - GoalsRouter|
+  if (Đã đạt target?) then (Có)
+    |Người dùng|
+    :Chọn keep, release hoặc spend;
+    |API - GoalsRouter|
+    if (Chế độ spend?) then (Có)
+      |Entity/Data - Category DB|
+      :Kiểm tra danh mục chi;
+      |Entity/Data - Transaction DB|
+      :Tạo giao dịch chi bằng toàn bộ số tiền;
+    endif
+    |API - GoalsRouter|
+    if (release hoặc spend?) then (Có)
+      |Entity/Data - GoalTransaction DB|
+      :Tạo giao dịch withdraw toàn bộ;
+    endif
+    |Entity/Data - Goal DB|
+    :Lưu completion_amount,\ncompletion_mode và status=completed;
+    |UI - GoalsPage|
+    :Chuyển mục tiêu sang tab hoàn thành;
+  else (Không)
+    |UI - GoalsPage|
+    :Thông báo chưa đạt mục tiêu;
+  endif
+
+elseif (Xem lịch sử?) then (Có)
+  |API - GoalsRouter|
+  |Entity/Data - GoalTransaction DB|
+  :Truy vấn lịch sử theo ngày giảm dần;
+  |UI - GoalsPage|
+  :Hiển thị lịch sử nạp/rút;
+
+else (Xóa mục tiêu)
+  |API - GoalsRouter|
+  |Entity/Data - GoalTransaction DB|
+  :Đếm lịch sử tiền;
+  |API - GoalsRouter|
+  if (Đã có lịch sử tiền?) then (Có)
+    |UI - GoalsPage|
+    :Thông báo không thể xóa;
+  else (Không)
+    |Entity/Data - GoalItem/Goal DB|
+    :Xóa hạng mục và mục tiêu;
+    |UI - GoalsPage|
+    :Cập nhật danh sách;
+  endif
+endif
+stop
+@enduml

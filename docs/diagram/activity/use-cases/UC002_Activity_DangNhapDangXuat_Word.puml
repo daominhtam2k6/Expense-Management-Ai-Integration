@@ -1,0 +1,42 @@
+@startuml UC002_Activity_DangNhapDangXuat_Word
+title UC002 — HOẠT ĐỘNG ĐĂNG NHẬP VÀ ĐĂNG XUẤT
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Khách/Người dùng|
+start
+if (Thao tác?) then (Đăng nhập)
+  :Nhập username/email và mật khẩu;
+  |Giao diện: LoginPage/AuthContext|
+  :Kiểm tra rỗng và gửi thông tin;
+  |Xử lý: AuthRouter/Security|
+  :Tìm theo username;\nNếu không có, tìm email không phân biệt hoa/thường;
+  :Xác minh bcrypt;
+  if (Thông tin hợp lệ?) then (Có)
+    :Tạo JWT hạn 24 giờ;
+    |Giao diện: AuthContext|
+    :Lưu token; lấy hồ sơ;
+    :Chuyển đến Dashboard;
+  else (Không)
+    |Giao diện: LoginPage|
+    :Hiển thị lỗi đăng nhập chung;
+  endif
+else (Đăng xuất)
+  |Giao diện: AuthContext|
+  :Xóa token và trạng thái người dùng;
+  :Chuyển về Đăng nhập;
+endif
+stop
+@enduml

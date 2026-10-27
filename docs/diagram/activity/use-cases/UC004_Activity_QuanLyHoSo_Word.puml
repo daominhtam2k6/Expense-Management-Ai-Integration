@@ -1,0 +1,50 @@
+@startuml UC004_Activity_QuanLyHoSo_Word
+title UC004 — HOẠT ĐỘNG QUẢN LÝ HỒ SƠ VÀ AVATAR
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Mở hồ sơ và chọn thao tác;
+|Giao diện: ProfilePanel|
+:Hiển thị thông tin và avatar hiện tại;
+if (Cập nhật thông tin?) then (Có)
+  :Gửi display name, username, email;
+  |Xử lý: AuthRouter|
+  :Kiểm tra định dạng và duy nhất;
+  if (Hợp lệ?) then (Có)
+    |Dữ liệu: User DB|
+    :Cập nhật hồ sơ;\nNếu đổi email, xóa reset token;
+  else (Không)
+    |Giao diện: ProfilePanel|
+    :Hiển thị lỗi;
+  endif
+else (Avatar)
+  |Tác nhân: Người dùng|
+  :Chọn tải lên/thay hoặc xóa avatar;
+  |Giao diện + Xử lý|
+  :Kiểm tra PNG/JPEG/WebP, ≤ 2 MB,\nMIME, chữ ký và nội dung tệp;
+  if (Tệp hợp lệ hoặc yêu cầu xóa?) then (Có)
+    |Dữ liệu: User DB/Avatar Storage|
+    :Lưu/xóa tệp; cập nhật avatar_url;\nXóa avatar cũ nếu có;
+  else (Không)
+    |Giao diện: ProfilePanel|
+    :Hiển thị lỗi tệp;
+  endif
+endif
+|Giao diện: ProfilePanel/AuthContext|
+:Đồng bộ hồ sơ và hiển thị kết quả;
+stop
+@enduml

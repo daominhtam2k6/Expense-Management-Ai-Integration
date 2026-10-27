@@ -1,0 +1,61 @@
+@startuml UC005_Activity_QuanLyDanhMuc
+title UC005 — BIỂU ĐỒ HOẠT ĐỘNG QUẢN LÝ DANH MỤC
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở màn hình Danh mục;
+|UI - CategoriesPage|
+:Yêu cầu danh mục của người dùng;
+|API - CategoriesRouter|
+|Entity/Data - Category DB|
+:Truy vấn theo current_user.id;
+|UI - CategoriesPage|
+:Hiển thị danh sách;
+|Người dùng|
+:Chọn thao tác;
+if (Thêm hoặc sửa?) then (Có)
+  :Nhập tên, loại Thu/Chi,\nmàu và icon;
+  |UI - CategoriesPage|
+  :Gửi dữ liệu;
+  |API - CategoriesRouter|
+  :Kiểm tra tên + loại không trùng\ntrong tài khoản;
+  if (Hợp lệ?) then (Có)
+    |Entity/Data - Category DB|
+    :Tạo hoặc cập nhật danh mục;
+    |UI - CategoriesPage|
+    :Cập nhật danh sách;
+  else (Không)
+    |UI - CategoriesPage|
+    :Hiển thị lỗi trùng/validation;
+  endif
+else (Xóa)
+  |UI - CategoriesPage|
+  :Yêu cầu xác nhận xóa;
+  |API - CategoriesRouter|
+  |Entity/Data - Transaction DB|
+  :Kiểm tra giao dịch tham chiếu;
+  |API - CategoriesRouter|
+  if (Danh mục đang được sử dụng?) then (Có)
+    |UI - CategoriesPage|
+    :Thông báo không thể xóa;
+  else (Không)
+    |Entity/Data - Category DB|
+    :Xóa danh mục;
+    |UI - CategoriesPage|
+    :Loại danh mục khỏi danh sách;
+  endif
+endif
+stop
+@enduml

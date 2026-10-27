@@ -1,0 +1,68 @@
+@startuml UC006_Activity_QuanLyGiaoDich
+title UC006 — BIỂU ĐỒ HOẠT ĐỘNG QUẢN LÝ GIAO DỊCH
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở màn hình Giao dịch;
+|UI - TransactionsPage|
+:Tải danh mục và giao dịch theo kỳ;
+|API - TransactionsRouter|
+|Entity/Data - Transaction DB|
+:Truy vấn giao dịch theo current_user.id;
+|UI - TransactionsPage|
+:Hiển thị danh sách;
+|Người dùng|
+:Chọn thao tác;
+if (Lọc/tìm kiếm?) then (Có)
+  :Chọn loại, danh mục,\nkhoảng ngày hoặc từ khóa;
+  |UI - TransactionsPage|
+  :Gửi các bộ lọc;
+  |API - TransactionsRouter|
+  |Entity/Data - Transaction DB|
+  :Lọc và sắp ngày giảm dần;
+  |UI - TransactionsPage|
+  :Hiển thị kết quả;
+elseif (Thêm hoặc sửa?) then (Có)
+  |Người dùng|
+  :Nhập danh mục, số tiền,\nngày và ghi chú;
+  |UI - TransactionsPage|
+  :Gửi dữ liệu giao dịch;
+  |API - TransactionsRouter|
+  :Kiểm tra số tiền > 0\nvà ngày không ở tương lai;
+  |Entity/Data - Category DB|
+  :Kiểm tra danh mục thuộc người dùng;
+  |API - TransactionsRouter|
+  if (Dữ liệu hợp lệ?) then (Có)
+    :Suy ra loại giao dịch từ danh mục;
+    |Entity/Data - Transaction DB|
+    :Tạo hoặc cập nhật giao dịch;
+    |UI - TransactionsPage|
+    :Cập nhật danh sách và thông báo thành công;
+  else (Không)
+    |UI - TransactionsPage|
+    :Hiển thị lỗi;
+  endif
+else (Xóa)
+  |UI - TransactionsPage|
+  :Yêu cầu xác nhận;
+  |API - TransactionsRouter|
+  :Kiểm tra giao dịch thuộc người dùng;
+  |Entity/Data - Transaction DB|
+  :Xóa giao dịch;
+  |UI - TransactionsPage|
+  :Cập nhật danh sách;
+endif
+stop
+@enduml

@@ -1,0 +1,71 @@
+@startuml UC003_Activity_KhoiPhucMatKhau
+title UC003 — BIỂU ĐỒ HOẠT ĐỘNG KHÔI PHỤC MẬT KHẨU
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Khách|
+start
+:Mở chức năng quên mật khẩu;
+:Nhập email;
+|UI - ForgotPasswordPage|
+:Chuẩn hóa email và gửi yêu cầu;
+|API - AuthRouter|
+:Kiểm tra giới hạn 3 yêu cầu/email/giờ;
+|Entity/Data - User DB|
+:Tìm người dùng theo email;
+|API - AuthRouter|
+if (Tài khoản tồn tại\nvà chưa vượt giới hạn?) then (Có)
+  |Business - Security|
+  :Sinh token ngẫu nhiên;
+  :Băm token bằng SHA-256;
+  |Entity/Data - User DB|
+  :Lưu hash và hạn 15 phút;
+  |External - Resend|
+  :Gửi email chứa liên kết đặt lại;
+  note right
+    Kết quả gửi email hiện không làm
+    thay đổi phản hồi chung của API.
+  end note
+endif
+|API - AuthRouter|
+:Trả thông báo chung,\nkhông tiết lộ email có tồn tại;
+|UI - ForgotPasswordPage|
+:Hiển thị hướng dẫn kiểm tra email;
+|Khách|
+if (Nhận và mở liên kết đặt lại?) then (Có)
+  :Nhập mật khẩu mới;
+  |UI - ResetPasswordPage|
+  :Kiểm tra mật khẩu >= 6\nvà xác nhận khớp;
+  :Gửi token và mật khẩu mới;
+  |API - AuthRouter|
+  |Entity/Data - User DB|
+  :Tìm tài khoản theo hash token;
+  |API - AuthRouter|
+  if (Token hợp lệ và chưa hết hạn?) then (Có)
+    |Business - Security|
+    :Băm mật khẩu mới bằng bcrypt;
+    |Entity/Data - User DB|
+    :Cập nhật mật khẩu;
+    :Xóa hash token và thời hạn;
+    |UI - ResetPasswordPage|
+    :Thông báo thành công;
+    :Chuyển đến đăng nhập;
+  else (Không)
+    |UI - ResetPasswordPage|
+    :Thông báo liên kết không hợp lệ\nhoặc đã hết hạn;
+  endif
+else (Không)
+  :Kết thúc mà không thay đổi mật khẩu;
+endif
+stop
+@enduml

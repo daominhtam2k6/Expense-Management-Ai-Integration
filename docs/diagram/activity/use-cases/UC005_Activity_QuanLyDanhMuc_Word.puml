@@ -1,0 +1,51 @@
+@startuml UC005_Activity_QuanLyDanhMuc_Word
+title UC005 — HOẠT ĐỘNG QUẢN LÝ DANH MỤC
+scale max 1050*680
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+|Tác nhân: Người dùng|
+start
+:Mở Danh mục;
+|Giao diện: CategoriesPage|
+:Tải và hiển thị danh mục của tài khoản;
+|Tác nhân: Người dùng|
+:Chọn thêm, sửa hoặc xóa;
+|Giao diện: CategoriesPage|
+:Nhập/xác nhận dữ liệu;
+|Xử lý: CategoriesRouter|
+if (Thêm hoặc sửa?) then (Có)
+  :Kiểm tra name + type không trùng;
+  if (Hợp lệ?) then (Có)
+    |Dữ liệu: Category DB|
+    :INSERT/UPDATE danh mục;
+  else (Không)
+    |Giao diện: CategoriesPage|
+    :Báo trùng/validation;
+  endif
+else (Xóa)
+  |Dữ liệu: Transaction DB|
+  :Kiểm tra giao dịch tham chiếu;
+  if (Đang được sử dụng?) then (Có)
+    |Giao diện: CategoriesPage|
+    :Thông báo không thể xóa;
+  else (Không)
+    |Dữ liệu: Category DB|
+    :Xóa danh mục;
+  endif
+endif
+|Giao diện: CategoriesPage|
+:Cập nhật danh sách;
+stop
+@enduml

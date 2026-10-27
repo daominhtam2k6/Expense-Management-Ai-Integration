@@ -1,0 +1,49 @@
+@startuml UC002_Activity_DangNhapDangXuat
+title UC002 — BIỂU ĐỒ HOẠT ĐỘNG ĐĂNG NHẬP VÀ ĐĂNG XUẤT
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #EAF5F1
+  BorderColor #087F5B
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Khách / Người dùng|
+start
+if (Thao tác được chọn?) then (Đăng nhập)
+  |Khách|
+  :Nhập username/email và mật khẩu;
+  |UI - LoginPage|
+  :Kiểm tra không để trống;
+  :Gửi thông tin đăng nhập;
+  |API - AuthRouter|
+  :Tìm tài khoản theo username;
+  if (Không tìm thấy username?) then (Có)
+    :Tìm email không phân biệt hoa/thường;
+  endif
+  |Business - Security|
+  :Xác minh mật khẩu bcrypt;
+  if (Thông tin hợp lệ?) then (Có)
+    :Tạo JWT có hạn 24 giờ;
+    |UI - AuthContext|
+    :Lưu access token ở localStorage;
+    :Lấy hồ sơ người dùng hiện tại;
+    :Chuyển đến Dashboard;
+  else (Không)
+    |UI - LoginPage|
+    :Hiển thị thông báo đăng nhập chung;
+  endif
+else (Đăng xuất)
+  |Người dùng|
+  :Chọn "Đăng xuất";
+  |UI - AuthContext|
+  :Xóa access token và trạng thái người dùng;
+  :Chuyển về màn hình đăng nhập;
+endif
+stop
+@enduml

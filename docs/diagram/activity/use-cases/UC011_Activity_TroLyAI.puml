@@ -1,0 +1,76 @@
+@startuml UC011_Activity_TroLyAI
+title UC011 — BIỂU ĐỒ HOẠT ĐỘNG SỬ DỤNG TRỢ LÝ AI
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #F1ECFF
+  BorderColor #7757E8
+  DiamondBackgroundColor #FFF5D9
+  DiamondBorderColor #C28A00
+}
+skinparam activityPartition {
+  BackgroundColor #F7FAF9
+  BorderColor #8AA8A3
+  FontColor #173F3B
+}
+
+|Người dùng|
+start
+:Mở Trợ lý AI;
+|UI - AssistantPage|
+:Tải phạm vi dữ liệu và lịch sử hội thoại;
+|API - AssistantRouter|
+|Business - AssistantContext|
+:Tạo ngữ cảnh tổng hợp cho kỳ hiện tại\nvà tháng liền trước;
+|Entity/Data - Finance DB|
+:Đọc số tổng hợp giao dịch,\nngân sách và mục tiêu;
+|Business - AssistantContext|
+:Loại bỏ định danh, ghi chú,\ngiao dịch thô và tên tùy biến;
+|UI - AssistantPage|
+:Hiển thị phạm vi, quyền riêng tư\nvà câu hỏi khởi đầu;
+|Người dùng|
+:Chọn kỳ và nhập/chọn câu hỏi;
+|UI - AssistantPage|
+if (Câu hỏi không rỗng?) then (Có)
+  :Gửi câu hỏi, kỳ và conversation_id nếu có;
+  |API - AssistantRouter|
+  if (Hội thoại cũ?) then (Có)
+    |Entity/Data - AIConversation DB|
+    :Kiểm tra hội thoại thuộc người dùng;
+    :Tải lịch sử tin nhắn;
+  else (Không)
+    :Tạo tiêu đề hội thoại từ câu hỏi;
+  endif
+  |Business - AssistantContext|
+  :Tạo snapshot bằng chứng tổng hợp;
+  |Business - GeminiService|
+  :Tạo system instruction,\ncontext và lịch sử hội thoại;
+  |External - Google Gemini|
+  :Sinh câu trả lời tư vấn;
+  |Business - GeminiService|
+  if (Gemini trả lời thành công?) then (Có)
+    |Entity/Data - AIConversation DB|
+    :Lưu câu hỏi, câu trả lời,\nkỳ và evidence snapshot;
+    |UI - AssistantPage|
+    :Hiển thị câu trả lời, bằng chứng,\nđộ tin cậy và liên kết nguồn;
+  else (Không)
+    |API - AssistantRouter|
+    :Ánh xạ lỗi 429/502/503/504;
+    |UI - AssistantPage|
+    :Hiển thị lỗi và cho phép thử lại;
+  endif
+else (Không)
+  :Không gửi yêu cầu;
+endif
+|Người dùng|
+if (Xem hoặc xóa lịch sử?) then (Có)
+  |UI - AssistantPage|
+  :Gửi yêu cầu mở/xóa hội thoại;
+  |API - AssistantRouter|
+  :Kiểm tra quyền sở hữu;
+  |Entity/Data - AIConversation DB|
+  :Đọc hoặc xóa hội thoại và tin nhắn;
+  |UI - AssistantPage|
+  :Cập nhật danh sách hội thoại;
+endif
+stop
+@enduml
