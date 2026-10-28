@@ -1,0 +1,56 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 600
+skinparam nodesep 18
+skinparam ranksep 25
+skinparam ArrowThickness 1.6
+skinparam shadowing false
+skinparam defaultFontColor #111111
+skinparam ArrowColor #202020
+skinparam usecaseBorderThickness 1.4
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor white
+  BorderColor #202020
+  ArrowColor #202020
+}
+
+actor "Người\nsử dụng" as User
+actor "Resend" as Resend <<external>>
+
+rectangle "Sổ chi tiêu - Tài khoản" {
+  usecase "UC001\nĐăng ký\ntài khoản" as UC001
+  usecase "UC002\nĐăng nhập" as UC002
+  usecase "UC003\nĐăng xuất" as UC003
+  usecase "UC004\nKhôi phục\nmật khẩu" as UC004
+  usecase "UC005\nQuản lý hồ sơ" as UC005
+  usecase "Xem hồ sơ" as UC005a
+  usecase "Cập nhật\nthông tin" as UC005b
+  usecase "Thay đổi\nảnh đại diện" as UC005c
+  usecase "Đổi mật khẩu" as UC005d
+  usecase "Xóa tài khoản và\ndữ liệu cá nhân" as UC005e
+  UC004 ..> UC002 : <<extend>>\n[quên mật khẩu]
+  UC005a -|> UC005
+  UC005b -|> UC005
+  UC005c -|> UC005
+  UC005d -|> UC005
+  UC005e -|> UC005
+}
+
+User -- UC001
+User -- UC002
+User -- UC003
+User -- UC004
+User -- UC005
+Resend -- UC004
+UC001 -[hidden]down- UC002
+UC002 -[hidden]down- UC003
+UC003 -[hidden]down- UC004
+UC005a -[hidden]down- UC005b
+UC005b -[hidden]down- UC005c
+UC005c -[hidden]down- UC005d
+UC005d -[hidden]down- UC005e
+@enduml

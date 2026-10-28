@@ -1,0 +1,52 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 600
+skinparam nodesep 18
+skinparam ranksep 25
+skinparam ArrowThickness 1.6
+skinparam shadowing false
+skinparam defaultFontColor #111111
+skinparam ArrowColor #202020
+skinparam usecaseBorderThickness 1.4
+skinparam usecase {
+  BackgroundColor white
+  BorderColor #202020
+  ArrowColor #202020
+}
+
+actor "Người\nsử dụng" as User
+rectangle "Sổ chi tiêu - Danh mục\nvà giao dịch" {
+  usecase "UC006\nQuản lý\ndanh mục" as UC006
+  usecase "Xem danh mục" as C1
+  usecase "Thêm\ndanh mục" as C2
+  usecase "Sửa\ndanh mục" as C3
+  usecase "Xóa\ndanh mục" as C4
+  usecase "UC007\nQuản lý\ngiao dịch" as UC007
+  usecase "Xem và lọc\ngiao dịch" as T1
+  usecase "Thêm\ngiao dịch" as T2
+  usecase "Sửa\ngiao dịch" as T3
+  usecase "Xóa\ngiao dịch" as T4
+  usecase "Chọn\ndanh mục" as SelectCategory
+  C1 -[hidden]down- C2
+  C2 -[hidden]down- C3
+  C3 -[hidden]down- C4
+  T1 -[hidden]down- T2
+  T2 -[hidden]down- T3
+  T3 -[hidden]down- T4
+  C1 -|> UC006
+  C2 -|> UC006
+  C3 -|> UC006
+  C4 -|> UC006
+  T1 -|> UC007
+  T2 -|> UC007
+  T3 -|> UC007
+  T4 -|> UC007
+  T2 ..> SelectCategory : <<include>>
+  T3 ..> SelectCategory : <<include>>
+}
+User -- UC006
+User -- UC007
+@enduml

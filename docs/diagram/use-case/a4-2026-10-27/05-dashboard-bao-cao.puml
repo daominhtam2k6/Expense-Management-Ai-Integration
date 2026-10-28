@@ -1,0 +1,52 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 600
+skinparam nodesep 18
+skinparam ranksep 25
+skinparam ArrowThickness 1.6
+skinparam shadowing false
+skinparam defaultFontColor #111111
+skinparam ArrowColor #202020
+skinparam usecaseBorderThickness 1.4
+skinparam usecase {
+  BackgroundColor white
+  BorderColor #202020
+  ArrowColor #202020
+}
+
+actor "Người\nsử dụng" as User
+rectangle "Sổ chi tiêu - Dashboard\nvà báo cáo so sánh" {
+  usecase "UC010\nXem Dashboard" as UC010
+  usecase "Xem tổng quan\nthu chi" as D1
+  usecase "Xem chi theo\ndanh mục" as D2
+  usecase "Xem trạng thái\nngân sách" as D3
+  usecase "Xem mục tiêu và\ngiao dịch gần nhất" as D4
+  usecase "UC011\nXem báo cáo\nso sánh" as UC011
+  usecase "Chọn hai kỳ\nso sánh" as R1
+  usecase "Xem chênh lệch\nthu chi" as R2
+  usecase "Xem cơ cấu\ntheo danh mục" as R3
+  usecase "Mở giao dịch\nđã lọc" as R4
+  D1 -[hidden]down- D2
+  D2 -[hidden]down- D3
+  D3 -[hidden]down- D4
+  R1 -[hidden]down- R2
+  R2 -[hidden]down- R3
+  R3 -[hidden]down- R4
+  D1 -|> UC010
+  D2 -|> UC010
+  D3 -|> UC010
+  D4 -|> UC010
+  R2 -|> UC011
+  R3 -|> UC011
+  R2 ..> R1 : <<include>>
+  R3 ..> R1 : <<include>>
+  R4 ..> R2 : <<extend>>\n[xem chi tiết]
+  R4 ..> R3 : <<extend>>\n[xem chi tiết]
+}
+User -- UC010
+User -- UC011
+UC011 -[hidden]down- D1
+@enduml

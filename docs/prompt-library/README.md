@@ -21,3 +21,7 @@
 | 15 | Triển khai và bảo trì | [Chuẩn bị triển khai và bảo trì](15-trien-khai-va-bao-tri.md) |
 
 Đây là thư viện nội dung giao việc theo giai đoạn. Mỗi prompt xác định nguồn, nhiệm vụ, skill, đầu ra và điều kiện hoàn tất phù hợp với bước đó; việc thực thi vẫn theo yêu cầu cụ thể trong cuộc trao đổi.
+
+## System prompt dùng cho phép so sánh
+
+Ngoài 15 prompt giao việc theo SDLC, thư viện có [3 system prompt P1/P2/P3](so-sanh-ai/README.md) cho TC-037: [P1 cơ bản](so-sanh-ai/p1-co-ban.md), [P2 ràng buộc số liệu](so-sanh-ai/p2-rang-buoc-so-lieu.md), [P3 thêm ràng buộc khả năng tài chính](so-sanh-ai/p3-rang-buoc-kha-nang-tai-chinh.md). Nội dung giữ nguyên theo hướng dẫn N1; không đổi số thứ tự 15 giai đoạn.

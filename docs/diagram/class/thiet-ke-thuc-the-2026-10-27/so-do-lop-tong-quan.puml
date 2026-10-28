@@ -1,0 +1,150 @@
+@startuml
+top to bottom direction
+skinparam defaultFontName Arial
+skinparam defaultFontSize 20
+skinparam dpi 600
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBorderThickness 1.2
+skinparam ArrowThickness 1.1
+skinparam nodesep 24
+skinparam ranksep 45
+skinparam ArrowFontSize 16
+skinparam linetype polyline
+skinparam class {
+ BackgroundColor #F7F7F7
+ BorderColor #202020
+ FontColor #111111
+}
+title Sổ chi tiêu - Thiết kế lớp thực thể
+class User <<entity>> {
+  + id: String {PK}
+  + username: String
+  + email: String
+  + displayName: String?
+  - passwordHash: String
+  + avatarUrl: String?
+  + createdAt: DateTime
+  - resetTokenHash: String?
+  + resetTokenExpiry: DateTime?
+  + usernameNormalized: String
+  + emailNormalized: String
+  --
+  {static} + register(...): User
+  {static} + login(...): String
+  + logout(...): void
+  {static} + recoverPassword(...): void
+  + updateAccount(...): void
+}
+class Category <<entity>> {
+  + id: String {PK}
+  + userId: String {FK}
+  + name: String
+  + type: CategoryType
+  + color: String
+  + icon: String
+  + nameNormalized: String
+  --
+  {static} + create(...): Category
+  + update(...): void
+  + delete(): void
+}
+class Transaction <<entity>> {
+  + id: String {PK}
+  + userId: String {FK}
+  + categoryId: String {FK}
+  + amount: Decimal
+  + type: TransactionType
+  + transactionDate: Date
+  + note: String?
+  --
+  {static} + create(...): Transaction
+  + update(...): void
+  + delete(): void
+}
+class Budget <<entity>> {
+  + id: String {PK}
+  + userId: String {FK}
+  + categoryId: String {FK}
+  + month: Integer
+  + year: Integer
+  + limitAmount: Decimal
+  --
+  {static} + create(...): Budget
+  + update(...): void
+  + delete(): void
+  + calculateRemaining(...): Decimal
+  + isOverBudget(...): Boolean
+}
+class SavingGoal <<entity>> {
+  + id: String {PK}
+  + userId: String {FK}
+  + name: String
+  + targetAmount: Decimal
+  + deadline: Date?
+  + status: GoalStatus
+  + completionAmount: Decimal?
+  + completionMode: String?
+  --
+  {static} + create(...): SavingGoal
+  + update(...): void
+  + delete(): void
+  + calculateCurrentAmount(...): Decimal
+  + isTargetReached(...): Boolean
+}
+class GoalTransaction <<entity>> {
+  + id: String {PK}
+  + goalId: String {FK}
+  + amount: Decimal
+  + type: GoalTransactionType
+  + transactionDate: Date
+  + note: String?
+  --
+  {static} + deposit(...): GoalTransaction
+  {static} + withdraw(...): GoalTransaction
+}
+class GoalItem <<entity>> {
+  + id: String {PK}
+  + goalId: String {FK}
+  + name: String
+  + cost: Decimal
+  + isPurchased: Boolean
+  --
+  + updateStatus(...): void
+}
+class AIConversation <<entity>> {
+  + id: String {PK}
+  + userId: String {FK}
+  + title: String
+  + createdAt: DateTime
+  + updatedAt: DateTime
+  --
+  {static} + create(...): AIConversation
+  + delete(): void
+}
+class AIMessage <<entity>> {
+  + id: String {PK}
+  + conversationId: String {FK}
+  + role: MessageRole
+  + content: Text
+  + contextMonth: Integer?
+  + contextYear: Integer?
+  + evidenceJson: Text?
+  + /evidence: Map?
+  + createdAt: DateTime
+  --
+  + toOutput(): AIMessageOutput
+}
+User "1" -right- "0..*" Category : sở hữu
+User "1" -- "0..*" Transaction : sở hữu
+User "1" -- "0..*" Budget : sở hữu
+User "1" -right- "0..*" SavingGoal : sở hữu
+User "1" -right- "0..*" AIConversation : sở hữu
+Category "1" -- "0..*" Transaction : phân loại
+Category "1" -- "0..*" Budget : áp dụng
+SavingGoal "1" *-- "0..*" GoalItem : gồm
+SavingGoal "1" *-- "0..*" GoalTransaction : nhật ký
+AIConversation "1" *-- "0..*" AIMessage : gồm
+@enduml

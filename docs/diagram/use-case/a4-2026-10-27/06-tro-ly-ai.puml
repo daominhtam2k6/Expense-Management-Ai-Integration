@@ -1,0 +1,37 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 600
+skinparam nodesep 18
+skinparam ranksep 25
+skinparam ArrowThickness 1.6
+skinparam shadowing false
+skinparam defaultFontColor #111111
+skinparam ArrowColor #202020
+skinparam usecaseBorderThickness 1.4
+skinparam usecase {
+  BackgroundColor white
+  BorderColor #202020
+  ArrowColor #202020
+}
+
+actor "Người\nsử dụng" as User
+actor "Google\nGemini" as Gemini <<external>>
+rectangle "Sổ chi tiêu - Trợ lý AI" {
+  usecase "UC012\nTrợ lý AI" as UC012
+  usecase "Hỏi trợ lý\ntài chính" as A1
+  usecase "Xem hội thoại" as A2
+  usecase "Xóa hội thoại" as A3
+  usecase "Tạo câu trả lời\nAI" as A4
+  A1 -|> UC012
+  A2 -|> UC012
+  A3 -|> UC012
+  A1 ..> A4 : <<include>>
+}
+User -- UC012
+Gemini -- A4
+A1 -[hidden]down- A2
+A2 -[hidden]down- A3
+@enduml
