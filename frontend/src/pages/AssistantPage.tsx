@@ -25,6 +25,8 @@ import type { FormEvent, KeyboardEvent, RefObject } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { AssistantMessage } from "../components/AssistantMessage";
+import { assistantPreview } from "../lib/assistantPreview";
 import { api } from "../lib/api";
 import { formatCurrency } from "../lib/format";
 import type {
@@ -371,7 +373,7 @@ export function AssistantPage() {
                       <strong>{message.role === "assistant" ? "Trợ lý AI" : "Bạn"}</strong>
                       <time dateTime={message.created_at}>{formatTime(message.created_at)}</time>
                     </div>
-                    <p>{message.content}</p>
+                    {message.role === "assistant" ? <AssistantMessage content={message.content} /> : <p>{message.content}</p>}
                     {message.role === "assistant" && message.evidence && <EvidenceBlock evidence={message.evidence} onFollowUp={chooseStarter} />}
                   </div>
                 </article>
@@ -447,7 +449,7 @@ function HistoryRail({ railRef, open, loading, search, groups, activeId, deleteI
             {items.map((item) => (
               <div className={`assistant-history-item${item.id === activeId ? " is-active" : ""}`} key={item.id}>
                 <button type="button" onClick={() => onSelect(item.id)}>
-                  <strong>{item.title}</strong><span>{item.preview}</span>
+                  <strong>{item.title}</strong><span>{assistantPreview(item.preview)}</span>
                 </button>
                 {deleteId === item.id ? (
                   <span className="assistant-history-confirm"><button type="button" onClick={() => onDelete(item.id)}>Xóa</button><button type="button" onClick={() => onAskDelete(null)}>Hủy</button></span>

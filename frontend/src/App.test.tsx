@@ -285,4 +285,20 @@ describe("application route smoke tests", () => {
     await userEvent.click(screen.getByRole("button", { name: /Thử lại/ }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
   });
+
+  it("formats saved AI answers and previews while leaving user questions literal", async () => {
+    vi.mocked(api.listAssistantConversations).mockResolvedValueOnce([{ ...conversations[0], preview: "**Kết luận:** Giảm -80,9%." }]);
+    vi.spyOn(api, "getAssistantConversation").mockResolvedValueOnce({
+      ...conversations[0],
+      messages: [
+        { id: "m1", role: "user", content: "Giải thích **100.000 VNĐ**", created_at: "2026-08-01T00:00:00Z", context_month: 8, context_year: 2026, evidence: null },
+        { id: "m2", role: "assistant", content: "**Tổng chi:** 100.000 VNĐ", created_at: "2026-08-01T00:00:01Z", context_month: 8, context_year: 2026, evidence: null },
+      ],
+    });
+    renderApp("/assistant");
+    expect(await screen.findByText("Kết luận: Giảm -80,9%.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Spending Kết luận: Giảm -80,9%." }));
+    expect(await screen.findByText("Giải thích **100.000 VNĐ**")).toBeInTheDocument();
+    expect(screen.getByText("Tổng chi:").tagName).toBe("STRONG");
+  });
 });
